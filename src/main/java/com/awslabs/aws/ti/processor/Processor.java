@@ -1,9 +1,6 @@
 package com.awslabs.aws.ti.processor;
 
 import com.awslabs.aws.ti.Record;
-import com.awslabs.aws.ti.buffer.Buffer;
-
-import java.util.Collection;
 
 /**
  * Transformation Instance Processor interface. These are intermediary processing units using which users can filter,
@@ -11,5 +8,12 @@ import java.util.Collection;
  */
 public interface Processor {
 
-    Collection<Record> process(final Buffer buffer);
+    /**
+     * execute the processor logic which could potentially modify the incoming record. The level to which the record has
+     * been modified depends on the implementation
+     *
+     * @param record Record which will be modified
+     * @return Record modified record
+     */
+    Record execute(final Record record);
 }
