@@ -15,12 +15,13 @@ public class StdOutSink implements Sink {
     }
 
     @Override
-    public void output(Collection<Record> records) {
+    public boolean output(Collection<Record> records) {
         final Iterator<Record> iterator = records.iterator();
         while(!haltFlag && iterator.hasNext()) {
             final Record record = iterator.next();
             System.out.println(new String(record.getData().array(), StandardCharsets.UTF_8));
         }
+        return true;
     }
 
     @Override

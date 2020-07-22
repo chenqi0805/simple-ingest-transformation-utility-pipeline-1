@@ -14,7 +14,7 @@ public interface Sink {
      * outputs collection of {@link Record}.
      * @param records
      */
-    void output(Collection<Record> records);
+    boolean output(Collection<Record> records);
 
     /**
      * Updates the sink to stop sending records.

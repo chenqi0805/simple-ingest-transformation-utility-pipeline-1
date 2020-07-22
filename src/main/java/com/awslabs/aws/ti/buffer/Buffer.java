@@ -5,8 +5,10 @@ import com.awslabs.aws.ti.Record;
 /**
  * Transformation Instance buffer interface. Buffer queues the records between TI components and acts as a layer
  * between source and processor/sink. Buffer can be in-memory, disk based or other a standalone implementation.
+ *
+ * TODO: Rename this such that it does not confuse java.nio.Buffer
  */
-public interface TIBuffer {
+public interface Buffer {
 
     /**
      * writes the record to the buffer

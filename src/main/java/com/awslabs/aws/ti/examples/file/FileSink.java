@@ -24,15 +24,17 @@ public class FileSink implements Sink {
     }
 
     @Override
-    public void output(Collection<Record> records) {
+    public boolean output(Collection<Record> records) {
         try(final BufferedWriter writer = Files.newBufferedWriter(Paths.get(outputFilePath),
                 StandardCharsets.UTF_8)) {
             for(final Record record : records) {
                 writer.write(new String(record.getData().array(), StandardCharsets.UTF_8));
                 writer.newLine();
             }
+            return true;
         } catch (IOException ex) {
             System.err.println(ex);
+            return false;
         }
     }
 

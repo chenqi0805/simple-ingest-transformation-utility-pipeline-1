@@ -1,13 +1,11 @@
 package com.awslabs.aws.ti.examples.file;
 
 import com.awslabs.aws.ti.Record;
-import com.awslabs.aws.ti.buffer.TIBuffer;
+import com.awslabs.aws.ti.buffer.Buffer;
 import com.awslabs.aws.ti.source.Source;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -27,7 +25,7 @@ public class FileSource implements Source {
 
 
     @Override
-    public void start(final TIBuffer buffer) {
+    public void start(final Buffer buffer) {
         try(final BufferedReader reader =
                     Files.newBufferedReader(Paths.get(filePathToRead), StandardCharsets.UTF_8)) {
             String line;

@@ -1,17 +1,16 @@
-package com.awslabs.aws.ti.examples.console;
+package com.awslabs.aws.ti.buffer;
 
 import com.awslabs.aws.ti.Record;
-import com.awslabs.aws.ti.buffer.TIBuffer;
+import com.awslabs.aws.ti.buffer.Buffer;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class InMemoryTIBuffer implements TIBuffer {
+public class InMemoryBuffer implements Buffer {
 
     private final Queue<Record> queue;
 
-    public InMemoryTIBuffer() {
+    public InMemoryBuffer() {
         this.queue = new LinkedList<>();
     }
 

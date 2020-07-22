@@ -1,7 +1,7 @@
 package com.awslabs.aws.ti.examples.console;
 
 import com.awslabs.aws.ti.Record;
-import com.awslabs.aws.ti.buffer.TIBuffer;
+import com.awslabs.aws.ti.buffer.Buffer;
 import com.awslabs.aws.ti.source.Source;
 
 import java.nio.ByteBuffer;
@@ -18,7 +18,7 @@ public class StdInSource implements Source {
     }
 
     @Override
-    public void start(final TIBuffer buffer) {
+    public void start(final Buffer buffer) {
         if(buffer == null) {
             //exception scenario
             return;
