@@ -1,11 +1,15 @@
-package com.awslabs.aws.ti.examples.console;
+package com.amazon.ti.examples.console;
 
-import com.awslabs.aws.ti.buffer.Buffer;
-import com.awslabs.aws.ti.buffer.InMemoryBuffer;
-import com.awslabs.aws.ti.pipeline.Pipeline;
-import com.awslabs.aws.ti.sink.Sink;
-import com.awslabs.aws.ti.source.Source;
+import com.amazon.ti.buffer.Buffer;
+import com.amazon.ti.buffer.InMemoryBuffer;
+import com.amazon.ti.pipeline.Pipeline;
+import com.amazon.ti.sink.Sink;
+import com.amazon.ti.source.Source;
 
+/**
+ * Simple example to demonstrate the Pipeline.
+ * Execute the class and enter records to process. type "exit" to stop reading the data
+ */
 public class SimpleExample {
     public static void main(String[] args) throws Exception {
         final Source consoleSource = new StdInSource();

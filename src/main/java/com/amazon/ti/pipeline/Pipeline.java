@@ -1,11 +1,11 @@
-package com.awslabs.aws.ti.pipeline;
+package com.amazon.ti.pipeline;
 
-import com.awslabs.aws.ti.Record;
-import com.awslabs.aws.ti.buffer.Buffer;
-import com.awslabs.aws.ti.processor.NoOpProcessor;
-import com.awslabs.aws.ti.processor.Processor;
-import com.awslabs.aws.ti.sink.Sink;
-import com.awslabs.aws.ti.source.Source;
+import com.amazon.ti.Record;
+import com.amazon.ti.buffer.Buffer;
+import com.amazon.ti.processor.NoOpProcessor;
+import com.amazon.ti.processor.Processor;
+import com.amazon.ti.sink.Sink;
+import com.amazon.ti.source.Source;
 
 import java.util.*;
 

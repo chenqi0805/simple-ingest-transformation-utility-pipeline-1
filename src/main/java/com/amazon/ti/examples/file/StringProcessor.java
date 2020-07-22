@@ -1,7 +1,7 @@
-package com.awslabs.aws.ti.examples.file;
+package com.amazon.ti.examples.file;
 
-import com.awslabs.aws.ti.Record;
-import com.awslabs.aws.ti.processor.Processor;
+import com.amazon.ti.Record;
+import com.amazon.ti.processor.Processor;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;

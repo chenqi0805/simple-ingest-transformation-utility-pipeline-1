@@ -1,11 +1,11 @@
-package com.awslabs.aws.ti.examples.file;
+package com.amazon.ti.examples.file;
 
-import com.awslabs.aws.ti.buffer.Buffer;
-import com.awslabs.aws.ti.buffer.InMemoryBuffer;
-import com.awslabs.aws.ti.pipeline.Pipeline;
-import com.awslabs.aws.ti.processor.Processor;
-import com.awslabs.aws.ti.sink.Sink;
-import com.awslabs.aws.ti.source.Source;
+import com.amazon.ti.buffer.Buffer;
+import com.amazon.ti.buffer.InMemoryBuffer;
+import com.amazon.ti.pipeline.Pipeline;
+import com.amazon.ti.processor.Processor;
+import com.amazon.ti.sink.Sink;
+import com.amazon.ti.source.Source;
 
 /**
  * A simple and raw file reading example using the Pipeline

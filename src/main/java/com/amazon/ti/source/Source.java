@@ -1,6 +1,6 @@
-package com.awslabs.aws.ti.source;
+package com.amazon.ti.source;
 
-import com.awslabs.aws.ti.buffer.Buffer;
+import com.amazon.ti.buffer.Buffer;
 
 /**
  * Transformation Instance source interface. Source acts as receiver of the events that flow

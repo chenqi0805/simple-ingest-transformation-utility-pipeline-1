@@ -1,8 +1,8 @@
-package com.awslabs.aws.ti.examples.console;
+package com.amazon.ti.examples.console;
 
-import com.awslabs.aws.ti.Record;
-import com.awslabs.aws.ti.buffer.Buffer;
-import com.awslabs.aws.ti.source.Source;
+import com.amazon.ti.Record;
+import com.amazon.ti.buffer.Buffer;
+import com.amazon.ti.source.Source;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;

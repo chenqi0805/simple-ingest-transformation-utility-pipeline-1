@@ -1,7 +1,7 @@
-package com.awslabs.aws.ti.examples.console;
+package com.amazon.ti.examples.console;
 
-import com.awslabs.aws.ti.Record;
-import com.awslabs.aws.ti.sink.Sink;
+import com.amazon.ti.Record;
+import com.amazon.ti.sink.Sink;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;

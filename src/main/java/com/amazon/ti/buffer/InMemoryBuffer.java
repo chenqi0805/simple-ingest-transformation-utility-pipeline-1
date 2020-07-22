@@ -1,7 +1,6 @@
-package com.awslabs.aws.ti.buffer;
+package com.amazon.ti.buffer;
 
-import com.awslabs.aws.ti.Record;
-import com.awslabs.aws.ti.buffer.Buffer;
+import com.amazon.ti.Record;
 
 import java.util.LinkedList;
 import java.util.Queue;

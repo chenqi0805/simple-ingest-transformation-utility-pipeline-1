@@ -1,6 +1,6 @@
-package com.awslabs.aws.ti.processor;
+package com.amazon.ti.processor;
 
-import com.awslabs.aws.ti.Record;
+import com.amazon.ti.Record;
 
 public class NoOpProcessor implements Processor {
     @Override

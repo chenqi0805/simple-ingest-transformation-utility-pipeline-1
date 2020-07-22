@@ -1,6 +1,6 @@
-package com.awslabs.aws.ti.buffer;
+package com.amazon.ti.buffer;
 
-import com.awslabs.aws.ti.Record;
+import com.amazon.ti.Record;
 
 /**
  * Transformation Instance buffer interface. Buffer queues the records between TI components and acts as a layer

@@ -1,4 +1,4 @@
-package com.awslabs.aws.ti.configuration;
+package com.amazon.ti.configuration;
 
 /**
  * Configuration settings for TI components

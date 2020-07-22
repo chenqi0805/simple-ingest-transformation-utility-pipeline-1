@@ -1,4 +1,4 @@
-package com.awslabs.aws.ti;
+package com.amazon.ti;
 
 import java.nio.ByteBuffer;
 import java.util.Map;

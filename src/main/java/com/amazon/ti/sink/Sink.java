@@ -1,7 +1,6 @@
-package com.awslabs.aws.ti.sink;
+package com.amazon.ti.sink;
 
-import com.awslabs.aws.ti.Record;
-
+import com.amazon.ti.Record;
 import java.util.Collection;
 
 /**
