@@ -12,8 +12,8 @@ public interface Processor {
      * execute the processor logic which could potentially modify the incoming record. The level to which the record has
      * been modified depends on the implementation
      *
-     * @param record Record which will be modified
-     * @return Record modified record
+     * @param record Input record that will be modified/processed
+     * @return Record  modified output record
      */
     Record execute(final Record record);
 }

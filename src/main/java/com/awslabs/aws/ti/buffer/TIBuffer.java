@@ -6,7 +6,7 @@ import com.awslabs.aws.ti.Record;
  * Transformation Instance buffer interface. Buffer queues the records between TI components and acts as a layer
  * between source and processor/sink. Buffer can be in-memory, disk based or other a standalone implementation.
  */
-public interface Buffer {
+public interface TIBuffer {
 
     /**
      * writes the record to the buffer
