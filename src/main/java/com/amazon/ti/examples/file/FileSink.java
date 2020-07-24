@@ -10,10 +10,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
 
-public class FileSink implements Sink {
+public class FileSink implements Sink<Record<String>> {
     private static final String SAMPLE_FILE_PATH = "src/resources/file-test-sample-output.txt";
 
-    private String outputFilePath;
+    private final String outputFilePath;
 
     public FileSink() {
         this(SAMPLE_FILE_PATH);
@@ -24,16 +24,16 @@ public class FileSink implements Sink {
     }
 
     @Override
-    public boolean output(Collection<Record> records) {
+    public boolean output(Collection<Record<String>> records) {
         try(final BufferedWriter writer = Files.newBufferedWriter(Paths.get(outputFilePath),
                 StandardCharsets.UTF_8)) {
-            for(final Record record : records) {
-                writer.write(new String(record.getData().array(), StandardCharsets.UTF_8));
+            for(final Record<String> record : records) {
+                writer.write(record.getData());
                 writer.newLine();
             }
             return true;
         } catch (IOException ex) {
-            System.err.println(ex);
+            System.err.println(ex.getMessage());
             return false;
         }
     }

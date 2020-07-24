@@ -7,19 +7,24 @@ import com.amazon.ti.processor.Processor;
 import com.amazon.ti.sink.Sink;
 import com.amazon.ti.source.Source;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Pipeline is a data transformation flow which reads data from {@link Source}, optionally transforms the data
  * using {@link Processor} and outputs the transformed (or original) data to {@link Sink}.
+ *
+ * TODO: Add dependencies - for guards like @NonNull
  */
-public class Pipeline {
+public class Pipeline<InputT extends Record<?>, OutputT extends Record<?>> {
 
     private final String name;
-    private final Source source;
-    private final Buffer buffer;
-    private final Optional<Processor> processorOptional;
-    private final Sink sink;
+    private final Source<InputT> source;
+    private final Buffer<InputT> buffer;
+    private final Processor<InputT, OutputT> processor;
+    private final Sink<OutputT> sink;
 
     /**
      * Constructs a pipeline without processor
@@ -31,13 +36,13 @@ public class Pipeline {
      */
     public Pipeline(
             final String name,
-            final Source source,
-            final Buffer buffer,
-            final Sink sink) {
+            final Source<InputT> source,
+            final Buffer<InputT> buffer,
+            final Sink<OutputT> sink) {
         this.name = name;
         this.source = source;
         this.buffer = buffer;
-        processorOptional = Optional.empty();
+        processor = null;
         this.sink = sink;
     }
 
@@ -52,14 +57,14 @@ public class Pipeline {
      */
     public Pipeline(
             final String name,
-            final Source source,
-            final Buffer buffer,
-            final Processor processor,
-            final Sink sink) {
+            final Source<InputT> source,
+            final Buffer<InputT> buffer,
+            final Processor<InputT, OutputT> processor,
+            final Sink<OutputT> sink) {
         this.name = name;
         this.source = source;
         this.buffer = buffer;
-        processorOptional = Optional.of(processor);
+        this.processor = processor;
         this.sink = sink;
     }
 
@@ -74,29 +79,29 @@ public class Pipeline {
     /**
      * @return {@link Source} of this pipeline.
      */
-    public Source getSource() {
+    public Source<InputT> getSource() {
         return this.source;
     }
 
     /**
      * @return {@link Buffer} of this pipeline.
      */
-    public Buffer getBuffer() {
+    public Buffer<InputT> getBuffer() {
         return this.buffer;
     }
 
     /**
      * @return {@link Sink} of this pipeline.
      */
-    public Sink getSink() {
+    public Sink<OutputT> getSink() {
         return this.sink;
     }
 
     /**
      * @return An optional {@link Processor} of this pipeline.
      */
-    Optional<Processor> getProcessor() {
-        return processorOptional;
+    Optional<Processor<InputT, OutputT>> getProcessor() {
+        return Optional.ofNullable(processor);
     }
 
     /**
@@ -124,10 +129,10 @@ public class Pipeline {
      * TODO: Derive bufferSize from configuration
      */
     private void executeToEmptyBuffer(int bufferSize) {
-        final Processor processor = processorOptional.orElse(new NoOpProcessor());
-        List<Record> records = new ArrayList<>(); //TODO: derive size from the configuration
+        final Processor<InputT, OutputT> processor = this.getProcessor().orElse(new NoOpProcessor());
+        List<OutputT> records = new ArrayList<>(); //TODO: derive size from the configuration
         int index = 0;
-        Record record;
+        InputT record;
         while ((record = buffer.get()) != null) {
             records.add(index, processor.execute(record));
             if (index == bufferSize - 1) {
@@ -137,12 +142,12 @@ public class Pipeline {
             }
             index++;
         }
-        if(index > 0) {
+        if (index > 0) {
             postToSink(records);
         }
     }
 
-    private boolean postToSink(Collection<Record> records) {
+    private boolean postToSink(Collection<OutputT> records) {
         return sink.output(records);
     }
 

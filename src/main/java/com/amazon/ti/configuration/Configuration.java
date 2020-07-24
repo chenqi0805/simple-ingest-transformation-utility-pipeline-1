@@ -2,6 +2,8 @@ package com.amazon.ti.configuration;
 
 /**
  * Configuration settings for TI components
+ *
+ * TODO: Consider renaming this - its overloaded word [by @laneholloway]
  */
 public interface Configuration {
 

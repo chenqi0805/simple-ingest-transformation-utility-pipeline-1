@@ -1,7 +1,8 @@
 package com.amazon.ti.examples.console;
 
+import com.amazon.ti.Record;
 import com.amazon.ti.buffer.Buffer;
-import com.amazon.ti.buffer.InMemoryBuffer;
+import com.amazon.ti.buffer.UnboundedInMemoryBuffer;
 import com.amazon.ti.pipeline.Pipeline;
 import com.amazon.ti.sink.Sink;
 import com.amazon.ti.source.Source;
@@ -11,11 +12,11 @@ import com.amazon.ti.source.Source;
  * Execute the class and enter records to process. type "exit" to stop reading the data
  */
 public class SimpleExample {
-    public static void main(String[] args) throws Exception {
-        final Source consoleSource = new StdInSource();
-        final Buffer inMemoryBuffer = new InMemoryBuffer();
-        final Sink consoleSink = new StdOutSink();
-        final Pipeline consolePipeline = new Pipeline("console-pipeline", consoleSource,
+    public static void main(String[] args) {
+        final Source<Record<String>> consoleSource = new StdInSource();
+        final Buffer<Record<String>> inMemoryBuffer = new UnboundedInMemoryBuffer<>();
+        final Sink<Record<String>> consoleSink = new StdOutSink();
+        final Pipeline<Record<String>,Record<String>> consolePipeline = new Pipeline<>("console-pipeline", consoleSource,
                 inMemoryBuffer, consoleSink);
         consolePipeline.execute();
         consolePipeline.stop();

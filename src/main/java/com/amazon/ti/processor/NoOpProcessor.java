@@ -2,9 +2,10 @@ package com.amazon.ti.processor;
 
 import com.amazon.ti.Record;
 
-public class NoOpProcessor implements Processor {
+public class NoOpProcessor<InputT extends Record<?>> implements Processor<InputT, InputT> {
+
     @Override
-    public Record execute(Record record) {
+    public InputT execute(InputT record) {
         return record;
     }
 }

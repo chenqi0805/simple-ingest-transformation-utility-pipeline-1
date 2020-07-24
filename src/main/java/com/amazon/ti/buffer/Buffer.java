@@ -8,16 +8,16 @@ import com.amazon.ti.Record;
  *
  * TODO: Rename this such that it does not confuse java.nio.Buffer
  */
-public interface Buffer {
+public interface Buffer<BufferedRecord extends Record<?>> {
 
     /**
      * writes the record to the buffer
      * @param record The Record which needed to be written
      */
-    void put(Record record);
+    void put(BufferedRecord record);
 
     /**
      * @return The earliest record in the buffer which is still not read.
      */
-    Record get();
+    BufferedRecord get();
 }

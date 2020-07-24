@@ -4,11 +4,9 @@ import com.amazon.ti.Record;
 import com.amazon.ti.buffer.Buffer;
 import com.amazon.ti.source.Source;
 
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
-public class StdInSource implements Source {
+public class StdInSource implements Source<Record<String>> {
     private final Scanner reader;
     private boolean haltFlag;
 
@@ -18,16 +16,15 @@ public class StdInSource implements Source {
     }
 
     @Override
-    public void start(final Buffer buffer) {
-        if(buffer == null) {
+    public void start(final Buffer<Record<String>> buffer) {
+        if (buffer == null) {
             //exception scenario
             return;
         }
         String line = "";
-        while(!haltFlag && !"exit".equalsIgnoreCase(line)) {
+        while (!haltFlag && !"exit".equalsIgnoreCase(line)) {
             line = reader.nextLine();
-            final byte[] lineBytes = line.getBytes(StandardCharsets.UTF_8);
-            final Record record = new Record(ByteBuffer.wrap(lineBytes));
+            final Record<String> record = new Record<>(line);
             buffer.put(record);
         }
     }
