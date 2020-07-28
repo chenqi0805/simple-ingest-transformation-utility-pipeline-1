@@ -2,6 +2,8 @@ package com.amazon.ti.processor;
 
 import com.amazon.ti.Record;
 
+import java.util.Collection;
+
 /**
  * Transformation Instance Processor interface. These are intermediary processing units using which users can filter,
  * transform and enrich the records into desired format before publishing to the sink.
@@ -12,8 +14,8 @@ public interface Processor<InputRecord extends Record<?>, OutputRecord extends R
      * execute the processor logic which could potentially modify the incoming record. The level to which the record has
      * been modified depends on the implementation
      *
-     * @param record Input record that will be modified/processed
-     * @return Record  modified output record
+     * @param records Input records that will be modified/processed
+     * @return Record  modified output records
      */
-    OutputRecord execute(final InputRecord record);
+    Collection<OutputRecord> execute(final Collection<InputRecord> records);
 }

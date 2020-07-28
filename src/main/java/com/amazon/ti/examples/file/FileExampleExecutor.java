@@ -8,6 +8,9 @@ import com.amazon.ti.processor.Processor;
 import com.amazon.ti.sink.Sink;
 import com.amazon.ti.source.Source;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A simple and raw file reading example using the Pipeline
  */
@@ -16,9 +19,11 @@ public class FileExampleExecutor {
         final Source<Record<String>> fileSource = new FileSource();
         final Buffer<Record<String>> inMemoryQueue = new UnboundedInMemoryBuffer<>();
         final Processor<Record<String>, Record<String>> stringProcessor = new StringProcessor();
+        final List<Processor> processors = new ArrayList<>();
+        processors.add(stringProcessor);
         final Sink<Record<String>> fileSink = new FileSink();
-        final Pipeline<Record<String>,Record<String>> filePipeline = new Pipeline<>("file-pipeline",
-                fileSource, inMemoryQueue, stringProcessor, fileSink);
+        final Pipeline filePipeline = new Pipeline("file-pipeline",
+                fileSource, inMemoryQueue, processors, fileSink);
         filePipeline.execute();
     }
 }

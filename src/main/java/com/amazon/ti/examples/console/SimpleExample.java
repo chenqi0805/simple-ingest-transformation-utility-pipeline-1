@@ -14,9 +14,9 @@ import com.amazon.ti.source.Source;
 public class SimpleExample {
     public static void main(String[] args) {
         final Source<Record<String>> consoleSource = new StdInSource();
-        final Buffer<Record<String>> inMemoryBuffer = new UnboundedInMemoryBuffer<>();
+        final Buffer<Record<String>> inMemoryBuffer = new UnboundedInMemoryBuffer<>(4);
         final Sink<Record<String>> consoleSink = new StdOutSink();
-        final Pipeline<Record<String>,Record<String>> consolePipeline = new Pipeline<>("console-pipeline", consoleSource,
+        final Pipeline consolePipeline = new Pipeline("console-pipeline", consoleSource,
                 inMemoryBuffer, consoleSink);
         consolePipeline.execute();
         consolePipeline.stop();
