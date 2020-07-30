@@ -1,6 +1,7 @@
 package com.amazon.ti.buffer;
 
 import com.amazon.ti.Record;
+import com.amazon.ti.plugins.buffer.UnboundedInMemoryBuffer;
 
 import java.util.Collection;
 
@@ -27,4 +28,9 @@ public interface Buffer<T extends Record<?>> {
      * @return Collection of records from the buffer
      */
     Collection<T> records();
+
+    @SuppressWarnings("rawtypes")
+     static Buffer defaultBuffer() {
+        return new UnboundedInMemoryBuffer();
+    }
 }
