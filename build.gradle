@@ -8,6 +8,11 @@ repositories {
 }
 
 dependencies {
+    // ES sink
+    // https://mvnrepository.com/artifact/org.apache.beam/beam-sdks-java-io-elasticsearch
+    compile group: 'org.apache.beam', name: 'beam-sdks-java-io-elasticsearch', version: '2.23.0'
+    // https://mvnrepository.com/artifact/org.apache.beam/beam-vendor-guava-26_0-jre
+    compile group: 'org.apache.beam', name: 'beam-vendor-guava-26_0-jre', version: '0.1'
     // Use JUnit test framework
     testImplementation 'junit:junit:4.13'
 }
