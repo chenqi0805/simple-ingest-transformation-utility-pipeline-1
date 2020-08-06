@@ -49,19 +49,19 @@ public class ConfigurationDeserializer extends JsonDeserializer<PipelineConfigur
             final JsonNode processorNode,
             final JsonNode sinkNode) {
         final String pipelineName = nameNode == null ? null : nameNode.asText();
-        final List<Configuration> sourceConfigurations = getConfigurationOrNull(sourceNode);
-        final List<Configuration> bufferConfigurations = getConfigurationOrNull(bufferNode);
-        final List<Configuration> processorConfigurations = getConfigurationOrNull(processorNode);
-        final List<Configuration> sinkConfigurations = getConfigurationOrNull(sinkNode);
+        final List<Configuration> sourceConfigurations = getConfigurationsOrNull(sourceNode);
+        final List<Configuration> bufferConfigurations = getConfigurationsOrNull(bufferNode);
+        final List<Configuration> processorConfigurations = getConfigurationsOrNull(processorNode);
+        final List<Configuration> sinkConfigurations = getConfigurationsOrNull(sinkNode);
         return new PipelineConfiguration(
                 pipelineName,
-                getTopConfigurationOrNull(sourceConfigurations),
-                getTopConfigurationOrNull(bufferConfigurations),
+                getFirstConfigurationIfExists(sourceConfigurations),
+                getFirstConfigurationIfExists(bufferConfigurations),
                 processorConfigurations,
                 sinkConfigurations);
     }
 
-    private List<Configuration> getConfigurationOrNull(final JsonNode jsonNode) {
+    private List<Configuration> getConfigurationsOrNull(final JsonNode jsonNode) {
         List<Configuration> configurations = null;
         if (jsonNode != null) {
             configurations = new ArrayList<>();
@@ -76,7 +76,10 @@ public class ConfigurationDeserializer extends JsonDeserializer<PipelineConfigur
         return configurations;
     }
 
-    private Configuration getTopConfigurationOrNull(final List<Configuration> configurations) {
+    /**
+     * TODO if configuration file has two sources - throw an exception
+     */
+    private Configuration getFirstConfigurationIfExists(final List<Configuration> configurations) {
         return configurations == null || configurations.isEmpty() ? null : configurations.get(0);
     }
 

@@ -1,26 +1,20 @@
 package com.amazon.ti.parser;
 
 public enum PipelineAttribute {
-    PIPELINE("pipeline", true),
-    NAME("name", true),
-    SOURCE("source", true),
-    BUFFER("buffer", false),
-    PROCESSOR("processor", false),
-    SINK("sink", true);
+    PIPELINE("pipeline"),
+    NAME("name"),
+    SOURCE("source"),
+    BUFFER("buffer"),
+    PROCESSOR("processor"),
+    SINK("sink");
 
-    private final String name;
-    private final boolean isRequired;
+    private final String attributeName;
 
-    PipelineAttribute(final String name, boolean isRequired) {
-        this.name = name;
-        this.isRequired = isRequired;
+    PipelineAttribute(final String attributeName) {
+        this.attributeName = attributeName;
     }
 
     public String attributeName() {
-        return name;
-    }
-
-    public boolean isRequired() {
-        return isRequired;
+        return attributeName;
     }
 }

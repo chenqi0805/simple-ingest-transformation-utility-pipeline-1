@@ -154,6 +154,7 @@ public class Pipeline {
     /**
      * TODO Add retry mechanism
      * TODO Add isolator pattern - Fail if one of the Sink fails [isolator Pattern]
+     * TODO Update records such that sinks can modify independently [clone ?]
      */
     private boolean postToSink(Collection<Record> records) {
         sinks.forEach(sink -> sink.output(records));

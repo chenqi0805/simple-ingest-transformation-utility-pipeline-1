@@ -9,7 +9,6 @@ import com.amazon.ti.processor.Processor;
 public class ProcessorFactory extends PluginFactory {
 
     public static Processor newProcessor(final Configuration configuration) {
-        final Class<Processor> processorClass = PluginRepository.getProcessorClass(configuration.getName());
-        return (Processor) newPlugin(configuration, processorClass);
+        return (Processor) newPlugin(configuration, PluginRepository.getProcessorClass(configuration.getName()));
     }
 }

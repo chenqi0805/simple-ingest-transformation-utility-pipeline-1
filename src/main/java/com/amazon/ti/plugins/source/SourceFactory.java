@@ -9,7 +9,6 @@ import com.amazon.ti.source.Source;
 public class SourceFactory extends PluginFactory {
 
     public static Source newSource(final Configuration configuration) {
-        final Class<Source> sourceClass = PluginRepository.getSourceClass(configuration.getName());
-        return (Source) newPlugin(configuration, sourceClass);
+        return (Source) newPlugin(configuration, PluginRepository.getSourceClass(configuration.getName()));
     }
 }

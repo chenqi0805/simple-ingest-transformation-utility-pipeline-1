@@ -9,7 +9,6 @@ import com.amazon.ti.sink.Sink;
 public class SinkFactory extends PluginFactory {
 
     public static Sink newSink(final Configuration configuration) {
-        final Class<Sink> sinkClass = PluginRepository.getSinkClass(configuration.getName());
-        return (Sink) newPlugin(configuration, sinkClass);
+        return (Sink) newPlugin(configuration, PluginRepository.getSinkClass(configuration.getName()));
     }
 }
