@@ -16,7 +16,7 @@ import java.util.*;
  */
 @TransformationInstancePlugin(name="unbounded-inmemory", type = PluginType.BUFFER)
 public class UnboundedInMemoryBuffer<T extends Record<?>> implements Buffer<T> {
-    private static final int DEFAULT_BUFFER_SIZE = 10;
+    private static final int DEFAULT_BUFFER_SIZE = 8;
 
     private final Queue<T> queue;
     private final int bufferSize;

@@ -49,10 +49,10 @@ public class ConfigurationDeserializer extends JsonDeserializer<PipelineConfigur
             final JsonNode processorNode,
             final JsonNode sinkNode) {
         final String pipelineName = nameNode == null ? null : nameNode.asText();
-        final List<Configuration> sourceConfigurations = getConfigurationsOrNull(sourceNode);
-        final List<Configuration> bufferConfigurations = getConfigurationsOrNull(bufferNode);
-        final List<Configuration> processorConfigurations = getConfigurationsOrNull(processorNode);
-        final List<Configuration> sinkConfigurations = getConfigurationsOrNull(sinkNode);
+        final List<Configuration> sourceConfigurations = getConfigurationsOrEmpty(sourceNode);
+        final List<Configuration> bufferConfigurations = getConfigurationsOrEmpty(bufferNode);
+        final List<Configuration> processorConfigurations = getConfigurationsOrEmpty(processorNode);
+        final List<Configuration> sinkConfigurations = getConfigurationsOrEmpty(sinkNode);
         return new PipelineConfiguration(
                 pipelineName,
                 getFirstConfigurationIfExists(sourceConfigurations),
@@ -61,10 +61,9 @@ public class ConfigurationDeserializer extends JsonDeserializer<PipelineConfigur
                 sinkConfigurations);
     }
 
-    private List<Configuration> getConfigurationsOrNull(final JsonNode jsonNode) {
-        List<Configuration> configurations = null;
+    private List<Configuration> getConfigurationsOrEmpty(final JsonNode jsonNode) {
+        List<Configuration> configurations = new ArrayList<>();
         if (jsonNode != null) {
-            configurations = new ArrayList<>();
             final Iterator<String> fieldIterator = jsonNode.fieldNames();
             while (fieldIterator.hasNext()) {
                 String fieldName = fieldIterator.next();

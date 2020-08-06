@@ -2,7 +2,11 @@ package com.amazon.ti.annotations;
 
 import com.amazon.ti.plugins.PluginType;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Annotates a Transformation Instance Java plugin that includes Source, Sink, Buffer and Processor.

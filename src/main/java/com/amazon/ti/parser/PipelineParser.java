@@ -1,6 +1,7 @@
 package com.amazon.ti.parser;
 
 import com.amazon.ti.parser.model.PipelineConfiguration;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
@@ -10,7 +11,8 @@ import java.io.IOException;
 import static java.lang.String.format;
 
 public class PipelineParser {
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper(new YAMLFactory());
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper(new YAMLFactory())
+            .enable(DeserializationFeature.FAIL_ON_READING_DUP_TREE_KEY);
     private final String configurationFileLocation;
 
     public PipelineParser(final String configurationFileLocation) {
