@@ -1,0 +1,14 @@
+pipeline:
+  name: file-io-test
+  source:
+    file:
+      path: "src/resources/file-test-sample.txt"
+  buffer:
+    unbounded-inmemory:
+      size: 5
+  processor:
+    upper-case:
+    no-op:
+  sink:
+    file:
+      path: "src/resources/file-test-sample-output.txt"
