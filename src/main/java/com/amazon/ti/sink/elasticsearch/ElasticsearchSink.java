@@ -2,7 +2,6 @@ package com.amazon.ti.sink.elasticsearch;
 
 import com.amazon.ti.Record;
 import com.amazon.ti.sink.Sink;
-import org.apache.beam.vendor.grpc.v1p26p0.io.netty.handler.codec.http.HttpMethod;
 import org.apache.http.HttpEntity;
 import org.apache.http.StatusLine;
 import org.apache.http.entity.BufferedHttpEntity;
@@ -99,28 +98,28 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     String indexTemplateJson = Files.readString(Path.of(jsonFilePath));
     HttpEntity requestBody =
         new NStringEntity(indexTemplateJson, ContentType.APPLICATION_JSON);
-    Request request = new Request(HttpMethod.POST.name(), endPoint);
+    Request request = new Request("POST", endPoint);
     request.setEntity(requestBody);
     response = restClient.performRequest(request);
     responseEntity = new BufferedHttpEntity(response.getEntity());
     // TODO: apply retry predicate here
-    responseEntity = handleRetry(HttpMethod.POST.name(), endPoint, responseEntity);
+    responseEntity = handleRetry("POST", endPoint, responseEntity);
     checkForErrors(responseEntity);
   }
 
   private void checkAndCreateIndex() throws IOException {
     // Check alias exists
     String indexAlias = IndexType.TYPE_TO_ALIAS.get(esSinkConfig.getIndexConfiguration().getIndexType());
-    Request request = new Request(HttpMethod.HEAD.name(), indexAlias);
+    Request request = new Request("HEAD", indexAlias);
     Response response = restClient.performRequest(request);
     StatusLine statusLine = response.getStatusLine();
     if (statusLine.getStatusCode() == 404) {
       String initialIndexName = String.format("%s-000001", indexAlias);
-      request = new Request(HttpMethod.POST.name(), initialIndexName);
+      request = new Request("POST", initialIndexName);
       response = restClient.performRequest(request);
       HttpEntity responseEntity = new BufferedHttpEntity(response.getEntity());
       // TODO: apply retry predicate here
-      responseEntity = handleRetry(HttpMethod.POST.name(), initialIndexName, responseEntity);
+      responseEntity = handleRetry("POST", initialIndexName, responseEntity);
       checkForErrors(responseEntity);
     }
   }
@@ -142,12 +141,12 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     String endPoint = String.format("/%s/_bulk", indexAlias);
     HttpEntity requestBody =
         new NStringEntity(bulkRequest.toString(), ContentType.APPLICATION_JSON);
-    Request request = new Request(HttpMethod.POST.name(), endPoint);
+    Request request = new Request("POST", endPoint);
     request.setEntity(requestBody);
     response = restClient.performRequest(request);
     responseEntity = new BufferedHttpEntity(response.getEntity());
     // TODO: apply retry predicate here
-    responseEntity = handleRetry(HttpMethod.POST.name(), endPoint, responseEntity);
+    responseEntity = handleRetry("POST", endPoint, responseEntity);
     checkForErrors(responseEntity);
   }
 

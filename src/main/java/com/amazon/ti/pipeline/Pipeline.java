@@ -6,6 +6,8 @@ import com.amazon.ti.processor.Processor;
 import com.amazon.ti.sink.Sink;
 import com.amazon.ti.source.Source;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -13,62 +15,72 @@ import java.util.List;
 /**
  * Pipeline is a data transformation flow which reads data from {@link Source}, optionally transforms the data
  * using {@link Processor} and outputs the transformed (or original) data to {@link Sink}.
- * TODO: Add dependencies - for guards like @NonNull
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class Pipeline {
+    private static List<Processor> EMPTY_PROCESSOR_LIST = new ArrayList<>(0);
 
+    @Nonnull
     private final String name;
+    @Nonnull
     private final Source source;
+    @Nullable
     private final Buffer buffer;
+    @Nullable
     private final List<Processor> processors;
-    private final Sink sink;
+    @Nonnull
+    private final Collection<Sink> sinks;
 
     /**
-     * Constructs a pipeline without processor
+     * Constructs a {@link Pipeline} object with provided {@link Source}, {@link #name}, {@link Collection} of
+     * {@link Sink} and default {@link Buffer}, {@link Processor}.
      *
      * @param name   name of the pipeline
      * @param source source from where the pipeline reads the records
-     * @param buffer buffer for the source to queue records
-     * @param sink   sink to which the transformed records are posted
+     * @param sinks  collection of sink's to which the transformed records need to be posted
      */
     public Pipeline(
-            final String name,
-            final Source source,
-            final Buffer buffer,
-            final Sink sink) {
+            @Nonnull final String name,
+            @Nonnull final Source source,
+            @Nonnull final Collection<Sink> sinks) {
         this.name = name;
         this.source = source;
-        this.buffer = buffer;
-        processors = new ArrayList<>(0);
-        this.sink = sink;
+        this.buffer = Buffer.defaultBuffer();
+        processors = EMPTY_PROCESSOR_LIST;
+        this.sinks = sinks;
     }
 
     /**
-     * Constructs a pipeline with processor
+     * Constructs a {@link Pipeline} object with provided {@link Source}, {@link #name}, {@link Collection} of
+     * {@link Sink}, {@link Buffer} and list of {@link Processor}. On {@link #execute()} the engine will read
+     * records {@link Record} from provided {@link Source}, buffers the records in {@link Buffer}, applies List of
+     * {@link Processor} sequentially (in the given order) and outputs the processed records to collection of {@link
+     * Sink}
      *
      * @param name       name of the pipeline
      * @param source     source from where the pipeline reads the records
      * @param buffer     buffer for the source to queue records
      * @param processors processor that is applied to records
-     * @param sink       sink to which the transformed records are posted
+     * @param sinks      sink to which the transformed records are posted
      */
     public Pipeline(
-            final String name,
-            final Source source,
-            final Buffer buffer,
-            final List<Processor> processors,
-            final Sink sink) {
+            @Nonnull final String name,
+            @Nonnull final Source source,
+            @Nullable final Buffer buffer,
+            @Nullable final List<Processor> processors,
+            @Nonnull final Collection<Sink> sinks) {
         this.name = name;
         this.source = source;
-        this.buffer = buffer;
-        this.processors = processors;
-        this.sink = sink;
+        this.buffer = buffer != null ? buffer : Buffer.defaultBuffer();
+        this.processors = processors != null ? processors : EMPTY_PROCESSOR_LIST;
+        this.sinks = sinks;
     }
 
 
     /**
      * @return Unique name of this pipeline.
      */
+    @Nonnull
     public String getName() {
         return this.name;
     }
@@ -76,6 +88,7 @@ public class Pipeline {
     /**
      * @return {@link Source} of this pipeline.
      */
+    @Nonnull
     public Source getSource() {
         return this.source;
     }
@@ -83,6 +96,7 @@ public class Pipeline {
     /**
      * @return {@link Buffer} of this pipeline.
      */
+    @Nullable
     public Buffer getBuffer() {
         return this.buffer;
     }
@@ -90,13 +104,15 @@ public class Pipeline {
     /**
      * @return {@link Sink} of this pipeline.
      */
-    public Sink getSink() {
-        return this.sink;
+    @Nonnull
+    public Collection<Sink> getSinks() {
+        return this.sinks;
     }
 
     /**
      * @return a list of {@link Processor} of this pipeline or an empty list .
      */
+    @Nullable
     List<Processor> getProcessors() {
         return processors;
     }
@@ -114,7 +130,7 @@ public class Pipeline {
      */
     public void stop() {
         source.stop();
-        sink.stop(); //TODO wait for buffer to empty before stopping sink
+        sinks.forEach(Sink::stop); //TODO wait for buffer to empty before stopping sink
     }
 
     private void executeWithStart() {
@@ -127,16 +143,22 @@ public class Pipeline {
      */
     private void executeToEmptyBuffer() {
         Collection<Record> records;
-        while((records = buffer.records()) != null && !records.isEmpty()) {
-            for(final Processor processor : processors) {
+        while ((records = buffer.records()) != null && !records.isEmpty()) {
+            for (final Processor processor : processors) {
                 records = processor.execute(records);
             }
-            postToSink(records); //TODO Add retry mechanism
+            postToSink(records); //TODO apply acknowledgement status to decide further processing or halting
         }
     }
 
+    /**
+     * TODO Add retry mechanism
+     * TODO Add isolator pattern - Fail if one of the Sink fails [isolator Pattern]
+     * TODO Update records such that sinks can modify independently [clone ?]
+     */
     private boolean postToSink(Collection<Record> records) {
-        return sink.output(records);
+        sinks.forEach(sink -> sink.output(records));
+        return true;
     }
 
 }
