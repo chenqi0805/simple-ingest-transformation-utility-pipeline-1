@@ -1,4 +1,4 @@
-package com.amazon.ti.sink.elasticsearch;
+package com.amazon.ti.plugins.sink.elasticsearch;
 
 import static com.google.common.base.Preconditions.checkArgument;
 

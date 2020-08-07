@@ -1,6 +1,4 @@
-package com.amazon.ti.sink.elasticsearch;
-
-import org.joda.time.Duration;
+package com.amazon.ti.plugins.sink.elasticsearch;
 
 public class RetryConfiguration {
   // TODO: add private parameters

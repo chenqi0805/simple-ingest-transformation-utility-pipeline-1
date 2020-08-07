@@ -1,4 +1,4 @@
-package com.amazon.ti.sink.elasticsearch;
+package com.amazon.ti.plugins.sink.elasticsearch;
 
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;

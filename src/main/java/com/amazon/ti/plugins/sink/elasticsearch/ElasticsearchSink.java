@@ -1,4 +1,4 @@
-package com.amazon.ti.sink.elasticsearch;
+package com.amazon.ti.plugins.sink.elasticsearch;
 
 import com.amazon.ti.Record;
 import com.amazon.ti.sink.Sink;
