@@ -22,7 +22,7 @@ import java.net.URL;
 import java.security.KeyStore;
 import java.util.List;
 
-import static org.apache.beam.vendor.guava.v26_0_jre.com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
 
 public class ConnectionConfiguration {
   private final List<String> addresses;
