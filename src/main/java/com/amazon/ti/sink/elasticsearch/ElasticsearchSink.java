@@ -41,6 +41,7 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     batch = new ArrayList<>();
     currentBatchSizeBytes = 0;
     createIndexTemplate();
+    checkAndCreateIndex();
   }
 
   @Override
