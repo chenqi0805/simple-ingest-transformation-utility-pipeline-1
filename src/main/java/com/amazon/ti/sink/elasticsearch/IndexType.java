@@ -1,27 +1,20 @@
 package com.amazon.ti.sink.elasticsearch;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
-public enum IndexType {
-  raw("raw");
+public class IndexType {
+  public static final String RAW = "raw";
 
-  private String value;
+  public static final Set<String> TYPES = new HashSet<>();
 
-  IndexType(String value) {
-    this.value = value;
-  }
+  public static final Map<String, String> TYPE_TO_ALIAS = new HashMap<>();
 
-  public String getValue() {
-    return value;
-  }
-
-  public static Set<String> getValues() {
-    Set<String> values = new HashSet<>();
-
-    for (IndexType indexType : IndexType.values()) {
-      values.add(indexType.getValue());
-    }
-    return values;
+  static {
+    TYPES.add(RAW);
+    // TODO: extract out version number into version enum
+    TYPE_TO_ALIAS.put(RAW, "otel-v1-apm-span");
   }
 }

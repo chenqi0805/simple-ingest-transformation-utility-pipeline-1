@@ -35,8 +35,6 @@ public class ConnectionConfiguration {
 
   private final String keystorePassword;
 
-  private final String index; // TODO: index name or index pattern?
-
   private final Integer socketTimeout;
 
   private final Integer connectTimeout;
@@ -63,10 +61,6 @@ public class ConnectionConfiguration {
     return keystorePassword;
   }
 
-  public String getIndex() {
-    return index;
-  }
-
   public Integer getSocketTimeout() {
     return socketTimeout;
   }
@@ -89,8 +83,6 @@ public class ConnectionConfiguration {
     private String keystorePath;
 
     private String keystorePassword;
-
-    private String index;
 
     private Integer socketTimeout;
 
@@ -129,13 +121,6 @@ public class ConnectionConfiguration {
       return this;
     }
 
-    public Builder withIndex(String index) {
-      checkArgument(index != null, "index cannot be null");
-      checkArgument(!index.isEmpty(), "index cannot be empty");
-      this.index = index;
-      return this;
-    }
-
     public Builder withSocketTimeout(Integer socketTimeout) {
       checkArgument(socketTimeout != null, "socketTimeout cannot be null");
       this.socketTimeout = socketTimeout;
@@ -158,9 +143,6 @@ public class ConnectionConfiguration {
       if (addresses == null) {
         missing += "addresses";
       }
-      if (index == null) {
-        missing += "index";
-      }
       if (!missing.isEmpty()) {
         throw new IllegalStateException("Missing required properties:" + missing);
       }
@@ -175,7 +157,6 @@ public class ConnectionConfiguration {
     this.password = builder.password;
     this.keystorePath = builder.keystorePath;
     this.keystorePassword = builder.keystorePassword;
-    this.index = builder.index;
     this.socketTimeout = builder.socketTimeout;
     this.connectTimeout = builder.connectTimeout;
     this.trustSelfSignedCerts = builder.trustSelfSignedCerts;

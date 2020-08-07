@@ -92,12 +92,11 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     // QUES: how to identify index template file with index pattern accordingly?
     Response response;
     HttpEntity responseEntity;
-    // TODO: if we use index pattern in the connection configuration, we need to remove wildcard.
-    String endPoint = "_index_template/otel-v1-apm-span-index-template";
-    // TODO: replace the hardcoded file path with the logic to select the file.
-    String jsonFilePath = "src/resources/apm-spans-template-v1.json";
+    String indexAlias = IndexType.TYPE_TO_ALIAS.get(IndexType.RAW);
+    String endPoint = String.format("_index_template/%s-index-template", indexAlias);
+    String jsonFilePath = String.format("src/resources/%s-index-template.json", indexAlias);
+    // TODO: use numOfShards, numOfReplicas to replace hardcoded values in the template json string
     String indexTemplateJson = Files.readString(Path.of(jsonFilePath));
-    
     HttpEntity requestBody =
         new NStringEntity(indexTemplateJson, ContentType.APPLICATION_JSON);
     Request request = new Request(HttpMethod.POST.name(), endPoint);
@@ -111,15 +110,17 @@ public class ElasticsearchSink implements Sink<Record<String>> {
 
   private void checkAndCreateIndex() throws IOException {
     // Check alias exists
-    Request request = new Request(HttpMethod.HEAD.name(), "otel-v1-apm-span");
+    String indexAlias = IndexType.TYPE_TO_ALIAS.get(esSinkConfig.getIndexConfiguration().getIndexType());
+    Request request = new Request(HttpMethod.HEAD.name(), indexAlias);
     Response response = restClient.performRequest(request);
     StatusLine statusLine = response.getStatusLine();
     if (statusLine.getStatusCode() == 404) {
-      request = new Request(HttpMethod.POST.name(), "otel-v1-apm-span-000001");
+      String initialIndexName = String.format("%s-000001", indexAlias);
+      request = new Request(HttpMethod.POST.name(), initialIndexName);
       response = restClient.performRequest(request);
       HttpEntity responseEntity = new BufferedHttpEntity(response.getEntity());
       // TODO: apply retry predicate here
-      responseEntity = handleRetry(HttpMethod.POST.name(), "otel-v1-apm-span-000001", responseEntity);
+      responseEntity = handleRetry(HttpMethod.POST.name(), initialIndexName, responseEntity);
       checkForErrors(responseEntity);
     }
   }
@@ -137,7 +138,8 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     Response response;
     HttpEntity responseEntity;
     // TODO: if we use index pattern in the connection configuration, we need to replace wildcard with datetime.
-    String endPoint = String.format("/%s/_bulk", esSinkConfig.getConnectionConfiguration().getIndex());
+    String indexAlias = IndexType.TYPE_TO_ALIAS.get(esSinkConfig.getIndexConfiguration().getIndexType());
+    String endPoint = String.format("/%s/_bulk", indexAlias);
     HttpEntity requestBody =
         new NStringEntity(bulkRequest.toString(), ContentType.APPLICATION_JSON);
     Request request = new Request(HttpMethod.POST.name(), endPoint);

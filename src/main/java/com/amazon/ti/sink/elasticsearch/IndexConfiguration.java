@@ -22,7 +22,7 @@ public class IndexConfiguration {
   }
 
   public static class Builder {
-    private String indexType = IndexType.raw.getValue();
+    private String indexType = IndexType.RAW;
 
     private int numOfShards = 1;
 
@@ -30,7 +30,7 @@ public class IndexConfiguration {
 
     public Builder withIndexType(String indexType) {
       checkArgument(indexType != null, "indexType cannot be null.");
-      checkArgument( IndexType.getValues().contains(indexType), "Invalid indexType.");
+      checkArgument( IndexType.TYPES.contains(indexType), "Invalid indexType.");
       this.indexType = indexType;
       return this;
     }

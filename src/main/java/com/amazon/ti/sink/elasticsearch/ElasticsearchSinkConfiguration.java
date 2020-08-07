@@ -8,12 +8,18 @@ public class ElasticsearchSinkConfiguration {
    */
   private final ConnectionConfiguration connectionConfiguration;
 
+  private final IndexConfiguration indexConfiguration;
+
   private final long maxBatchSize;
 
   private final long maxBatchSizeBytes;
 
   public ConnectionConfiguration getConnectionConfiguration() {
     return connectionConfiguration;
+  }
+
+  public IndexConfiguration getIndexConfiguration() {
+    return indexConfiguration;
   }
 
   public long getMaxBatchSize() {
@@ -27,6 +33,8 @@ public class ElasticsearchSinkConfiguration {
   public static class Builder {
     private ConnectionConfiguration connectionConfiguration;
 
+    private IndexConfiguration indexConfiguration = new IndexConfiguration.Builder().build();
+
     private long maxBatchSize = 1000;
 
     private long maxBatchSizeBytes = 5L * 1024L *1024L;
@@ -34,6 +42,12 @@ public class ElasticsearchSinkConfiguration {
     public Builder withConnectionConfiguration(ConnectionConfiguration connectionConfiguration) {
       checkArgument(connectionConfiguration != null, "connectionConfiguration cannot be null");
       this.connectionConfiguration = connectionConfiguration;
+      return this;
+    }
+
+    public Builder withIndexConfiguration(IndexConfiguration indexConfiguration) {
+      checkArgument(indexConfiguration != null, "indexConfiguration cannot be null");
+      this.indexConfiguration = indexConfiguration;
       return this;
     }
 
@@ -54,6 +68,9 @@ public class ElasticsearchSinkConfiguration {
       if (connectionConfiguration == null) {
         missing += "connectionConfiguration";
       }
+      if (indexConfiguration == null) {
+        missing += "indexConfiguration";
+      }
       if (!missing.isEmpty()) {
         throw new IllegalStateException("Missing required properties:" + missing);
       }
@@ -64,6 +81,7 @@ public class ElasticsearchSinkConfiguration {
 
   private ElasticsearchSinkConfiguration(Builder builder) {
     this.connectionConfiguration = builder.connectionConfiguration;
+    this.indexConfiguration = builder.indexConfiguration;
     this.maxBatchSize = builder.maxBatchSize;
     this.maxBatchSizeBytes = builder.maxBatchSizeBytes;
   }
