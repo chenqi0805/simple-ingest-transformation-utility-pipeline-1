@@ -4,6 +4,7 @@ import com.amazon.ti.Record;
 import com.amazon.ti.sink.Sink;
 import org.apache.beam.vendor.grpc.v1p26p0.io.netty.handler.codec.http.HttpMethod;
 import org.apache.http.HttpEntity;
+import org.apache.http.StatusLine;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.nio.entity.NStringEntity;
@@ -91,9 +92,9 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     Response response;
     HttpEntity responseEntity;
     // TODO: if we use index pattern in the connection configuration, we need to remove wildcard.
-    String endPoint = String.format("_index_template/%s_template", esSinkConfig.getConnectionConfiguration().getIndex());
+    String endPoint = "_index_template/otel-v1-apm-span-index-template";
     // TODO: replace the hardcoded file path with the logic to select the file.
-    String jsonFilePath = "src/resources/fake-index-template.json";
+    String jsonFilePath = "src/resources/apm-spans-template-v1.json";
     String indexTemplateJson = Files.readString(Path.of(jsonFilePath));
     
     HttpEntity requestBody =
@@ -105,6 +106,21 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     // TODO: apply retry predicate here
     responseEntity = handleRetry(HttpMethod.POST.name(), endPoint, responseEntity);
     checkForErrors(responseEntity);
+  }
+
+  private void checkAndCreateIndex() throws IOException {
+    // Check alias exists
+    Request request = new Request(HttpMethod.HEAD.name(), "otel-v1-apm-span");
+    Response response = restClient.performRequest(request);
+    StatusLine statusLine = response.getStatusLine();
+    if (statusLine.getStatusCode() == 404) {
+      request = new Request(HttpMethod.POST.name(), "otel-v1-apm-span-000001");
+      response = restClient.performRequest(request);
+      HttpEntity responseEntity = new BufferedHttpEntity(response.getEntity());
+      // TODO: apply retry predicate here
+      responseEntity = handleRetry(HttpMethod.POST.name(), "otel-v1-apm-span-000001", responseEntity);
+      checkForErrors(responseEntity);
+    }
   }
 
   private void flushBatch() throws IOException {
