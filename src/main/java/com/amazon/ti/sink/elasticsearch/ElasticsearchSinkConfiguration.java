@@ -1,7 +1,5 @@
 package com.amazon.ti.sink.elasticsearch;
 
-import org.elasticsearch.client.RestClient;
-
 import static org.apache.beam.vendor.guava.v26_0_jre.com.google.common.base.Preconditions.checkArgument;
 
 public class ElasticsearchSinkConfiguration {
