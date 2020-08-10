@@ -37,10 +37,12 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     return null;
   }
 
+  // TODO: needs to be invoked in TI pipeline
   public void setup() throws IOException {
     restClient = esSinkConfig.getConnectionConfiguration().createClient();
   }
 
+  // TODO: needs to be invoked in TI pipeline
   public void start() throws IOException {
     batch = new ArrayList<>();
     currentBatchSizeBytes = 0;
