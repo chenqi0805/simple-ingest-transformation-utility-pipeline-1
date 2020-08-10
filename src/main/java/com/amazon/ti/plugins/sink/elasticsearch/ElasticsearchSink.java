@@ -1,6 +1,9 @@
 package com.amazon.ti.plugins.sink.elasticsearch;
 
 import com.amazon.ti.Record;
+import com.amazon.ti.annotations.TransformationInstancePlugin;
+import com.amazon.ti.configuration.Configuration;
+import com.amazon.ti.plugins.PluginType;
 import com.amazon.ti.sink.Sink;
 import org.apache.http.HttpEntity;
 import org.apache.http.StatusLine;
@@ -18,18 +21,20 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 
+@TransformationInstancePlugin(name = "elasticsearch", type = PluginType.SINK)
 public class ElasticsearchSink implements Sink<Record<String>> {
   private ElasticsearchSinkConfiguration esSinkConfig;
   private RestClient restClient;
   private ArrayList<String> batch;
   private long currentBatchSizeBytes;
 
-  /**
-   * TODO: replace {@link ElasticsearchSinkConfiguration} with configuration and then
-   * parse the configuration to instantiate {@link ElasticsearchSinkConfiguration}.
-   */
-  ElasticsearchSink(ElasticsearchSinkConfiguration esSinkConfig) {
-    this.esSinkConfig = esSinkConfig;
+  ElasticsearchSink(final Configuration configuration) {
+    this.esSinkConfig = readESConfig(configuration);
+  }
+
+  private ElasticsearchSinkConfiguration readESConfig(Configuration configuration) {
+    // TODO: add logic to convert configuration
+    return null;
   }
 
   public void setup() throws IOException {
