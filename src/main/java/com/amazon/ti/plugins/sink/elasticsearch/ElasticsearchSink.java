@@ -15,21 +15,23 @@ import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collection;
 
 @TransformationInstancePlugin(name = "elasticsearch", type = PluginType.SINK)
 public class ElasticsearchSink implements Sink<Record<String>> {
   private ElasticsearchSinkConfiguration esSinkConfig;
   private RestClient restClient;
-  private ArrayList<String> batch;
-  private long currentBatchSizeBytes;
 
-  ElasticsearchSink(final Configuration configuration) {
+  public ElasticsearchSink(final Configuration configuration) {
     this.esSinkConfig = readESConfig(configuration);
+    try {
+      start();
+    } catch (IOException e) {
+      // TODO: better error handling
+      e.printStackTrace();
+    }
   }
 
   private ElasticsearchSinkConfiguration readESConfig(Configuration configuration) {
@@ -37,52 +39,53 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     return null;
   }
 
-  // TODO: needs to be invoked in TI pipeline
-  public void setup() throws IOException {
-    restClient = esSinkConfig.getConnectionConfiguration().createClient();
-  }
-
-  // TODO: needs to be invoked in TI pipeline
   public void start() throws IOException {
-    batch = new ArrayList<>();
-    currentBatchSizeBytes = 0;
+    restClient = esSinkConfig.getConnectionConfiguration().createClient();
     createIndexTemplate();
     checkAndCreateIndex();
   }
 
   @Override
   public boolean output(Collection<Record<String>> records) {
+    if (records.isEmpty()) {
+      return false;
+    }
+    StringBuilder bulkRequest = new StringBuilder();
     for (Record<String> record: records) {
       /**
        * TODO:
-       * 1. How is document related to getData?
-       * 2. convert document into json string
+       * If the record includes documentID, we need to fill it into the bulk request entity
        */
       String document = record.getData();
-      batch.add(String.format("{ \"index\" : { } }\n%s\n", document));
-      currentBatchSizeBytes += document.getBytes(StandardCharsets.UTF_8).length; // Shall we use other standards?
-      if (batch.size() >= esSinkConfig.getMaxBatchSize() || currentBatchSizeBytes >= esSinkConfig.getMaxBatchSizeBytes()) {
-        try {
-          flushBatch();
-        } catch (IOException e) {
-          // TODO: handling error
-          e.printStackTrace();
-        }
-      }
+      bulkRequest.append(String.format("{ \"index\" : { } }\n%s\n", document));
     }
-    // TODO: what if partial success?
-    return true;
+    Response response;
+    HttpEntity responseEntity;
+    // TODO: if we use index pattern in the connection configuration, we need to replace wildcard with datetime.
+    String indexAlias = IndexType.TYPE_TO_ALIAS.get(esSinkConfig.getIndexConfiguration().getIndexType());
+    String endPoint = String.format("/%s/_bulk", indexAlias);
+    HttpEntity requestBody =
+        new NStringEntity(bulkRequest.toString(), ContentType.APPLICATION_JSON);
+    Request request = new Request("POST", endPoint);
+    request.setEntity(requestBody);
+    try {
+      response = restClient.performRequest(request);
+      responseEntity = new BufferedHttpEntity(response.getEntity());
+      // TODO: apply retry predicate here
+      responseEntity = handleRetry("POST", endPoint, responseEntity);
+      checkForErrors(responseEntity);
+
+      // TODO: what if partial success?
+      return true;
+    } catch (IOException e) {
+      // TODO: better error handling
+      e.printStackTrace();
+      return false;
+    }
   }
 
   @Override
   public void stop() {
-    try {
-      flushBatch();
-    } catch (IOException e) {
-      // TODO: handling error
-      e.printStackTrace();
-    }
-
     if (restClient != null) {
       try {
         restClient.close();
@@ -129,32 +132,6 @@ public class ElasticsearchSink implements Sink<Record<String>> {
       responseEntity = handleRetry("POST", initialIndexName, responseEntity);
       checkForErrors(responseEntity);
     }
-  }
-
-  private void flushBatch() throws IOException {
-    if (batch.isEmpty()) {
-      return;
-    }
-    StringBuilder bulkRequest = new StringBuilder();
-    for (String json : batch) {
-      bulkRequest.append(json);
-    }
-    batch.clear();
-    currentBatchSizeBytes = 0;
-    Response response;
-    HttpEntity responseEntity;
-    // TODO: if we use index pattern in the connection configuration, we need to replace wildcard with datetime.
-    String indexAlias = IndexType.TYPE_TO_ALIAS.get(esSinkConfig.getIndexConfiguration().getIndexType());
-    String endPoint = String.format("/%s/_bulk", indexAlias);
-    HttpEntity requestBody =
-        new NStringEntity(bulkRequest.toString(), ContentType.APPLICATION_JSON);
-    Request request = new Request("POST", endPoint);
-    request.setEntity(requestBody);
-    response = restClient.performRequest(request);
-    responseEntity = new BufferedHttpEntity(response.getEntity());
-    // TODO: apply retry predicate here
-    responseEntity = handleRetry("POST", endPoint, responseEntity);
-    checkForErrors(responseEntity);
   }
 
   private HttpEntity handleRetry(String method, String endpoint, HttpEntity requestBody) {
