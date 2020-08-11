@@ -124,6 +124,7 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     Response response = restClient.performRequest(request);
     StatusLine statusLine = response.getStatusLine();
     if (statusLine.getStatusCode() == 404) {
+      // TODO: use date as suffix?
       String initialIndexName = String.format("%s-000001", indexAlias);
       request = new Request("POST", initialIndexName);
       response = restClient.performRequest(request);
