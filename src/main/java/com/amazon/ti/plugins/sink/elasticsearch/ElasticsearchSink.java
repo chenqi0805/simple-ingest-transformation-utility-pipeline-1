@@ -15,7 +15,9 @@ import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.index.Index;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -146,7 +148,8 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     HttpEntity responseEntity;
     String indexAlias = IndexType.TYPE_TO_ALIAS.get(IndexType.RAW);
     String endPoint = String.format("_index_template/%s-index-template", indexAlias);
-    String jsonFilePath = String.format("src/resources/%s-index-template.json", indexAlias);
+    ClassLoader classLoader = getClass().getClassLoader();
+    String jsonFilePath = classLoader.getResource(String.format("%s-index-template.json", indexAlias)).getFile();
     StringBuilder indexTemplateJsonBuffer = new StringBuilder();
     Files.lines(Paths.get(jsonFilePath)).forEach(s -> indexTemplateJsonBuffer.append(s).append("\n"));
     String indexTemplateJson = indexTemplateJsonBuffer.toString();
@@ -170,7 +173,7 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     if (statusLine.getStatusCode() == 404) {
       // TODO: use date as suffix?
       String initialIndexName = String.format("%s-000001", indexAlias);
-      request = new Request("POST", initialIndexName);
+      request = new Request("PUT", initialIndexName);
       response = restClient.performRequest(request);
       HttpEntity responseEntity = new BufferedHttpEntity(response.getEntity());
       // TODO: apply retry predicate here
