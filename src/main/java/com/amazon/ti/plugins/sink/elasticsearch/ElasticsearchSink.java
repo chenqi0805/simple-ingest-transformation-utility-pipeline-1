@@ -18,6 +18,7 @@ import org.elasticsearch.index.Index;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.List;
 
@@ -146,7 +147,9 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     String indexAlias = IndexType.TYPE_TO_ALIAS.get(IndexType.RAW);
     String endPoint = String.format("_index_template/%s-index-template", indexAlias);
     String jsonFilePath = String.format("src/resources/%s-index-template.json", indexAlias);
-    String indexTemplateJson = Files.readString(Path.of(jsonFilePath));
+    StringBuilder indexTemplateJsonBuffer = new StringBuilder();
+    Files.lines(Paths.get(jsonFilePath)).forEach(s -> indexTemplateJsonBuffer.append(s).append("\n"));
+    String indexTemplateJson = indexTemplateJsonBuffer.toString();
     HttpEntity requestBody =
         new NStringEntity(indexTemplateJson, ContentType.APPLICATION_JSON);
     Request request = new Request("POST", endPoint);

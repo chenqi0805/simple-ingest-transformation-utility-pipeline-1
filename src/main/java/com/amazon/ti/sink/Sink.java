@@ -11,7 +11,7 @@ public interface Sink<T extends Record<?>> {
 
     /**
      * outputs collection of records which extend {@link Record}.
-     * @param records
+     * @param records records
      */
     boolean output(Collection<T> records);
 

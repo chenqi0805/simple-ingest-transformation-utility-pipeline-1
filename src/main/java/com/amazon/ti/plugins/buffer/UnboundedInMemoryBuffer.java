@@ -29,7 +29,7 @@ public class UnboundedInMemoryBuffer<T extends Record<?>> implements Buffer<T> {
     /**
      * Constructs an unbounded in-memory buffer with provided bufferSize. The bufferSize determines the size of the
      * collection for {@link #records()}.
-     * @param bufferSize
+     * @param bufferSize buffer size
      */
     public UnboundedInMemoryBuffer(int bufferSize){
         this.queue = new LinkedList<>();

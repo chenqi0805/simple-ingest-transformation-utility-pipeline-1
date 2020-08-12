@@ -61,7 +61,7 @@ public class TransformationInstance {
     /**
      * Terminates the execution of Transformation Instance
      * TODO - Set a flag to notify components
-     * @return boolean status of the stop request [TODO]
+     * return boolean status of the stop request [TODO]
      */
     public void stop() {
         transformationPipeline.stop();
