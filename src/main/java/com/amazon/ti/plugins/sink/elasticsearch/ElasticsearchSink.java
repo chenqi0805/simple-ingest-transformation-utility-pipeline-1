@@ -48,6 +48,7 @@ public class ElasticsearchSink implements Sink<Record<String>> {
 
   private ConnectionConfiguration readConnectionConfiguration(Configuration configuration){
     ConnectionConfiguration.Builder builder = new ConnectionConfiguration.Builder();
+    @SuppressWarnings("unchecked")
     List<String> addresses = (List<String>)configuration.getAttributeFromMetadata("addresses");
     if (addresses != null) {
       builder = builder.withAddresses(addresses);
