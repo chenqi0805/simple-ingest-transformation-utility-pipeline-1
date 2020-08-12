@@ -13,11 +13,13 @@ import org.apache.http.nio.entity.NStringEntity;
 import org.elasticsearch.client.Request;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
+import org.elasticsearch.index.Index;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.List;
 
 @TransformationInstancePlugin(name = "elasticsearch", type = PluginType.SINK)
 public class ElasticsearchSink implements Sink<Record<String>> {
@@ -35,8 +37,48 @@ public class ElasticsearchSink implements Sink<Record<String>> {
   }
 
   private ElasticsearchSinkConfiguration readESConfig(Configuration configuration) {
-    // TODO: add logic to convert configuration
-    return null;
+    ConnectionConfiguration connectionConfiguration = readConnectionConfiguration(configuration);
+    IndexConfiguration indexConfiguration = readIndexConfig(configuration);
+
+    return new ElasticsearchSinkConfiguration.Builder()
+        .withConnectionConfiguration(connectionConfiguration)
+        .withIndexConfiguration(indexConfiguration)
+        .build();
+  }
+
+  private ConnectionConfiguration readConnectionConfiguration(Configuration configuration){
+    ConnectionConfiguration.Builder builder = new ConnectionConfiguration.Builder();
+    List<String> addresses = (List<String>)configuration.getAttributeFromMetadata("addresses");
+    if (addresses != null) {
+      builder = builder.withAddresses(addresses);
+    }
+    String username = (String)configuration.getAttributeFromMetadata("username");
+    if (username != null) {
+      builder = builder.withUsername(username);
+    }
+    String password = (String)configuration.getAttributeFromMetadata("password");
+    if (password != null) {
+      builder = builder.withPassword(password);
+    }
+    Integer socketTimeout = (Integer)configuration.getAttributeFromMetadata("socket_timeout");
+    if (socketTimeout != null) {
+      builder = builder.withSocketTimeout(socketTimeout);
+    }
+    Integer connectTimeout = (Integer)configuration.getAttributeFromMetadata("connect_timeout");
+    if (connectTimeout != null) {
+      builder = builder.withConnectTimeout(connectTimeout);
+    }
+
+    return builder.build();
+  }
+
+  private IndexConfiguration readIndexConfig(Configuration configuration) {
+    IndexConfiguration.Builder builder = new IndexConfiguration.Builder();
+    String indexType = (String)configuration.getAttributeFromMetadata("index_type");
+    if (indexType != null) {
+      builder = builder.withIndexType(indexType);
+    }
+    return builder.build();
   }
 
   public void start() throws IOException {
@@ -61,7 +103,6 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     }
     Response response;
     HttpEntity responseEntity;
-    // TODO: if we use index pattern in the connection configuration, we need to replace wildcard with datetime.
     String indexAlias = IndexType.TYPE_TO_ALIAS.get(esSinkConfig.getIndexConfiguration().getIndexType());
     String endPoint = String.format("/%s/_bulk", indexAlias);
     HttpEntity requestBody =
@@ -104,7 +145,6 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     String indexAlias = IndexType.TYPE_TO_ALIAS.get(IndexType.RAW);
     String endPoint = String.format("_index_template/%s-index-template", indexAlias);
     String jsonFilePath = String.format("src/resources/%s-index-template.json", indexAlias);
-    // TODO: use numOfShards, numOfReplicas to replace hardcoded values in the template json string
     String indexTemplateJson = Files.readString(Path.of(jsonFilePath));
     HttpEntity requestBody =
         new NStringEntity(indexTemplateJson, ContentType.APPLICATION_JSON);

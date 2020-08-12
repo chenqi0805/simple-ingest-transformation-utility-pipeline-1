@@ -5,21 +5,12 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
-import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.nio.conn.ssl.SSLIOSessionStrategy;
-import org.apache.http.ssl.SSLContexts;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 
-import javax.net.ssl.SSLContext;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
-import java.security.KeyStore;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -31,15 +22,9 @@ public class ConnectionConfiguration {
 
   private final String password;
 
-  private final String keystorePath;
-
-  private final String keystorePassword;
-
   private final Integer socketTimeout;
 
   private final Integer connectTimeout;
-
-  private final boolean trustSelfSignedCerts;
 
   public List<String> getAddresses() {
     return addresses;
@@ -53,24 +38,12 @@ public class ConnectionConfiguration {
     return password;
   }
 
-  public String getKeystorePath() {
-    return keystorePath;
-  }
-
-  public String getKeystorePassword() {
-    return keystorePassword;
-  }
-
   public Integer getSocketTimeout() {
     return socketTimeout;
   }
 
   public Integer getConnectTimeout() {
     return connectTimeout;
-  }
-
-  public boolean getTrustSelfSignedCerts() {
-    return trustSelfSignedCerts;
   }
 
   public static class Builder {
@@ -80,15 +53,9 @@ public class ConnectionConfiguration {
 
     private String password;
 
-    private String keystorePath;
-
-    private String keystorePassword;
-
     private Integer socketTimeout;
 
     private Integer connectTimeout;
-
-    private boolean trustSelfSignedCerts;
 
     public Builder withAddresses(List<String> addresses) {
       checkArgument(addresses != null, "addresses cannot be null");
@@ -109,18 +76,6 @@ public class ConnectionConfiguration {
       return this;
     }
 
-    public Builder withKeystorePath(String keystorePath) {
-      checkArgument(keystorePath != null, "keystorePath cannot be null");
-      this.keystorePath = keystorePath;
-      return this;
-    }
-
-    public Builder withKeystorePassword(String keystorePassword) {
-      checkArgument(keystorePassword != null, "keystorePassword cannot be null");
-      this.keystorePassword = keystorePassword;
-      return this;
-    }
-
     public Builder withSocketTimeout(Integer socketTimeout) {
       checkArgument(socketTimeout != null, "socketTimeout cannot be null");
       this.socketTimeout = socketTimeout;
@@ -130,11 +85,6 @@ public class ConnectionConfiguration {
     public Builder withConnectTimeout(Integer connectTimeout) {
       checkArgument(connectTimeout != null, "connectTimeout cannot be null");
       this.connectTimeout = connectTimeout;
-      return this;
-    }
-
-    public Builder withTrustSelfSignedCerts(boolean trustSelfSignedCerts) {
-      this.trustSelfSignedCerts = trustSelfSignedCerts;
       return this;
     }
 
@@ -155,11 +105,8 @@ public class ConnectionConfiguration {
     this.addresses = builder.addresses;
     this.username = builder.username;
     this.password = builder.password;
-    this.keystorePath = builder.keystorePath;
-    this.keystorePassword = builder.keystorePassword;
     this.socketTimeout = builder.socketTimeout;
     this.connectTimeout = builder.connectTimeout;
-    this.trustSelfSignedCerts = builder.trustSelfSignedCerts;
   }
 
   public RestClient createClient() throws IOException {
@@ -178,23 +125,6 @@ public class ConnectionConfiguration {
       restClientBuilder.setHttpClientConfigCallback(
           httpAsyncClientBuilder ->
               httpAsyncClientBuilder.setDefaultCredentialsProvider(credentialsProvider));
-    }
-    if (keystorePath != null && !keystorePath.isEmpty()) {
-      try {
-        KeyStore keyStore = KeyStore.getInstance("jks");
-        try (InputStream is = new FileInputStream(new File(keystorePath))) {
-          keyStore.load(is, (keystorePassword == null) ? null : keystorePassword.toCharArray());
-        }
-        final TrustStrategy trustStrategy = trustSelfSignedCerts ? new TrustSelfSignedStrategy() : null;
-        final SSLContext sslContext =
-            SSLContexts.custom().loadTrustMaterial(keyStore, trustStrategy).build();
-        final SSLIOSessionStrategy sessionStrategy = new SSLIOSessionStrategy(sslContext);
-        restClientBuilder.setHttpClientConfigCallback(
-            httpClientBuilder ->
-                httpClientBuilder.setSSLContext(sslContext).setSSLStrategy(sessionStrategy));
-      } catch (Exception e) {
-        throw new IOException("Can't load the client certificate from the keystore", e);
-      }
     }
     restClientBuilder.setRequestConfigCallback(
         new RestClientBuilder.RequestConfigCallback() {
