@@ -62,9 +62,6 @@
           "type": "keyword"
         }
       }
-    },
-    "aliases": {
-      "otel-v1-apm-span": {}
     }
   }
 }

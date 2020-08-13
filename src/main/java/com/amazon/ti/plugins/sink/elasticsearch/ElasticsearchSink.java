@@ -174,6 +174,8 @@ public class ElasticsearchSink implements Sink<Record<String>> {
       // TODO: use date as suffix?
       String initialIndexName = String.format("%s-000001", indexAlias);
       request = new Request("PUT", initialIndexName);
+      String jsonContent = String.format("{ \"aliases\": { \"%s\": { \"is_write_index\": true } } }", indexAlias);
+      request.setJsonEntity(jsonContent);
       response = restClient.performRequest(request);
       HttpEntity responseEntity = new BufferedHttpEntity(response.getEntity());
       // TODO: apply retry predicate here
