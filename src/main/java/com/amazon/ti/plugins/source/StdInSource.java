@@ -44,7 +44,7 @@ public class StdInSource implements Source<Record<String>> {
         while (!haltFlag && !"exit".equalsIgnoreCase(line)) {
             line = reader.nextLine();
             final Record<String> record = new Record<>(line);
-            buffer.put(record);
+            buffer.write(record);
         }
     }
 

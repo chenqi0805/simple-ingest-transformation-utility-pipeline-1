@@ -44,7 +44,7 @@ public class FileSource implements Source<Record<String>> {
                      Files.newBufferedReader(Paths.get(filePathToRead), StandardCharsets.UTF_8)) {
             String line;
             while ((line = reader.readLine()) != null) {
-                buffer.put(new Record<>(line));
+                buffer.write(new Record<>(line));
             }
         } catch (IOException ex) {
             //exception processing the File
