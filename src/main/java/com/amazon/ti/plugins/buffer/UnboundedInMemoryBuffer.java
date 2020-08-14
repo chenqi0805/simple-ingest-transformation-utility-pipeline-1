@@ -5,13 +5,12 @@ import com.amazon.ti.configuration.Configuration;
 import com.amazon.ti.plugins.PluginType;
 import com.amazon.ti.annotations.TransformationInstancePlugin;
 import com.amazon.ti.buffer.Buffer;
-import com.amazon.ti.plugins.processor.NoOpProcessor;
 
 import java.util.*;
 
 /**
  * Implementation of {@link Buffer} - An unbounded in-memory FIFO buffer. The bufferSize determines the size of the
- * collection for {@link #records()}.
+ * collection for {@link #readBatch()}.
  * @param <T> a sub-class of {@link Record}
  */
 @TransformationInstancePlugin(name="unbounded-inmemory", type = PluginType.BUFFER)
@@ -28,7 +27,7 @@ public class UnboundedInMemoryBuffer<T extends Record<?>> implements Buffer<T> {
 
     /**
      * Constructs an unbounded in-memory buffer with provided bufferSize. The bufferSize determines the size of the
-     * collection for {@link #records()}.
+     * collection for {@link #readBatch()}.
      * @param bufferSize
      */
     public UnboundedInMemoryBuffer(int bufferSize){
@@ -47,13 +46,13 @@ public class UnboundedInMemoryBuffer<T extends Record<?>> implements Buffer<T> {
     }
 
     @Override
-    public void put(final T record) {
+    public void write(final T record) {
         //throws runtime exception if buffer is full
         queue.add(record);
     }
 
     @Override
-    public T get() {
+    public T read() {
         //returns null if the buffer is empty
         return queue.poll();
     }
@@ -63,11 +62,11 @@ public class UnboundedInMemoryBuffer<T extends Record<?>> implements Buffer<T> {
      * value as 10).
      */
     @Override
-    public Collection<T> records() {
+    public Collection<T> readBatch() {
         final List<T> records = new ArrayList<>();
         int index = 0;
         T record;
-        while(index < bufferSize && (record = this.get()) != null) {
+        while(index < bufferSize && (record = this.read()) != null) {
             records.add(record);
             index++;
         }

@@ -17,6 +17,7 @@ dependencies {
     implementation 'org.apache.bval:bval-jsr:2.0.0'
     implementation 'org.apache.bval:bval-extras:2.0.4'
     testImplementation 'junit:junit:4.13'
+    testImplementation 'org.hamcrest:hamcrest:2.2'
 }
 
 jar {

@@ -17,17 +17,17 @@ public interface Buffer<T extends Record<?>> {
      * writes the record to the buffer
      * @param record The Record which needed to be written
      */
-    void put(T record);
+    void write(T record);
 
     /**
      * @return The earliest record in the buffer which is still not read.
      */
-    T get();
+    T read();
 
     /**
      * @return Collection of records from the buffer
      */
-    Collection<T> records();
+    Collection<T> readBatch();
 
     @SuppressWarnings("rawtypes")
      static Buffer defaultBuffer() {

@@ -16,3 +16,11 @@ Sink in the output component of pipeline, it defines the one or more destination
 
 ### Processor
 Processor component of the pipeline, these are intermediary processing units using which users can filter, transform and enrich the records into desired format before publishing to the sink. The processor is an optional component of the pipeline, if not defined the records will be published in the format as defined in the source.
+
+## Pre-requisites for custom components
+As we know, the default provided source, buffer, processor and/or sinks will not suffice diverse customer needs. Below are the steps to create a custom source/buffer/processor/sink
+ 
+ 
+1. Implement the appropriate interface from ```com.amazon.ti.<source|buffer|processor|sink>.Source|Buffer|Processor|Sink```
+2. Annotate the class file with ```com.amazon.ti.annotations.TransformationInstancePlugin``` providing appropriate name and type
+3. Add a mandatory constructor to the class with ```com.amazon.ti.configuration.Configuration``` as parameter. Example: [FileSink](https://github.com/yadavcbala/transformation-instance/blob/master/src/main/java/com/amazon/ti/plugins/sink/FileSink.java)
