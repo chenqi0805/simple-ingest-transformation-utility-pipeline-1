@@ -143,7 +143,7 @@ public class Pipeline {
      */
     private void executeToEmptyBuffer() {
         Collection<Record> records;
-        while ((records = buffer.records()) != null && !records.isEmpty()) {
+        while ((records = buffer.readBatch()) != null && !records.isEmpty()) {
             for (final Processor processor : processors) {
                 records = processor.execute(records);
             }

@@ -22,6 +22,10 @@ public class NoOpProcessor<InputT extends Record<?>> implements Processor<InputT
         //no op
     }
 
+    public NoOpProcessor() {
+
+    }
+
     @Override
     public Collection<InputT> execute(Collection<InputT> records) {
         return records;
