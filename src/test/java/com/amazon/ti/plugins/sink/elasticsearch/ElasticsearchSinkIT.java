@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ElasticsearchSinkIT extends ESRestTestCase {
-  public static List<String> ADDRESSES = Arrays.stream(System.getProperty("tests.rest.cluster").split(","))
+  public static List<String> HOSTS = Arrays.stream(System.getProperty("tests.rest.cluster").split(","))
       .map(ip -> "http://" + ip).collect(Collectors.toList());
 
   private Configuration configuration;
@@ -26,7 +26,7 @@ public class ElasticsearchSinkIT extends ESRestTestCase {
   @Before
   public void setup() {
     Map<String, Object> metadata = new HashMap<>();
-    metadata.put("addresses", ADDRESSES);
+    metadata.put("addresses", HOSTS);
     metadata.put("username", "");
     metadata.put("password", "");
     metadata.put("index_type", IndexType.RAW);
