@@ -6,14 +6,21 @@ import org.apache.http.util.EntityUtils;
 import org.elasticsearch.client.Request;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.test.rest.ESRestTestCase;
 import org.junit.Before;
 
 import javax.ws.rs.HttpMethod;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-public class ElasticsearchSinkIT extends ESSinkRestTestCase {
+public class ElasticsearchSinkIT extends ESRestTestCase {
+  public static List<String> ADDRESSES = Arrays.stream(System.getProperty("tests.rest.cluster").split(","))
+      .map(ip -> "http://" + ip).collect(Collectors.toList());
+
   private Configuration configuration;
 
   @Before
