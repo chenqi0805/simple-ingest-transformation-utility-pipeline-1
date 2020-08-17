@@ -14,7 +14,7 @@ public class IndexConfiguration {
   public static class Builder {
     private String indexType = IndexType.RAW;
 
-    public Builder withIndexType(String indexType) {
+    public Builder withIndexType(final String indexType) {
       checkArgument(indexType != null, "indexType cannot be null.");
       checkArgument( IndexType.TYPES.contains(indexType), "Invalid indexType.");
       this.indexType = indexType;
@@ -26,7 +26,7 @@ public class IndexConfiguration {
     }
   }
 
-  private IndexConfiguration(Builder builder) {
+  private IndexConfiguration(final Builder builder) {
     this.indexType = builder.indexType;
   }
 }

@@ -67,32 +67,32 @@ public class ConnectionConfiguration {
 
     private Integer connectTimeout;
 
-    public Builder withAddresses(List<String> addresses) {
+    public Builder withAddresses(final List<String> addresses) {
       checkArgument(addresses != null, "addresses cannot be null");
       checkArgument(addresses.size() > 0, "addresses cannot be empty list");
       this.addresses = addresses;
       return this;
     }
 
-    public Builder withUsername(String username) {
+    public Builder withUsername(final String username) {
       checkArgument(username != null, "username cannot be null");
       this.username = username;
       return this;
     }
 
-    public Builder withPassword(String password) {
+    public Builder withPassword(final String password) {
       checkArgument(password != null, "password cannot be null");
       this.password = password;
       return this;
     }
 
-    public Builder withSocketTimeout(Integer socketTimeout) {
+    public Builder withSocketTimeout(final Integer socketTimeout) {
       checkArgument(socketTimeout != null, "socketTimeout cannot be null");
       this.socketTimeout = socketTimeout;
       return this;
     }
 
-    public Builder withConnectTimeout(Integer connectTimeout) {
+    public Builder withConnectTimeout(final Integer connectTimeout) {
       checkArgument(connectTimeout != null, "connectTimeout cannot be null");
       this.connectTimeout = connectTimeout;
       return this;
@@ -111,7 +111,7 @@ public class ConnectionConfiguration {
     }
   }
 
-  private ConnectionConfiguration(Builder builder) {
+  private ConnectionConfiguration(final Builder builder) {
     this.addresses = builder.addresses;
     this.username = builder.username;
     this.password = builder.password;

@@ -23,13 +23,13 @@ public class ElasticsearchSinkConfiguration {
 
     private IndexConfiguration indexConfiguration = new IndexConfiguration.Builder().build();
 
-    public Builder withConnectionConfiguration(ConnectionConfiguration connectionConfiguration) {
+    public Builder withConnectionConfiguration(final ConnectionConfiguration connectionConfiguration) {
       checkArgument(connectionConfiguration != null, "connectionConfiguration cannot be null");
       this.connectionConfiguration = connectionConfiguration;
       return this;
     }
 
-    public Builder withIndexConfiguration(IndexConfiguration indexConfiguration) {
+    public Builder withIndexConfiguration(final IndexConfiguration indexConfiguration) {
       checkArgument(indexConfiguration != null, "indexConfiguration cannot be null");
       this.indexConfiguration = indexConfiguration;
       return this;
@@ -51,7 +51,7 @@ public class ElasticsearchSinkConfiguration {
     }
   }
 
-  private ElasticsearchSinkConfiguration(Builder builder) {
+  private ElasticsearchSinkConfiguration(final Builder builder) {
     this.connectionConfiguration = builder.connectionConfiguration;
     this.indexConfiguration = builder.indexConfiguration;
   }
