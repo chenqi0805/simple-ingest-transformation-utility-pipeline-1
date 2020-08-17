@@ -13,6 +13,8 @@ import org.apache.http.nio.entity.NStringEntity;
 import org.elasticsearch.client.Request;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
+import org.elasticsearch.common.Strings;
+import org.elasticsearch.common.xcontent.XContentFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -102,7 +104,20 @@ public class ElasticsearchSink implements Sink<Record<String>> {
        * If the record includes documentID, we need to fill it into the bulk request entity
        */
       String document = record.getData();
-      bulkRequest.append(String.format("{ \"index\" : { } }\n%s\n", document));
+      try {
+        bulkRequest.append(
+            Strings.toString(
+                XContentFactory.jsonBuilder()
+                    .startObject()
+                    .startObject("index")
+                    .endObject()
+                    .endObject()
+            )
+        ).append("\n").append(document).append("\n");
+      } catch (IOException e) {
+        // TODO: better error handling
+        e.printStackTrace();
+      }
     }
     Response response;
     HttpEntity responseEntity;
@@ -173,7 +188,15 @@ public class ElasticsearchSink implements Sink<Record<String>> {
       // TODO: use date as suffix?
       String initialIndexName = String.format("%s-000001", indexAlias);
       request = new Request("PUT", initialIndexName);
-      String jsonContent = String.format("{ \"aliases\": { \"%s\": { \"is_write_index\": true } } }", indexAlias);
+      String jsonContent = Strings.toString(
+          XContentFactory.jsonBuilder().startObject()
+              .startObject("aliases")
+              .startObject(indexAlias)
+              .field("is_write_index", true)
+              .endObject()
+              .endObject()
+              .endObject()
+      );
       request.setJsonEntity(jsonContent);
       response = restClient.performRequest(request);
       HttpEntity responseEntity = new BufferedHttpEntity(response.getEntity());
