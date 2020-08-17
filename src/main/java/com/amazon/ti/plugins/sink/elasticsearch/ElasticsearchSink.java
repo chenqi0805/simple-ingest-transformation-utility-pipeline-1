@@ -16,6 +16,8 @@ import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.xcontent.XContentFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.HttpMethod;
 import java.io.IOException;
@@ -29,6 +31,10 @@ import static com.amazon.ti.plugins.sink.elasticsearch.IndexConfiguration.INDEX_
 
 @TransformationInstancePlugin(name = "elasticsearch", type = PluginType.SINK)
 public class ElasticsearchSink implements Sink<Record<String>> {
+
+  // TODO: replace with error handler?
+  private static final Logger LOG = LoggerFactory.getLogger(ElasticsearchSink.class);
+
   private ElasticsearchSinkConfiguration esSinkConfig;
   private RestClient restClient;
 
@@ -37,8 +43,7 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     try {
       start();
     } catch (IOException e) {
-      // TODO: better error handling
-      e.printStackTrace();
+      LOG.error(e.getMessage(), e);
     }
   }
 
@@ -117,8 +122,7 @@ public class ElasticsearchSink implements Sink<Record<String>> {
             )
         ).append("\n").append(document).append("\n");
       } catch (IOException e) {
-        // TODO: better error handling
-        e.printStackTrace();
+        LOG.error(e.getMessage(), e);
       }
     }
     Response response;
@@ -139,8 +143,7 @@ public class ElasticsearchSink implements Sink<Record<String>> {
       // TODO: what if partial success?
       return true;
     } catch (IOException e) {
-      // TODO: better error handling
-      e.printStackTrace();
+      LOG.error(e.getMessage(), e);
       return false;
     }
   }
@@ -151,8 +154,7 @@ public class ElasticsearchSink implements Sink<Record<String>> {
       try {
         restClient.close();
       } catch (IOException e) {
-        // TODO: proper error handling
-        e.printStackTrace();
+        LOG.error(e.getMessage(), e);
       }
     }
   }

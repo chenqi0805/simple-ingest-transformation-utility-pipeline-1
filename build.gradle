@@ -48,6 +48,7 @@ dependencies {
     implementation 'javax.ws.rs:javax.ws.rs-api:2.1.1'
     implementation 'org.apache.bval:bval-jsr:2.0.0'
     implementation 'org.apache.bval:bval-extras:2.0.4'
+    implementation 'org.slf4j:slf4j-api:1.7.30'
     testImplementation('junit:junit:4.13') {
         exclude group:'org.hamcrest' // workaround for jarHell
     }
