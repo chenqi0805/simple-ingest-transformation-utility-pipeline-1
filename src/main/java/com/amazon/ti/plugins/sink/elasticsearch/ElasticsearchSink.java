@@ -42,7 +42,7 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     }
   }
 
-  private ElasticsearchSinkConfiguration readESConfig(Configuration configuration) {
+  private ElasticsearchSinkConfiguration readESConfig(final Configuration configuration) {
     ConnectionConfiguration connectionConfiguration = readConnectionConfiguration(configuration);
     IndexConfiguration indexConfiguration = readIndexConfig(configuration);
 
@@ -52,7 +52,7 @@ public class ElasticsearchSink implements Sink<Record<String>> {
         .build();
   }
 
-  private ConnectionConfiguration readConnectionConfiguration(Configuration configuration){
+  private ConnectionConfiguration readConnectionConfiguration(final Configuration configuration){
     ConnectionConfiguration.Builder builder = new ConnectionConfiguration.Builder();
     @SuppressWarnings("unchecked")
     List<String> addresses = (List<String>)configuration.getAttributeFromMetadata(ADDRESSES);
@@ -79,7 +79,7 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     return builder.build();
   }
 
-  private IndexConfiguration readIndexConfig(Configuration configuration) {
+  private IndexConfiguration readIndexConfig(final Configuration configuration) {
     IndexConfiguration.Builder builder = new IndexConfiguration.Builder();
     String indexType = (String)configuration.getAttributeFromMetadata(INDEX_TYPE);
     if (indexType != null) {
