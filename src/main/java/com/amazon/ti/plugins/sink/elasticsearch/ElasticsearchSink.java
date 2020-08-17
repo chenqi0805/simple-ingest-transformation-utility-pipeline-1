@@ -16,6 +16,7 @@ import org.elasticsearch.client.RestClient;
 import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.xcontent.XContentFactory;
 
+import javax.ws.rs.HttpMethod;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -125,13 +126,13 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     String endPoint = String.format("/%s/_bulk", indexAlias);
     HttpEntity requestBody =
         new NStringEntity(bulkRequest.toString(), ContentType.APPLICATION_JSON);
-    Request request = new Request("POST", endPoint);
+    Request request = new Request(HttpMethod.POST, endPoint);
     request.setEntity(requestBody);
     try {
       response = restClient.performRequest(request);
       responseEntity = new BufferedHttpEntity(response.getEntity());
       // TODO: apply retry predicate here
-      responseEntity = handleRetry("POST", endPoint, responseEntity);
+      responseEntity = handleRetry(HttpMethod.POST, endPoint, responseEntity);
       checkForErrors(responseEntity);
 
       // TODO: what if partial success?
@@ -169,25 +170,25 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     String indexTemplateJson = indexTemplateJsonBuffer.toString();
     HttpEntity requestBody =
         new NStringEntity(indexTemplateJson, ContentType.APPLICATION_JSON);
-    Request request = new Request("POST", endPoint);
+    Request request = new Request(HttpMethod.POST, endPoint);
     request.setEntity(requestBody);
     response = restClient.performRequest(request);
     responseEntity = new BufferedHttpEntity(response.getEntity());
     // TODO: apply retry predicate here
-    responseEntity = handleRetry("POST", endPoint, responseEntity);
+    responseEntity = handleRetry(HttpMethod.POST, endPoint, responseEntity);
     checkForErrors(responseEntity);
   }
 
   private void checkAndCreateIndex() throws IOException {
     // Check alias exists
     String indexAlias = IndexType.TYPE_TO_ALIAS.get(esSinkConfig.getIndexConfiguration().getIndexType());
-    Request request = new Request("HEAD", indexAlias);
+    Request request = new Request(HttpMethod.HEAD, indexAlias);
     Response response = restClient.performRequest(request);
     StatusLine statusLine = response.getStatusLine();
     if (statusLine.getStatusCode() == 404) {
       // TODO: use date as suffix?
       String initialIndexName = String.format("%s-000001", indexAlias);
-      request = new Request("PUT", initialIndexName);
+      request = new Request(HttpMethod.PUT, initialIndexName);
       String jsonContent = Strings.toString(
           XContentFactory.jsonBuilder().startObject()
               .startObject("aliases")
@@ -201,7 +202,7 @@ public class ElasticsearchSink implements Sink<Record<String>> {
       response = restClient.performRequest(request);
       HttpEntity responseEntity = new BufferedHttpEntity(response.getEntity());
       // TODO: apply retry predicate here
-      responseEntity = handleRetry("POST", initialIndexName, responseEntity);
+      responseEntity = handleRetry(HttpMethod.POST, initialIndexName, responseEntity);
       checkForErrors(responseEntity);
     }
   }

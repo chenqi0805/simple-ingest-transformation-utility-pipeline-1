@@ -7,6 +7,7 @@ import org.elasticsearch.client.Response;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.junit.Before;
 
+import javax.ws.rs.HttpMethod;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,13 +28,13 @@ public class ElasticsearchSinkIT extends ESSinkRestTestCase {
   public void testInstantiateSink() throws IOException {
     String indexAlias = IndexType.TYPE_TO_ALIAS.get(IndexType.RAW);
     ElasticsearchSink sink = new ElasticsearchSink(configuration);
-    Request request = new Request("HEAD", indexAlias);
+    Request request = new Request(HttpMethod.HEAD, indexAlias);
     Response response = client().performRequest(request);
     assertEquals(200, response.getStatusLine().getStatusCode());
     sink.stop();
 
     // roll over initial index
-    request = new Request("POST", String.format("%s/_rollover", indexAlias));
+    request = new Request(HttpMethod.POST, String.format("%s/_rollover", indexAlias));
     request.setJsonEntity("{ \"conditions\" : { } }\n");
     response = client().performRequest(request);
     assertEquals(200, response.getStatusLine().getStatusCode());
@@ -42,7 +43,7 @@ public class ElasticsearchSinkIT extends ESSinkRestTestCase {
     sink = new ElasticsearchSink(configuration);
     // Make sure no new write index *-000001 is created under alias
     String rolloverIndexName = String.format("%s-000002", indexAlias);
-    request = new Request("GET", rolloverIndexName + "/_alias");
+    request = new Request(HttpMethod.GET, rolloverIndexName + "/_alias");
     response = client().performRequest(request);
     assertEquals(true, checkIsWriteIndex(EntityUtils.toString(response.getEntity()), indexAlias, rolloverIndexName));
     sink.stop();
