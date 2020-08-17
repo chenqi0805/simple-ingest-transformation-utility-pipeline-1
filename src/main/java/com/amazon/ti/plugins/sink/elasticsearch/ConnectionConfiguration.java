@@ -16,6 +16,16 @@ import java.util.List;
 import static com.google.common.base.Preconditions.checkArgument;
 
 public class ConnectionConfiguration {
+  public static final String ADDRESSES = "addresses";
+
+  public static final String USERNAME = "username";
+
+  public static final String PASSWORD = "password";
+
+  public static final String SOCKET_TIMEOUT = "socket_timeout";
+
+  public static final String CONNECT_TIMEOUT = "connect_timeout";
+
   private final List<String> addresses;
 
   private final String username;
@@ -91,7 +101,7 @@ public class ConnectionConfiguration {
     public ConnectionConfiguration build() {
       String missing = "";
       if (addresses == null) {
-        missing += "addresses";
+        missing += ADDRESSES;
       }
       if (!missing.isEmpty()) {
         throw new IllegalStateException("Missing required properties:" + missing);

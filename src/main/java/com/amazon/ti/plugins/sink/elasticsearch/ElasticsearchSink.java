@@ -20,6 +20,9 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.List;
 
+import static com.amazon.ti.plugins.sink.elasticsearch.ConnectionConfiguration.*;
+import static com.amazon.ti.plugins.sink.elasticsearch.IndexConfiguration.INDEX_TYPE;
+
 @TransformationInstancePlugin(name = "elasticsearch", type = PluginType.SINK)
 public class ElasticsearchSink implements Sink<Record<String>> {
   private ElasticsearchSinkConfiguration esSinkConfig;
@@ -48,23 +51,23 @@ public class ElasticsearchSink implements Sink<Record<String>> {
   private ConnectionConfiguration readConnectionConfiguration(Configuration configuration){
     ConnectionConfiguration.Builder builder = new ConnectionConfiguration.Builder();
     @SuppressWarnings("unchecked")
-    List<String> addresses = (List<String>)configuration.getAttributeFromMetadata("addresses");
+    List<String> addresses = (List<String>)configuration.getAttributeFromMetadata(ADDRESSES);
     if (addresses != null) {
       builder = builder.withAddresses(addresses);
     }
-    String username = (String)configuration.getAttributeFromMetadata("username");
+    String username = (String)configuration.getAttributeFromMetadata(USERNAME);
     if (username != null) {
       builder = builder.withUsername(username);
     }
-    String password = (String)configuration.getAttributeFromMetadata("password");
+    String password = (String)configuration.getAttributeFromMetadata(PASSWORD);
     if (password != null) {
       builder = builder.withPassword(password);
     }
-    Integer socketTimeout = (Integer)configuration.getAttributeFromMetadata("socket_timeout");
+    Integer socketTimeout = (Integer)configuration.getAttributeFromMetadata(SOCKET_TIMEOUT);
     if (socketTimeout != null) {
       builder = builder.withSocketTimeout(socketTimeout);
     }
-    Integer connectTimeout = (Integer)configuration.getAttributeFromMetadata("connect_timeout");
+    Integer connectTimeout = (Integer)configuration.getAttributeFromMetadata(CONNECT_TIMEOUT);
     if (connectTimeout != null) {
       builder = builder.withConnectTimeout(connectTimeout);
     }
@@ -74,7 +77,7 @@ public class ElasticsearchSink implements Sink<Record<String>> {
 
   private IndexConfiguration readIndexConfig(Configuration configuration) {
     IndexConfiguration.Builder builder = new IndexConfiguration.Builder();
-    String indexType = (String)configuration.getAttributeFromMetadata("index_type");
+    String indexType = (String)configuration.getAttributeFromMetadata(INDEX_TYPE);
     if (indexType != null) {
       builder = builder.withIndexType(indexType);
     }
