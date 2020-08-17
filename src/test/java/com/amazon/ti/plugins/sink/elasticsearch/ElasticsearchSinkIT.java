@@ -1,6 +1,7 @@
 package com.amazon.ti.plugins.sink.elasticsearch;
 
 import com.amazon.ti.configuration.Configuration;
+import org.apache.http.HttpStatus;
 import org.apache.http.util.EntityUtils;
 import org.elasticsearch.client.Request;
 import org.elasticsearch.client.Response;
@@ -30,14 +31,14 @@ public class ElasticsearchSinkIT extends ESSinkRestTestCase {
     ElasticsearchSink sink = new ElasticsearchSink(configuration);
     Request request = new Request(HttpMethod.HEAD, indexAlias);
     Response response = client().performRequest(request);
-    assertEquals(200, response.getStatusLine().getStatusCode());
+    assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
     sink.stop();
 
     // roll over initial index
     request = new Request(HttpMethod.POST, String.format("%s/_rollover", indexAlias));
     request.setJsonEntity("{ \"conditions\" : { } }\n");
     response = client().performRequest(request);
-    assertEquals(200, response.getStatusLine().getStatusCode());
+    assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
 
     // Instantiate sink again
     sink = new ElasticsearchSink(configuration);

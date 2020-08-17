@@ -6,6 +6,7 @@ import com.amazon.ti.configuration.Configuration;
 import com.amazon.ti.plugins.PluginType;
 import com.amazon.ti.sink.Sink;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.entity.ContentType;
@@ -185,7 +186,7 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     Request request = new Request(HttpMethod.HEAD, indexAlias);
     Response response = restClient.performRequest(request);
     StatusLine statusLine = response.getStatusLine();
-    if (statusLine.getStatusCode() == 404) {
+    if (statusLine.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
       // TODO: use date as suffix?
       String initialIndexName = String.format("%s-000001", indexAlias);
       request = new Request(HttpMethod.PUT, initialIndexName);
