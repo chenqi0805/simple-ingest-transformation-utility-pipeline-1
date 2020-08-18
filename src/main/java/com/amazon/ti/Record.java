@@ -11,7 +11,11 @@ import java.util.Map;
  */
 public class Record<T> {
     private final T data;
+    //TODO: make a better metadata object to pull metadata with correct class and prevent null objects from being set.
     private Map<String, Object> metadata;
+
+    //TODO: Move this to an enum or static class defining core metadata fields
+    public static final String RECORD_TYPE = "record_type";
 
     public Record(final T data) {
         this.data = data;
@@ -19,6 +23,7 @@ public class Record<T> {
 
     public Record(final T data, final Map<String, Object> metadata) {
         this.data = data;
+        //TODO: need to ensure that RECORD_TYPE is always set.
         this.metadata = metadata;
     }
 
@@ -30,4 +35,11 @@ public class Record<T> {
         return metadata;
     }
 
+    /**
+     * Provides the type of Record
+     * @return the record type
+     */
+    public String getRecordType() {
+        return this.metadata.get(RECORD_TYPE).toString();
+    }
 }
