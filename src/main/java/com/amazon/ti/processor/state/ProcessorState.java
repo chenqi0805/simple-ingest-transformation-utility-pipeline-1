@@ -30,9 +30,9 @@ public interface ProcessorState<T> {
     Map<String, T> getAll();
 
     /**
-     * Deletes the data in the processor state
+     * Clears the data in the processor state
      */
-    void delete();
+    void clear();
 
     /**
      * Any cleanup code goes here

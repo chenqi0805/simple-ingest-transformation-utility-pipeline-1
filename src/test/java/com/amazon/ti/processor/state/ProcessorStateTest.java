@@ -55,7 +55,7 @@ public abstract class ProcessorStateTest {
 
     @After
     public void teardown() {
-        processorState.delete();
+        processorState.clear();
         processorState.close();
     }
 
