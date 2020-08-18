@@ -3,6 +3,9 @@ package com.amazon.ti.plugins.sink.elasticsearch;
 import static com.google.common.base.Preconditions.checkArgument;
 
 public class IndexConfiguration {
+  /**
+   * TODO: add index management policy parameters
+   */
   public static final String INDEX_TYPE = "index_type";
 
   public static final String INDEX_ALIAS = "index_alias";
