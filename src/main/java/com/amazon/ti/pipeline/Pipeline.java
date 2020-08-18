@@ -80,7 +80,7 @@ public class Pipeline {
         this.processors = processors != null ? processors : EMPTY_PROCESSOR_LIST;
         this.sinks = sinks;
         this.executorService = executorService == null ? Executors.newSingleThreadExecutor() : executorService;
-        stopRequested = Boolean.FALSE;
+        stopRequested = false;
     }
 
 

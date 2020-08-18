@@ -42,7 +42,7 @@ public class ProcessWorker implements Runnable {
                 } else {
                     isQueueEmpty = true;
                 }
-            } while (!isHalted || !isBufferEmpty()); //If pipeline is stopped, we try to empty the already buffered records
+            } while (!isHalted || !isBufferEmpty()); //If pipeline is stopped, we try to empty the already buffered records ?
         } catch (final Exception ex) {
             throw new IllegalStateException(ex);
         }
