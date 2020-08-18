@@ -7,7 +7,6 @@ import org.elasticsearch.client.Request;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.test.rest.ESRestTestCase;
-import org.junit.Before;
 
 import javax.ws.rs.HttpMethod;
 import java.io.IOException;
@@ -92,6 +91,42 @@ public class ElasticsearchSinkIT extends ESRestTestCase {
     ElasticsearchSink sink = new ElasticsearchSink(configuration);
     String indexAlias = IndexConstants.TYPE_TO_DEFAULT_ALIAS.get(IndexConstants.SERVICE_MAP);
     Request request = new Request(HttpMethod.HEAD, indexAlias);
+    Response response = client().performRequest(request);
+    assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
+    sink.stop();
+  }
+
+  public void testInstantiateSinkServiceMapCustom() throws IOException {
+    String testIndexAlias = "test-service-map";
+    String testTemplateFile = getClass().getClassLoader().getResource("test-index-template.json").getFile();
+    Map<String, Object> metadata = new HashMap<>();
+    metadata.put("index_type", IndexConstants.SERVICE_MAP);
+    metadata.put("addresses", HOSTS);
+    metadata.put("username", "");
+    metadata.put("password", "");
+    metadata.put("index_alias", testIndexAlias);
+    metadata.put("template_file", testTemplateFile);
+    Configuration configuration = new Configuration("elasticsearch", metadata);
+    ElasticsearchSink sink = new ElasticsearchSink(configuration);
+    Request request = new Request(HttpMethod.HEAD, testIndexAlias);
+    Response response = client().performRequest(request);
+    assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
+    sink.stop();
+  }
+
+  public void testInstantiateSinkCustomIndex() throws IOException {
+    String testIndexAlias = "test-alias";
+    String testTemplateFile = getClass().getClassLoader().getResource("test-index-template.json").getFile();
+    Map<String, Object> metadata = new HashMap<>();
+    metadata.put("index_type", IndexConstants.CUSTOM);
+    metadata.put("addresses", HOSTS);
+    metadata.put("username", "");
+    metadata.put("password", "");
+    metadata.put("index_alias", testIndexAlias);
+    metadata.put("template_file", testTemplateFile);
+    Configuration configuration = new Configuration("elasticsearch", metadata);
+    ElasticsearchSink sink = new ElasticsearchSink(configuration);
+    Request request = new Request(HttpMethod.HEAD, testIndexAlias);
     Response response = client().performRequest(request);
     assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
     sink.stop();
