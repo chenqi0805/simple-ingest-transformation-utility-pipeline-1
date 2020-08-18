@@ -15,7 +15,7 @@ import org.elasticsearch.client.Request;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.common.Strings;
-import org.elasticsearch.common.xcontent.XContentFactory;
+import org.elasticsearch.common.xcontent.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static com.amazon.ti.plugins.sink.elasticsearch.ConnectionConfiguration.*;
-import static com.amazon.ti.plugins.sink.elasticsearch.IndexConfiguration.INDEX_TYPE;
+import static com.amazon.ti.plugins.sink.elasticsearch.IndexConfiguration.*;
 
 @TransformationInstancePlugin(name = "elasticsearch", type = PluginType.SINK)
 public class ElasticsearchSink implements Sink<Record<String>> {
@@ -90,12 +90,22 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     if (indexType != null) {
       builder = builder.withIndexType(indexType);
     }
+    String indexAlias = (String)configuration.getAttributeFromMetadata(INDEX_ALIAS);
+    if (indexAlias != null) {
+      builder = builder.withIndexAlias(indexAlias);
+    }
+    String templateFile = (String)configuration.getAttributeFromMetadata(TEMPLATE_FILE);
+    if (templateFile != null) {
+      builder = builder.withTemplateFile(templateFile);
+    }
     return builder.build();
   }
 
   public void start() throws IOException {
     restClient = esSinkConfig.getConnectionConfiguration().createClient();
-    createIndexTemplate();
+    if (esSinkConfig.getIndexConfiguration().getTemplateFile() != null) {
+      createIndexTemplate();
+    }
     checkAndCreateIndex();
   }
 
@@ -127,12 +137,9 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     }
     Response response;
     HttpEntity responseEntity;
-    String indexAlias = IndexType.TYPE_TO_ALIAS.get(esSinkConfig.getIndexConfiguration().getIndexType());
-    String endPoint = String.format("/%s/_bulk", indexAlias);
-    HttpEntity requestBody =
-        new NStringEntity(bulkRequest.toString(), ContentType.APPLICATION_JSON);
+    String endPoint = esSinkConfig.getIndexConfiguration().getIndexAlias() + "/_bulk";
     Request request = new Request(HttpMethod.POST, endPoint);
-    request.setEntity(requestBody);
+    request.setJsonEntity(bulkRequest.toString());
     try {
       response = restClient.performRequest(request);
       responseEntity = new BufferedHttpEntity(response.getEntity());
@@ -164,17 +171,31 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     // QUES: how to identify index template file with index pattern accordingly?
     Response response;
     HttpEntity responseEntity;
-    String indexAlias = IndexType.TYPE_TO_ALIAS.get(IndexType.RAW);
+    String indexAlias = esSinkConfig.getIndexConfiguration().getIndexAlias();
     String endPoint = String.format("_index_template/%s-index-template", indexAlias);
     ClassLoader classLoader = getClass().getClassLoader();
-    String jsonFilePath = classLoader.getResource(String.format("%s-index-template.json", indexAlias)).getFile();
-    StringBuilder indexTemplateJsonBuffer = new StringBuilder();
-    Files.lines(Paths.get(jsonFilePath)).forEach(s -> indexTemplateJsonBuffer.append(s).append("\n"));
-    String indexTemplateJson = indexTemplateJsonBuffer.toString();
-    HttpEntity requestBody =
-        new NStringEntity(indexTemplateJson, ContentType.APPLICATION_JSON);
+    String jsonFilePath = esSinkConfig.getIndexConfiguration().getTemplateFile();
+    StringBuilder templateJsonBuffer = new StringBuilder();
+    Files.lines(Paths.get(jsonFilePath)).forEach(s -> templateJsonBuffer.append(s).append("\n"));
+    String templateJson = templateJsonBuffer.toString();
     Request request = new Request(HttpMethod.POST, endPoint);
-    request.setEntity(requestBody);
+    XContentParser parser = XContentFactory.xContent(XContentType.JSON)
+        .createParser(NamedXContentRegistry.EMPTY, LoggingDeprecationHandler.INSTANCE, templateJson);
+    String jsonEntity;
+    if (esSinkConfig.getIndexConfiguration().getIndexType() == IndexType.RAW) {
+      // Add -* prefix for rollover
+      jsonEntity = Strings.toString(
+          XContentFactory.jsonBuilder().startObject()
+              .field("index_patterns", indexAlias + "-*")
+              .field("template").copyCurrentStructure(parser).endObject());
+    } else {
+      jsonEntity = Strings.toString(
+          XContentFactory.jsonBuilder().startObject()
+              .field("index_patterns", indexAlias)
+              .field("template").copyCurrentStructure(parser).endObject()
+      );
+    }
+    request.setJsonEntity(jsonEntity);
     response = restClient.performRequest(request);
     responseEntity = new BufferedHttpEntity(response.getEntity());
     // TODO: apply retry predicate here
@@ -184,13 +205,18 @@ public class ElasticsearchSink implements Sink<Record<String>> {
 
   private void checkAndCreateIndex() throws IOException {
     // Check alias exists
-    String indexAlias = IndexType.TYPE_TO_ALIAS.get(esSinkConfig.getIndexConfiguration().getIndexType());
+    String indexAlias = esSinkConfig.getIndexConfiguration().getIndexAlias();
     Request request = new Request(HttpMethod.HEAD, indexAlias);
     Response response = restClient.performRequest(request);
     StatusLine statusLine = response.getStatusLine();
     if (statusLine.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
       // TODO: use date as suffix?
-      String initialIndexName = String.format("%s-000001", indexAlias);
+      String initialIndexName;
+      if (esSinkConfig.getIndexConfiguration().getIndexType() == IndexType.RAW) {
+        initialIndexName = indexAlias + "-000001";
+      } else {
+        initialIndexName = indexAlias;
+      }
       request = new Request(HttpMethod.PUT, initialIndexName);
       String jsonContent = Strings.toString(
           XContentFactory.jsonBuilder().startObject()
