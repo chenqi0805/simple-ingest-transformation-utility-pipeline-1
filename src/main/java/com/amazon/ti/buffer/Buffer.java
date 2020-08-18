@@ -8,16 +8,17 @@ import java.util.Collection;
 /**
  * Transformation Instance buffer interface. Buffer queues the records between TI components and acts as a layer
  * between source and processor/sink. Buffer can be in-memory, disk based or other a standalone implementation.
- *
+ * <p>
  * TODO: Rename this such that it does not confuse java.nio.Buffer
  */
 public interface Buffer<T extends Record<?>> {
 
     /**
      * writes the record to the buffer
+     *
      * @param record The Record which needed to be written
      */
-    void write(T record);
+    void write(final T record);
 
     /**
      * @return The earliest record in the buffer which is still not read.
@@ -29,8 +30,10 @@ public interface Buffer<T extends Record<?>> {
      */
     Collection<T> readBatch();
 
+    void writeBatch(final Collection<T> records);
+
     @SuppressWarnings("rawtypes")
-     static Buffer defaultBuffer() {
+    static Buffer defaultBuffer() {
         return new UnboundedInMemoryBuffer();
     }
 }

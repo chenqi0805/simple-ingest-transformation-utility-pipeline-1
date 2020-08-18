@@ -1,6 +1,6 @@
 package com.amazon.ti.plugins.sink;
 
-import com.amazon.ti.configuration.Configuration;
+import com.amazon.ti.configuration.PluginSetting;
 import com.amazon.ti.plugins.PluginException;
 import com.amazon.ti.sink.Sink;
 import org.junit.Test;
@@ -18,12 +18,13 @@ public class SinkFactoryTest {
      */
     @Test
     public void testNewSinkClassByNameThatExists() {
-        final Configuration stdOutSinkConfiguration = new Configuration("stdout", new HashMap<>());
+        final PluginSetting stdOutSinkConfiguration = new PluginSetting("stdout", new HashMap<>());
         final Sink actualSink = SinkFactory.newSink(stdOutSinkConfiguration);
         final Sink expectedSink = new StdOutSink();
         assertNotNull(actualSink);
         assertEquals(expectedSink.getClass().getSimpleName(), actualSink.getClass().getSimpleName());
     }
+
     /**
      * Tests if SinkFactory fails with correct Exception when queried for a non-existent plugin
      */

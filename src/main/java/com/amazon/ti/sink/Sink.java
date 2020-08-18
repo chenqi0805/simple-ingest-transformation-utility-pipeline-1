@@ -1,6 +1,7 @@
 package com.amazon.ti.sink;
 
 import com.amazon.ti.Record;
+
 import java.util.Collection;
 
 /**
@@ -11,12 +12,9 @@ public interface Sink<T extends Record<?>> {
 
     /**
      * outputs collection of records which extend {@link Record}.
+     *
      * @param records
      */
     boolean output(Collection<T> records);
 
-    /**
-     * Updates the sink to stop sending records.
-     */
-    void stop();
 }

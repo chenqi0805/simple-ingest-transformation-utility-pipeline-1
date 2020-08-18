@@ -11,6 +11,9 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Pipeline is a data transformation flow which reads data from {@link Source}, optionally transforms the data
@@ -18,18 +21,16 @@ import java.util.List;
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class Pipeline {
-    private static List<Processor> EMPTY_PROCESSOR_LIST = new ArrayList<>(0);
+    private static final List<Processor> EMPTY_PROCESSOR_LIST = new ArrayList<>(0);
+    private static final int DEFAULT_TERMINATION_IN_MILLISECONDS = 5000;
+    private boolean stopRequested;
 
-    @Nonnull
     private final String name;
-    @Nonnull
     private final Source source;
-    @Nullable
     private final Buffer buffer;
-    @Nullable
     private final List<Processor> processors;
-    @Nonnull
     private final Collection<Sink> sinks;
+    private final ExecutorService executorService;
 
     /**
      * Constructs a {@link Pipeline} object with provided {@link Source}, {@link #name}, {@link Collection} of
@@ -42,12 +43,15 @@ public class Pipeline {
     public Pipeline(
             @Nonnull final String name,
             @Nonnull final Source source,
-            @Nonnull final Collection<Sink> sinks) {
+            @Nonnull final Collection<Sink> sinks,
+            final ExecutorService executorService) {
         this.name = name;
         this.source = source;
         this.buffer = Buffer.defaultBuffer();
         processors = EMPTY_PROCESSOR_LIST;
         this.sinks = sinks;
+        this.executorService = executorService == null ? Executors.newSingleThreadExecutor() : executorService;
+        stopRequested = false;
     }
 
     /**
@@ -68,19 +72,21 @@ public class Pipeline {
             @Nonnull final Source source,
             @Nullable final Buffer buffer,
             @Nullable final List<Processor> processors,
-            @Nonnull final Collection<Sink> sinks) {
+            @Nonnull final Collection<Sink> sinks,
+            @Nullable final ExecutorService executorService) {
         this.name = name;
         this.source = source;
         this.buffer = buffer != null ? buffer : Buffer.defaultBuffer();
         this.processors = processors != null ? processors : EMPTY_PROCESSOR_LIST;
         this.sinks = sinks;
+        this.executorService = executorService == null ? Executors.newSingleThreadExecutor() : executorService;
+        stopRequested = Boolean.FALSE;
     }
 
 
     /**
      * @return Unique name of this pipeline.
      */
-    @Nonnull
     public String getName() {
         return this.name;
     }
@@ -88,7 +94,6 @@ public class Pipeline {
     /**
      * @return {@link Source} of this pipeline.
      */
-    @Nonnull
     public Source getSource() {
         return this.source;
     }
@@ -96,7 +101,6 @@ public class Pipeline {
     /**
      * @return {@link Buffer} of this pipeline.
      */
-    @Nullable
     public Buffer getBuffer() {
         return this.buffer;
     }
@@ -104,15 +108,17 @@ public class Pipeline {
     /**
      * @return {@link Sink} of this pipeline.
      */
-    @Nonnull
     public Collection<Sink> getSinks() {
         return this.sinks;
+    }
+
+    public boolean isStopRequested() {
+        return stopRequested;
     }
 
     /**
      * @return a list of {@link Processor} of this pipeline or an empty list .
      */
-    @Nullable
     List<Processor> getProcessors() {
         return processors;
     }
@@ -129,36 +135,26 @@ public class Pipeline {
      * Notifies the components to stop the processing.
      */
     public void stop() {
+        stopRequested = true;
         source.stop();
-        sinks.forEach(Sink::stop); //TODO wait for buffer to empty before stopping sink
+        executorService.shutdown();
+        try {
+            if (!executorService.awaitTermination(DEFAULT_TERMINATION_IN_MILLISECONDS, TimeUnit.MILLISECONDS)) {
+                executorService.shutdownNow();
+            }
+        } catch (InterruptedException ex) {
+            executorService.shutdownNow();
+        }
     }
 
     private void executeWithStart() {
         source.start(buffer);
-        executeToEmptyBuffer();
-    }
-
-    /**
-     * TODO: Pass handler to handle errors/failures
-     */
-    private void executeToEmptyBuffer() {
-        Collection<Record> records;
-        while ((records = buffer.readBatch()) != null && !records.isEmpty()) {
-            for (final Processor processor : processors) {
-                records = processor.execute(records);
-            }
-            postToSink(records); //TODO apply acknowledgement status to decide further processing or halting
+        try {
+            executorService.execute(new ProcessWorker(buffer, processors, sinks, this));
+        } catch (Exception ex) {
+            executorService.shutdown();
+            throw ex;
+            //throw new TransformationInstanceException("Encountered exception while executing processors", ex);
         }
     }
-
-    /**
-     * TODO Add retry mechanism
-     * TODO Add isolator pattern - Fail if one of the Sink fails [isolator Pattern]
-     * TODO Update records such that sinks can modify independently [clone ?]
-     */
-    private boolean postToSink(Collection<Record> records) {
-        sinks.forEach(sink -> sink.output(records));
-        return true;
-    }
-
 }

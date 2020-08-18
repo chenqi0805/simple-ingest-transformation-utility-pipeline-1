@@ -5,8 +5,9 @@ pipeline:
       path: "src/resources/file-test-sample.txt"
   buffer:
     unbounded-inmemory:
-      size: 5
+      batch-size: 5
   processor:
+    threads: 3
     upper-case:
     no-op:
   sink:

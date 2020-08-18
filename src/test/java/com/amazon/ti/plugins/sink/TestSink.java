@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@TransformationInstancePlugin(name="test-sink", type = PluginType.SINK)
+@TransformationInstancePlugin(name = "test-sink", type = PluginType.SINK)
 public class TestSink implements Sink<Record<String>> {
     private final List<Record<String>> collectedRecords;
 
@@ -28,11 +28,6 @@ public class TestSink implements Sink<Record<String>> {
     public boolean output(Collection<Record<String>> records) {
         records.stream().collect(Collectors.toCollection(() -> collectedRecords));
         return true;
-    }
-
-    @Override
-    public void stop() {
-        //not required
     }
 
     public List<Record<String>> getCollectedRecords() {

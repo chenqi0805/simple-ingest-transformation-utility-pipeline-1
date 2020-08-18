@@ -37,7 +37,7 @@ public final class PluginRepository {
                     .getAnnotation(TransformationInstancePlugin.class);
             final String pluginName = tiPluginAnnotation.name();
             final PluginType pluginType = tiPluginAnnotation.type();
-            switch(pluginType) {
+            switch (pluginType) {
                 case SOURCE:
                     SOURCES.put(pluginName, (Class<Source>) annotatedClass);
                     break;

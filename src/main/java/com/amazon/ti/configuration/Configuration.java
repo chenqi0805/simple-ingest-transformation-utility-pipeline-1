@@ -1,35 +1,62 @@
 package com.amazon.ti.configuration;
 
+import javax.validation.constraints.NotNull;
+import java.util.List;
 import java.util.Map;
 
 /**
  * Configuration settings for TI components
- *
+ * <p>
  * TODO: Consider renaming this - its overloaded word [by @laneholloway]
  */
 public class Configuration {
-    private final String name;
-    private final Map<String, Object> metadata;
+    @NotNull
+    private final Map<String, Object> attributeMap;
+    @NotNull
+    private final List<PluginSetting> pluginSettings;
 
-    public Configuration(final String name, Map<String, Object> metadata) {
-        this.name = name;
-        this.metadata = metadata;
+    public Configuration(
+            final Map<String, Object> attributeMap,
+            final List<PluginSetting> pluginSettings) {
+        this.attributeMap = attributeMap;
+        this.pluginSettings = pluginSettings;
     }
 
-    public String getName() {
-        return name;
+    public Map<String, Object> getAttributeMap() {
+        return attributeMap;
     }
 
-    public Map<String, Object> getMetadata() {
-        return metadata;
+    public List<PluginSetting> getPluginSettings() {
+        return pluginSettings;
     }
 
     /**
      * Retrieves the value of the provided attribute (if exists), null otherwise.
-     * @param attribute name of the attribute
+     *
+     * @param attributeName name of the attribute
      * @return value of the attribute from the metadata
      */
-    public Object getAttributeFromMetadata(final String attribute) {
-        return metadata.get(attribute);
+    public Object getAttributeValue(final String attributeName) {
+        return attributeMap.get(attributeName);
+    }
+
+    /**
+     * Retrieves the value of the provided attribute (if exists) as String, null otherwise.
+     *
+     * @param attributeName name of the attribute
+     * @return value of the attribute from the metadata
+     */
+    public String getAttributeValueAsString(final String attributeName) {
+        return (String) getAttributeValue(attributeName);
+    }
+
+    /**
+     * Retrieves the value of the provided attribute (if exists) as int, null otherwise.
+     *
+     * @param attributeName name of the attribute
+     * @return value of the attribute from the metadata
+     */
+    public int getAttributeValueAsInteger(final String attributeName) {
+        return Integer.parseInt(getAttributeValueAsString(attributeName));
     }
 }

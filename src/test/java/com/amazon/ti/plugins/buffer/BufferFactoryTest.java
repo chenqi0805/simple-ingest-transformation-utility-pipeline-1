@@ -1,12 +1,8 @@
 package com.amazon.ti.plugins.buffer;
 
 import com.amazon.ti.buffer.Buffer;
-import com.amazon.ti.configuration.Configuration;
+import com.amazon.ti.configuration.PluginSetting;
 import com.amazon.ti.plugins.PluginException;
-import com.amazon.ti.plugins.processor.NoOpProcessor;
-import com.amazon.ti.plugins.sink.SinkFactory;
-import com.amazon.ti.plugins.sink.StdOutSink;
-import com.amazon.ti.sink.Sink;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -22,7 +18,7 @@ public class BufferFactoryTest {
      */
     @Test
     public void testNewBufferClassByNameThatExists() {
-        final Configuration unboundedBufferConfiguration = new Configuration("unbounded-inmemory", new HashMap<>());
+        final PluginSetting unboundedBufferConfiguration = new PluginSetting("unbounded-inmemory", new HashMap<>());
         final Buffer actualBuffer = BufferFactory.newBuffer(unboundedBufferConfiguration);
         final Buffer expectedBuffer = new UnboundedInMemoryBuffer();
         assertNotNull(actualBuffer);

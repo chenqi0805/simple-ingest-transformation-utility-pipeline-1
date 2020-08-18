@@ -11,6 +11,7 @@ public interface Source<T extends Record<?>> {
 
     /**
      * Notifies the source to start writing the records into the buffer
+     *
      * @param buffer Buffer to which the records will be queued or written to.
      */
     void start(final Buffer<T> buffer);

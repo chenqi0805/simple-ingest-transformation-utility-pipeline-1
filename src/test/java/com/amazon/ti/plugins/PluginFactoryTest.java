@@ -1,28 +1,29 @@
 package com.amazon.ti.plugins;
 
-import com.amazon.ti.configuration.Configuration;
+import com.amazon.ti.configuration.PluginSetting;
 import com.amazon.ti.source.Source;
 import org.junit.Test;
 
 import java.util.HashMap;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("rawtypes")
 public class PluginFactoryTest {
-    public static final Configuration NON_EXISTENT_EMPTY_CONFIGURATION = new Configuration("does-not-exists", new HashMap<>());
+    public static final PluginSetting NON_EXISTENT_EMPTY_CONFIGURATION = new PluginSetting("does-not-exists", new HashMap<>());
 
     @Test
     public void testNoMandatoryConstructor() {
-        final Configuration testConfiguration = new Configuration("junit-test", new HashMap<>());
-        final Class<Source> clazz = PluginRepository.getSourceClass(testConfiguration.getName());
+        final PluginSetting testPluginSettings = new PluginSetting("junit-test", new HashMap<>());
+        final Class<Source> clazz = PluginRepository.getSourceClass(testPluginSettings.getName());
         assertNotNull(clazz);
-        //assertThrows(PluginException.class, ()->PluginFactory.newPlugin(testConfiguration, clazz));
-        try{
-            PluginFactory.newPlugin(testConfiguration, clazz);
+        //assertThrows(PluginException.class, ()->PluginFactory.newPlugin(testPluginSettings, clazz));
+        try {
+            PluginFactory.newPlugin(testPluginSettings, clazz);
         } catch (PluginException e) {
             assertTrue("Incorrect exception or exception message was thrown", e.getMessage().startsWith(
-                    "TransformationInstance plugin requires a constructor with Configuration parameter; Plugin " +
+                    "TransformationInstance plugin requires a constructor with PluginSetting parameter; Plugin " +
                             "ConstructorLessComponent with name junit-test is missing such constructor."));
         }
     }

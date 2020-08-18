@@ -1,48 +1,51 @@
 package com.amazon.ti.plugins.buffer;
 
 import com.amazon.ti.Record;
-import com.amazon.ti.configuration.Configuration;
-import com.amazon.ti.plugins.PluginType;
 import com.amazon.ti.annotations.TransformationInstancePlugin;
 import com.amazon.ti.buffer.Buffer;
+import com.amazon.ti.configuration.PluginSetting;
+import com.amazon.ti.plugins.PluginType;
 
 import java.util.*;
 
 /**
  * Implementation of {@link Buffer} - An unbounded in-memory FIFO buffer. The bufferSize determines the size of the
  * collection for {@link #readBatch()}.
+ *
  * @param <T> a sub-class of {@link Record}
  */
-@TransformationInstancePlugin(name="unbounded-inmemory", type = PluginType.BUFFER)
+@TransformationInstancePlugin(name = "unbounded-inmemory", type = PluginType.BUFFER)
 public class UnboundedInMemoryBuffer<T extends Record<?>> implements Buffer<T> {
-    private static final int DEFAULT_BUFFER_SIZE = 8;
+    private static final int DEFAULT_BATCH_SIZE = 8;
 
     private final Queue<T> queue;
-    private final int bufferSize;
+    private final int batchSize;
 
     public UnboundedInMemoryBuffer() {
         this.queue = new LinkedList<>();
-        bufferSize = DEFAULT_BUFFER_SIZE;
+        batchSize = DEFAULT_BATCH_SIZE;
     }
 
     /**
      * Constructs an unbounded in-memory buffer with provided bufferSize. The bufferSize determines the size of the
      * collection for {@link #readBatch()}.
-     * @param bufferSize
+     *
+     * @param batchSize
      */
-    public UnboundedInMemoryBuffer(int bufferSize){
+    public UnboundedInMemoryBuffer(int batchSize) {
         this.queue = new LinkedList<>();
-        this.bufferSize = bufferSize;
+        this.batchSize = batchSize;
     }
 
     /**
      * Mandatory constructor for Transformation Instance Component - This constructor is used by Transformation instance
      * runtime engine to construct an instance of {@link UnboundedInMemoryBuffer} using an instance of
-     * {@link Configuration} which has access to configuration metadata from pipeline configuration file.
-     * @param configuration instance with metadata information from pipeline configuration file.
+     * {@link PluginSetting} which has access to pluginSetting metadata from pipeline pluginSetting file.
+     *
+     * @param pluginSetting instance with metadata information from pipeline pluginSetting file.
      */
-    public UnboundedInMemoryBuffer(final Configuration configuration) {
-        this(getAttributeOrDefault("size", configuration));
+    public UnboundedInMemoryBuffer(final PluginSetting pluginSetting) {
+        this(getAttributeOrDefault("batch-size", pluginSetting));
     }
 
     @Override
@@ -59,23 +62,27 @@ public class UnboundedInMemoryBuffer<T extends Record<?>> implements Buffer<T> {
 
     /**
      * @return Collection of records, the maximum size of the collection is determined by the bufferSize (with default
-     * value as 10).
+     * value as @link{{@link #DEFAULT_BATCH_SIZE}}).
      */
     @Override
     public Collection<T> readBatch() {
         final List<T> records = new ArrayList<>();
         int index = 0;
         T record;
-        while(index < bufferSize && (record = this.read()) != null) {
+        while (index < batchSize && (record = this.read()) != null) {
             records.add(record);
             index++;
         }
         return records;
     }
 
-    private static Integer getAttributeOrDefault(final String attribute, final Configuration configuration) {
-        final Object attributeObject = configuration.getAttributeFromMetadata(attribute);
-        return configuration.getAttributeFromMetadata(attribute) == null ?
-                DEFAULT_BUFFER_SIZE : (Integer) attributeObject;
+    @Override
+    public void writeBatch(Collection<T> records) {
+        queue.addAll(records);
+    }
+
+    private static Integer getAttributeOrDefault(final String attribute, final PluginSetting pluginSetting) {
+        final Object attributeObject = pluginSetting.getAttributeFromSettings(attribute);
+        return attributeObject == null ? DEFAULT_BATCH_SIZE : (Integer) attributeObject;
     }
 }
