@@ -212,20 +212,21 @@ public class ElasticsearchSink implements Sink<Record<String>> {
       String initialIndexName;
       if (esSinkConfig.getIndexConfiguration().getIndexType() == IndexConstants.RAW) {
         initialIndexName = indexAlias + "-000001";
+        request = new Request(HttpMethod.PUT, initialIndexName);
+        String jsonContent = Strings.toString(
+            XContentFactory.jsonBuilder().startObject()
+                .startObject("aliases")
+                .startObject(indexAlias)
+                .field("is_write_index", true)
+                .endObject()
+                .endObject()
+                .endObject()
+        );
+        request.setJsonEntity(jsonContent);
       } else {
         initialIndexName = indexAlias;
+        request = new Request(HttpMethod.PUT, initialIndexName);
       }
-      request = new Request(HttpMethod.PUT, initialIndexName);
-      String jsonContent = Strings.toString(
-          XContentFactory.jsonBuilder().startObject()
-              .startObject("aliases")
-              .startObject(indexAlias)
-              .field("is_write_index", true)
-              .endObject()
-              .endObject()
-              .endObject()
-      );
-      request.setJsonEntity(jsonContent);
       response = restClient.performRequest(request);
       HttpEntity responseEntity = new BufferedHttpEntity(response.getEntity());
       // TODO: apply retry predicate here
