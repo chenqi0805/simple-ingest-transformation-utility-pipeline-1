@@ -9,8 +9,6 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.entity.BufferedHttpEntity;
-import org.apache.http.entity.ContentType;
-import org.apache.http.nio.entity.NStringEntity;
 import org.elasticsearch.client.Request;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
@@ -182,7 +180,7 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     XContentParser parser = XContentFactory.xContent(XContentType.JSON)
         .createParser(NamedXContentRegistry.EMPTY, LoggingDeprecationHandler.INSTANCE, templateJson);
     String jsonEntity;
-    if (esSinkConfig.getIndexConfiguration().getIndexType() == IndexType.RAW) {
+    if (esSinkConfig.getIndexConfiguration().getIndexType() == IndexConstants.RAW) {
       // Add -* prefix for rollover
       jsonEntity = Strings.toString(
           XContentFactory.jsonBuilder().startObject()
@@ -212,7 +210,7 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     if (statusLine.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
       // TODO: use date as suffix?
       String initialIndexName;
-      if (esSinkConfig.getIndexConfiguration().getIndexType() == IndexType.RAW) {
+      if (esSinkConfig.getIndexConfiguration().getIndexType() == IndexConstants.RAW) {
         initialIndexName = indexAlias + "-000001";
       } else {
         initialIndexName = indexAlias;

@@ -29,12 +29,12 @@ public class ElasticsearchSinkIT extends ESRestTestCase {
     metadata.put("addresses", HOSTS);
     metadata.put("username", "");
     metadata.put("password", "");
-    metadata.put("index_type", IndexType.RAW);
+    metadata.put("index_type", IndexConstants.RAW);
     configuration = new Configuration("elasticsearch", metadata);
   }
 
   public void testInstantiateSink() throws IOException {
-    String indexAlias = IndexType.TYPE_TO_ALIAS.get(IndexType.RAW);
+    String indexAlias = IndexConstants.TYPE_TO_DEFAULT_ALIAS.get(IndexConstants.RAW);
     ElasticsearchSink sink = new ElasticsearchSink(configuration);
     Request request = new Request(HttpMethod.HEAD, indexAlias);
     Response response = client().performRequest(request);

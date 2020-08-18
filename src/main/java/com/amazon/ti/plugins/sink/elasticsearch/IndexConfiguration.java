@@ -28,7 +28,7 @@ public class IndexConfiguration {
   }
 
   public static class Builder {
-    private String indexType = IndexType.RAW;
+    private String indexType = IndexConstants.RAW;
 
     private String indexAlias;
 
@@ -36,7 +36,7 @@ public class IndexConfiguration {
 
     public Builder withIndexType(final String indexType) {
       checkArgument(indexType != null, "indexType cannot be null.");
-      checkArgument( IndexType.TYPES.contains(indexType), "Invalid indexType.");
+      checkArgument( IndexConstants.TYPES.contains(indexType), "Invalid indexType.");
       this.indexType = indexType;
       return this;
     }
@@ -64,22 +64,20 @@ public class IndexConfiguration {
 
     String templateFile = builder.templateFile;
     if (templateFile == null) {
-      if (builder.indexType == IndexType.RAW) {
-        // TODO: replace magic string
+      if (builder.indexType == IndexConstants.RAW) {
         templateFile = getClass().getClassLoader()
-            .getResource("otel-v1-apm-span-index-template.json").getFile();
-      } else if (builder.indexType == IndexType.SERVICE_MAP) {
-        // TODO: replace magic string
+            .getResource(IndexConstants.RAW_DEFAULT_TEMPLATE_FILE).getFile();
+      } else if (builder.indexType == IndexConstants.SERVICE_MAP) {
         templateFile = getClass().getClassLoader()
-            .getResource("otel-v1-apm-service-map-index-template.json").getFile();
+            .getResource(IndexConstants.SERVICE_MAP_DEFAULT_TEMPLATE_FILE).getFile();
       }
     }
     this.templateFile = templateFile;
 
     String indexAlias = builder.indexAlias;
     if (indexAlias == null) {
-      if (IndexType.TYPE_TO_ALIAS.containsKey(builder.indexType)) {
-        indexAlias = IndexType.TYPE_TO_ALIAS.get(builder.indexType);
+      if (IndexConstants.TYPE_TO_DEFAULT_ALIAS.containsKey(builder.indexType)) {
+        indexAlias = IndexConstants.TYPE_TO_DEFAULT_ALIAS.get(builder.indexType);
       } else {
         throw new IllegalStateException("Missing required properties:indexAlias");
       }
