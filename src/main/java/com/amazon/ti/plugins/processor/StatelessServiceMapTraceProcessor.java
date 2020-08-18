@@ -3,6 +3,7 @@ package com.amazon.ti.plugins.processor;
 import com.amazon.ti.Record;
 import com.amazon.ti.annotations.TransformationInstancePlugin;
 import com.amazon.ti.configuration.Configuration;
+import com.amazon.ti.configuration.PluginSetting;
 import com.amazon.ti.plugins.PluginType;
 import com.amazon.ti.processor.Processor;
 
@@ -22,11 +23,11 @@ public class StatelessServiceMapTraceProcessor implements Processor<Record<Strin
     private static final String RESULT_DATA_TYPE = "service-map";
 
     /**
-     * Receives the configuration for the stateless trace processor, and creates the processor with the given settings.
-     * @param configuration the configuration settings for the processor.
+     * Receives the pluginSetting for the stateless trace processor, and creates the processor with the given settings.
+     * @param pluginSetting the pluginSetting settings for the processor.
      */
-    public StatelessServiceMapTraceProcessor(final Configuration configuration) {
-        //right now we just no-op the configuration
+    public StatelessServiceMapTraceProcessor(final PluginSetting pluginSetting) {
+        //right now we just no-op the pluginSetting
         this();
     }
 
