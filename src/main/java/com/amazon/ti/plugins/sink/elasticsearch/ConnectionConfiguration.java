@@ -9,8 +9,6 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 
-import java.io.IOException;
-import java.net.URL;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkArgument;
