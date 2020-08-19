@@ -1,12 +1,12 @@
 package com.amazon.ti.plugins.processor;
 
+
 import com.amazon.ti.model.configuration.PluginSetting;
 import com.amazon.ti.model.record.Record;
 import com.amazon.ti.model.record.RecordMetadata;
 import com.amazon.ti.model.annotations.TransformationInstancePlugin;
 import com.amazon.ti.plugins.PluginType;
 import com.amazon.ti.model.processor.Processor;
-
 import java.util.Collection;
 import java.util.stream.Collectors;
 
