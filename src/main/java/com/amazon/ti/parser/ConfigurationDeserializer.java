@@ -1,7 +1,7 @@
 package com.amazon.ti.parser;
 
-import com.amazon.ti.configuration.Configuration;
-import com.amazon.ti.configuration.PluginSetting;
+import com.amazon.ti.model.configuration.Configuration;
+import com.amazon.ti.model.configuration.PluginSetting;
 import com.amazon.ti.parser.model.PipelineConfiguration;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;

@@ -1,7 +1,4 @@
-package com.amazon.ti;
-
-import java.util.Map;
-import java.util.Set;
+package com.amazon.ti.model.record;
 
 /**
  * Transformation Instance record - represents the fundamental data unit of TI, the idea is to encapsulate different

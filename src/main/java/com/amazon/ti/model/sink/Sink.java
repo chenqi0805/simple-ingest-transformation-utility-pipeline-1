@@ -1,6 +1,6 @@
-package com.amazon.ti.sink;
+package com.amazon.ti.model.sink;
 
-import com.amazon.ti.Record;
+import com.amazon.ti.model.record.Record;
 
 import java.util.Collection;
 

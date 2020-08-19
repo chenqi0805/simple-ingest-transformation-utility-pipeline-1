@@ -1,11 +1,11 @@
 package com.amazon.ti.plugins.processor;
 
-import com.amazon.ti.Record;
-import com.amazon.ti.annotations.TransformationInstancePlugin;
-import com.amazon.ti.configuration.Configuration;
-import com.amazon.ti.configuration.PluginSetting;
+import com.amazon.ti.model.configuration.PluginSetting;
+import com.amazon.ti.model.record.Record;
+import com.amazon.ti.model.record.RecordMetadata;
+import com.amazon.ti.model.annotations.TransformationInstancePlugin;
 import com.amazon.ti.plugins.PluginType;
-import com.amazon.ti.processor.Processor;
+import com.amazon.ti.model.processor.Processor;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -51,7 +51,7 @@ public class StatelessServiceMapTraceProcessor implements Processor<Record<Strin
         //build the service map record
         //output the trace record
         return records.stream()
-            .filter(i -> EXPECTED_DATA_TYPE.equals(i.getRecordType()))
+            .filter(i -> EXPECTED_DATA_TYPE.equals(i.getMetadata().getAsString(RecordMetadata.RECORD_TYPE)))
             .map(this::convert).collect(Collectors.toList());
     }
 }

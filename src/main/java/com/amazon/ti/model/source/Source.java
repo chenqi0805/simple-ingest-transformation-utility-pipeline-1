@@ -1,7 +1,7 @@
-package com.amazon.ti.source;
+package com.amazon.ti.model.source;
 
-import com.amazon.ti.Record;
-import com.amazon.ti.buffer.Buffer;
+import com.amazon.ti.model.record.Record;
+import com.amazon.ti.model.buffer.Buffer;
 
 /**
  * Transformation Instance source interface. Source acts as receiver of the events that flow

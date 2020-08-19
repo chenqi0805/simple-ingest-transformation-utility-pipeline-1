@@ -1,6 +1,6 @@
 package com.amazon.ti.parser.model;
 
-import com.amazon.ti.configuration.Configuration;
+import com.amazon.ti.model.configuration.Configuration;
 import com.amazon.ti.parser.ConfigurationDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 

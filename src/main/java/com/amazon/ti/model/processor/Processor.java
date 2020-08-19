@@ -1,6 +1,6 @@
-package com.amazon.ti.processor;
+package com.amazon.ti.model.processor;
 
-import com.amazon.ti.Record;
+import com.amazon.ti.model.record.Record;
 
 import java.util.Collection;
 

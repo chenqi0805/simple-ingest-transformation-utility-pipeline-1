@@ -1,9 +1,9 @@
 package com.amazon.ti.plugins.source;
 
-import com.amazon.ti.configuration.PluginSetting;
+import com.amazon.ti.model.configuration.PluginSetting;
 import com.amazon.ti.plugins.PluginFactory;
 import com.amazon.ti.plugins.PluginRepository;
-import com.amazon.ti.source.Source;
+import com.amazon.ti.model.source.Source;
 
 @SuppressWarnings({"rawtypes"})
 public class SourceFactory extends PluginFactory {

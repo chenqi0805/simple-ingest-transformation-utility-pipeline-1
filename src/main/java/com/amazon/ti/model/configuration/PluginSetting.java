@@ -1,4 +1,4 @@
-package com.amazon.ti.configuration;
+package com.amazon.ti.model.configuration;
 
 import java.util.Map;
 

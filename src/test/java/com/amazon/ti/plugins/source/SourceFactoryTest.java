@@ -1,8 +1,8 @@
 package com.amazon.ti.plugins.source;
 
-import com.amazon.ti.configuration.PluginSetting;
+import com.amazon.ti.model.configuration.PluginSetting;
 import com.amazon.ti.plugins.PluginException;
-import com.amazon.ti.source.Source;
+import com.amazon.ti.model.source.Source;
 import org.junit.Test;
 
 import java.util.HashMap;
