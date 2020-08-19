@@ -30,7 +30,6 @@ import static com.amazon.ti.plugins.sink.elasticsearch.IndexConfiguration.*;
 @TransformationInstancePlugin(name = "elasticsearch", type = PluginType.SINK)
 public class ElasticsearchSink implements Sink<Record<String>> {
 
-  // TODO: replace with error handler?
   private static final Logger LOG = LoggerFactory.getLogger(ElasticsearchSink.class);
 
   private final ElasticsearchSinkConfiguration esSinkConfig;
@@ -41,7 +40,7 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     try {
       start();
     } catch (IOException e) {
-      LOG.error(e.getMessage(), e);
+      throw new RuntimeException(e.getMessage(), e);
     }
   }
 
@@ -130,7 +129,7 @@ public class ElasticsearchSink implements Sink<Record<String>> {
             )
         ).append("\n").append(document).append("\n");
       } catch (IOException e) {
-        LOG.error(e.getMessage(), e);
+        throw new RuntimeException(e.getMessage(), e);
       }
     }
     Response response;
@@ -159,7 +158,7 @@ public class ElasticsearchSink implements Sink<Record<String>> {
       try {
         restClient.close();
       } catch (IOException e) {
-        LOG.error(e.getMessage(), e);
+        throw new RuntimeException(e.getMessage(), e);
       }
     }
   }

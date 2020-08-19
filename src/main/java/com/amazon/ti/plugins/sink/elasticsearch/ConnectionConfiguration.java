@@ -119,7 +119,7 @@ public class ConnectionConfiguration {
     this.connectTimeout = builder.connectTimeout;
   }
 
-  public RestClient createClient() throws IOException {
+  public RestClient createClient() {
     final HttpHost[] hosts = new HttpHost[addresses.size()];
     int i = 0;
     for (final String address : addresses) {
