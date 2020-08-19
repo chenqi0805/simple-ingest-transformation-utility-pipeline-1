@@ -65,11 +65,10 @@ public class ConnectionConfiguration {
 
     private Integer connectTimeout;
 
-    public Builder withHosts(final List<String> hosts) {
+    public Builder(final List<String> hosts) {
       checkArgument(hosts != null, "hosts cannot be null");
       checkArgument(hosts.size() > 0, "hosts cannot be empty list");
       this.hosts = hosts;
-      return this;
     }
 
     public Builder withUsername(final String username) {
@@ -97,14 +96,6 @@ public class ConnectionConfiguration {
     }
 
     public ConnectionConfiguration build() {
-      String missing = "";
-      if (hosts == null) {
-        missing += HOSTS;
-      }
-      if (!missing.isEmpty()) {
-        throw new IllegalStateException("Missing required properties:" + missing);
-      }
-
       return new ConnectionConfiguration(this);
     }
   }
