@@ -1,11 +1,13 @@
 package com.amazon.ti.plugins.sink.elasticsearch;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 import static com.amazon.ti.plugins.sink.elasticsearch.IndexConstants.*;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
-public class IndexConfigurationTests extends TestCase {
+public class IndexConfigurationTests {
+  @Test
   public void testDefault() {
     IndexConfiguration indexConfiguration = new IndexConfiguration.Builder().build();
     String expTemplateFile = indexConfiguration
@@ -16,6 +18,7 @@ public class IndexConfigurationTests extends TestCase {
     assertEquals(expTemplateFile, indexConfiguration.getTemplateFile());
   }
 
+  @Test
   public void testRawAPMSpan() {
     String fakeTemplateFilePath = "src/resources/dummy.json";
     IndexConfiguration indexConfiguration = new IndexConfiguration.Builder()
@@ -35,6 +38,7 @@ public class IndexConfigurationTests extends TestCase {
     assertEquals(expTemplateFile, indexConfiguration.getTemplateFile());
   }
 
+  @Test
   public void testServiceMap() {
     String fakeTemplateFilePath = "src/resources/dummy.json";
     IndexConfiguration indexConfiguration = new IndexConfiguration.Builder()
@@ -57,6 +61,7 @@ public class IndexConfigurationTests extends TestCase {
     assertEquals(expTemplateFile, indexConfiguration.getTemplateFile());
   }
 
+  @Test
   public void testCustom() {
     String fakeTemplateFilePath = "src/resources/dummy.json";
     String testIndexAlias = "foo";
