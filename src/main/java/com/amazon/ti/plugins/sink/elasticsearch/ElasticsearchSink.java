@@ -33,7 +33,7 @@ public class ElasticsearchSink implements Sink<Record<String>> {
   // TODO: replace with error handler?
   private static final Logger LOG = LoggerFactory.getLogger(ElasticsearchSink.class);
 
-  private ElasticsearchSinkConfiguration esSinkConfig;
+  private final ElasticsearchSinkConfiguration esSinkConfig;
   private RestClient restClient;
 
   public ElasticsearchSink(final Configuration configuration) {
@@ -46,8 +46,8 @@ public class ElasticsearchSink implements Sink<Record<String>> {
   }
 
   private ElasticsearchSinkConfiguration readESConfig(final Configuration configuration) {
-    ConnectionConfiguration connectionConfiguration = readConnectionConfiguration(configuration);
-    IndexConfiguration indexConfiguration = readIndexConfig(configuration);
+    final ConnectionConfiguration connectionConfiguration = readConnectionConfiguration(configuration);
+    final IndexConfiguration indexConfiguration = readIndexConfig(configuration);
 
     return new ElasticsearchSinkConfiguration.Builder()
         .withConnectionConfiguration(connectionConfiguration)
@@ -58,23 +58,23 @@ public class ElasticsearchSink implements Sink<Record<String>> {
   private ConnectionConfiguration readConnectionConfiguration(final Configuration configuration){
     ConnectionConfiguration.Builder builder = new ConnectionConfiguration.Builder();
     @SuppressWarnings("unchecked")
-    List<String> addresses = (List<String>)configuration.getAttributeFromMetadata(ADDRESSES);
+    final List<String> addresses = (List<String>)configuration.getAttributeFromMetadata(ADDRESSES);
     if (addresses != null) {
       builder = builder.withAddresses(addresses);
     }
-    String username = (String)configuration.getAttributeFromMetadata(USERNAME);
+    final String username = (String)configuration.getAttributeFromMetadata(USERNAME);
     if (username != null) {
       builder = builder.withUsername(username);
     }
-    String password = (String)configuration.getAttributeFromMetadata(PASSWORD);
+    final String password = (String)configuration.getAttributeFromMetadata(PASSWORD);
     if (password != null) {
       builder = builder.withPassword(password);
     }
-    Integer socketTimeout = (Integer)configuration.getAttributeFromMetadata(SOCKET_TIMEOUT);
+    final Integer socketTimeout = (Integer)configuration.getAttributeFromMetadata(SOCKET_TIMEOUT);
     if (socketTimeout != null) {
       builder = builder.withSocketTimeout(socketTimeout);
     }
-    Integer connectTimeout = (Integer)configuration.getAttributeFromMetadata(CONNECT_TIMEOUT);
+    final Integer connectTimeout = (Integer)configuration.getAttributeFromMetadata(CONNECT_TIMEOUT);
     if (connectTimeout != null) {
       builder = builder.withConnectTimeout(connectTimeout);
     }
@@ -84,15 +84,15 @@ public class ElasticsearchSink implements Sink<Record<String>> {
 
   private IndexConfiguration readIndexConfig(final Configuration configuration) {
     IndexConfiguration.Builder builder = new IndexConfiguration.Builder();
-    String indexType = (String)configuration.getAttributeFromMetadata(INDEX_TYPE);
+    final String indexType = (String)configuration.getAttributeFromMetadata(INDEX_TYPE);
     if (indexType != null) {
       builder = builder.withIndexType(indexType);
     }
-    String indexAlias = (String)configuration.getAttributeFromMetadata(INDEX_ALIAS);
+    final String indexAlias = (String)configuration.getAttributeFromMetadata(INDEX_ALIAS);
     if (indexAlias != null) {
       builder = builder.withIndexAlias(indexAlias);
     }
-    String templateFile = (String)configuration.getAttributeFromMetadata(TEMPLATE_FILE);
+    final String templateFile = (String)configuration.getAttributeFromMetadata(TEMPLATE_FILE);
     if (templateFile != null) {
       builder = builder.withTemplateFile(templateFile);
     }
@@ -113,7 +113,7 @@ public class ElasticsearchSink implements Sink<Record<String>> {
       return false;
     }
     StringBuilder bulkRequest = new StringBuilder();
-    for (Record<String> record: records) {
+    for (final Record<String> record: records) {
       /**
        * TODO:
        * If the record includes documentID, we need to fill it into the bulk request entity
@@ -135,8 +135,8 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     }
     Response response;
     HttpEntity responseEntity;
-    String endPoint = esSinkConfig.getIndexConfiguration().getIndexAlias() + "/_bulk";
-    Request request = new Request(HttpMethod.POST, endPoint);
+    final String endPoint = esSinkConfig.getIndexConfiguration().getIndexAlias() + "/_bulk";
+    final Request request = new Request(HttpMethod.POST, endPoint);
     request.setJsonEntity(bulkRequest.toString());
     try {
       response = restClient.performRequest(request);
@@ -169,15 +169,14 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     // QUES: how to identify index template file with index pattern accordingly?
     Response response;
     HttpEntity responseEntity;
-    String indexAlias = esSinkConfig.getIndexConfiguration().getIndexAlias();
-    String endPoint = String.format("_index_template/%s-index-template", indexAlias);
-    ClassLoader classLoader = getClass().getClassLoader();
-    String jsonFilePath = esSinkConfig.getIndexConfiguration().getTemplateFile();
+    final String indexAlias = esSinkConfig.getIndexConfiguration().getIndexAlias();
+    final String endPoint = String.format("_index_template/%s-index-template", indexAlias);
+    final String jsonFilePath = esSinkConfig.getIndexConfiguration().getTemplateFile();
     StringBuilder templateJsonBuffer = new StringBuilder();
     Files.lines(Paths.get(jsonFilePath)).forEach(s -> templateJsonBuffer.append(s).append("\n"));
-    String templateJson = templateJsonBuffer.toString();
-    Request request = new Request(HttpMethod.POST, endPoint);
-    XContentParser parser = XContentFactory.xContent(XContentType.JSON)
+    final String templateJson = templateJsonBuffer.toString();
+    final Request request = new Request(HttpMethod.POST, endPoint);
+    final XContentParser parser = XContentFactory.xContent(XContentType.JSON)
         .createParser(NamedXContentRegistry.EMPTY, LoggingDeprecationHandler.INSTANCE, templateJson);
     String jsonEntity;
     if (esSinkConfig.getIndexConfiguration().getIndexType() == IndexConstants.RAW) {
@@ -203,10 +202,10 @@ public class ElasticsearchSink implements Sink<Record<String>> {
 
   private void checkAndCreateIndex() throws IOException {
     // Check alias exists
-    String indexAlias = esSinkConfig.getIndexConfiguration().getIndexAlias();
+    final String indexAlias = esSinkConfig.getIndexConfiguration().getIndexAlias();
     Request request = new Request(HttpMethod.HEAD, indexAlias);
     Response response = restClient.performRequest(request);
-    StatusLine statusLine = response.getStatusLine();
+    final StatusLine statusLine = response.getStatusLine();
     if (statusLine.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
       // TODO: use date as suffix?
       String initialIndexName;
