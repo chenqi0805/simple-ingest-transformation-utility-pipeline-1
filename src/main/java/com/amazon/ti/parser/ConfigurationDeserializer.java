@@ -1,6 +1,7 @@
 package com.amazon.ti.parser;
 
-import com.amazon.ti.configuration.Configuration;
+import com.amazon.ti.model.configuration.Configuration;
+import com.amazon.ti.model.configuration.PluginSetting;
 import com.amazon.ti.parser.model.PipelineConfiguration;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -10,10 +11,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Deserializer for pipeline configuration: Deserializes on the basis of {@link PipelineAttribute} for required check,
@@ -49,30 +47,35 @@ public class ConfigurationDeserializer extends JsonDeserializer<PipelineConfigur
             final JsonNode processorNode,
             final JsonNode sinkNode) {
         final String pipelineName = nameNode == null ? null : nameNode.asText();
-        final List<Configuration> sourceConfigurations = getConfigurationsOrEmpty(sourceNode);
-        final List<Configuration> bufferConfigurations = getConfigurationsOrEmpty(bufferNode);
-        final List<Configuration> processorConfigurations = getConfigurationsOrEmpty(processorNode);
-        final List<Configuration> sinkConfigurations = getConfigurationsOrEmpty(sinkNode);
+        final Configuration sourceConfiguration = getConfigurationsOrEmpty(sourceNode);
+        final Configuration bufferConfiguration = getConfigurationsOrEmpty(bufferNode);
+        final Configuration processorConfiguration = getConfigurationsOrEmpty(processorNode);
+        final Configuration sinkConfiguration = getConfigurationsOrEmpty(sinkNode);
         return new PipelineConfiguration(
                 pipelineName,
-                getFirstConfigurationIfExists(sourceConfigurations),
-                getFirstConfigurationIfExists(bufferConfigurations),
-                processorConfigurations,
-                sinkConfigurations);
+                sourceConfiguration,
+                bufferConfiguration,
+                processorConfiguration,
+                sinkConfiguration);
     }
 
-    private List<Configuration> getConfigurationsOrEmpty(final JsonNode jsonNode) {
-        List<Configuration> configurations = new ArrayList<>();
+    private Configuration getConfigurationsOrEmpty(final JsonNode jsonNode) {
+        final List<PluginSetting> pluginSettings = new ArrayList<>();
+        final Map<String, Object> attributeMap = new HashMap<>();
         if (jsonNode != null) {
             final Iterator<String> fieldIterator = jsonNode.fieldNames();
             while (fieldIterator.hasNext()) {
                 String fieldName = fieldIterator.next();
                 final JsonNode fieldValueNode = jsonNode.get(fieldName);
-                final Map<String, Object> metadataMap = SIMPLE_OBJECT_MAPPER.convertValue(fieldValueNode, MAP_TYPE_REFERENCE);
-                configurations.add(new Configuration(fieldName, metadataMap));
+                if (fieldValueNode.isObject()) {
+                    final Map<String, Object> settingsMap = SIMPLE_OBJECT_MAPPER.convertValue(fieldValueNode, MAP_TYPE_REFERENCE);
+                    pluginSettings.add(new PluginSetting(fieldName, settingsMap));
+                } else if (fieldValueNode.isValueNode()) {
+                    attributeMap.put(fieldName, fieldValueNode.asText());
+                }
             }
         }
-        return configurations;
+        return new Configuration(attributeMap, pluginSettings);
     }
 
     /**

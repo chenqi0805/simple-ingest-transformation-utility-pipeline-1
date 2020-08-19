@@ -1,6 +1,4 @@
-package com.amazon.ti;
-
-import java.util.Map;
+package com.amazon.ti.model.record;
 
 /**
  * Transformation Instance record - represents the fundamental data unit of TI, the idea is to encapsulate different
@@ -11,13 +9,14 @@ import java.util.Map;
  */
 public class Record<T> {
     private final T data;
-    private Map<String, Object> metadata;
+    private final RecordMetadata metadata;
 
     public Record(final T data) {
         this.data = data;
+        metadata = RecordMetadata.defaultMetadata();
     }
 
-    public Record(final T data, final Map<String, Object> metadata) {
+    public Record(final T data, final RecordMetadata metadata) {
         this.data = data;
         this.metadata = metadata;
     }
@@ -26,8 +25,7 @@ public class Record<T> {
         return data;
     }
 
-    public Map<String, Object> getMetadata() {
+    public RecordMetadata getMetadata() {
         return metadata;
     }
-
 }

@@ -1,10 +1,10 @@
 package com.amazon.ti.plugins.sink;
 
-import com.amazon.ti.Record;
-import com.amazon.ti.annotations.TransformationInstancePlugin;
-import com.amazon.ti.configuration.Configuration;
+import com.amazon.ti.model.record.Record;
+import com.amazon.ti.model.annotations.TransformationInstancePlugin;
+import com.amazon.ti.model.configuration.PluginSetting;
 import com.amazon.ti.plugins.PluginType;
-import com.amazon.ti.sink.Sink;
+import com.amazon.ti.model.sink.Sink;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -13,22 +13,25 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
 
+import static java.lang.String.format;
+
 @TransformationInstancePlugin(name = "file", type = PluginType.SINK)
 public class FileSink implements Sink<Record<String>> {
     private static final String SAMPLE_FILE_PATH = "src/resources/file-test-sample-output.txt";
 
     private final String outputFilePath;
+    private boolean isStopRequested;
 
     /**
      * Mandatory constructor for Transformation Instance Component - This constructor is used by Transformation instance
-     * runtime engine to construct an instance of {@link FileSink} using an instance of {@link Configuration} which
-     * has access to configuration metadata from pipeline
-     * configuration file.
+     * runtime engine to construct an instance of {@link FileSink} using an instance of {@link PluginSetting} which
+     * has access to pluginSetting metadata from pipeline
+     * pluginSetting file.
      *
-     * @param configuration instance with metadata information from pipeline configuration file.
+     * @param pluginSetting instance with metadata information from pipeline pluginSetting file.
      */
-    public FileSink(final Configuration configuration) {
-        this((String) configuration.getAttributeFromMetadata("path"));
+    public FileSink(final PluginSetting pluginSetting) {
+        this((String) pluginSetting.getAttributeFromSettings("path"));
     }
 
     public FileSink() {
@@ -36,7 +39,8 @@ public class FileSink implements Sink<Record<String>> {
     }
 
     public FileSink(final String outputFile) {
-        this.outputFilePath = outputFile;
+        this.outputFilePath = outputFile == null ? SAMPLE_FILE_PATH : outputFile;
+        isStopRequested = false;
     }
 
     @Override
@@ -49,13 +53,7 @@ public class FileSink implements Sink<Record<String>> {
             }
             return true;
         } catch (IOException ex) {
-            System.err.println(ex.getMessage());
-            return false;
+            throw new RuntimeException(format("Encountered exception opening/creating file %s", outputFilePath), ex);
         }
-    }
-
-    @Override
-    public void stop() {
-        //No Op
     }
 }

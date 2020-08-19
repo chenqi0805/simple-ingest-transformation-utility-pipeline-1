@@ -1,4 +1,4 @@
-package com.amazon.ti.annotations;
+package com.amazon.ti.model.annotations;
 
 import com.amazon.ti.plugins.PluginType;
 
@@ -16,6 +16,7 @@ import java.lang.annotation.RetentionPolicy;
  * TODO 1. Pick a different name - Plugin, Component, Resource conflicts with
  * other most used frameworks and may confuse users
  * TODO 2. Add capability for ElementType.METHOD
+ * TODO 3. Add expected RECORD_TYPE for input and expected RECORD_TYPE for output
  */
 
 @Documented

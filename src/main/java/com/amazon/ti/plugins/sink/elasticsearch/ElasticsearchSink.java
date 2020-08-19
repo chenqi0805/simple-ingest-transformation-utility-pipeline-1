@@ -1,10 +1,10 @@
 package com.amazon.ti.plugins.sink.elasticsearch;
 
-import com.amazon.ti.Record;
-import com.amazon.ti.annotations.TransformationInstancePlugin;
-import com.amazon.ti.configuration.Configuration;
+import com.amazon.ti.model.configuration.PluginSetting;
+import com.amazon.ti.model.record.Record;
+import com.amazon.ti.model.annotations.TransformationInstancePlugin;
 import com.amazon.ti.plugins.PluginType;
-import com.amazon.ti.sink.Sink;
+import com.amazon.ti.model.sink.Sink;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
@@ -36,8 +36,8 @@ public class ElasticsearchSink implements Sink<Record<String>> {
   private final ElasticsearchSinkConfiguration esSinkConfig;
   private RestClient restClient;
 
-  public ElasticsearchSink(final Configuration configuration) {
-    this.esSinkConfig = readESConfig(configuration);
+  public ElasticsearchSink(final PluginSetting pluginSetting) {
+    this.esSinkConfig = readESConfig(pluginSetting);
     try {
       start();
     } catch (IOException e) {
@@ -45,9 +45,9 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     }
   }
 
-  private ElasticsearchSinkConfiguration readESConfig(final Configuration configuration) {
-    final ConnectionConfiguration connectionConfiguration = readConnectionConfiguration(configuration);
-    final IndexConfiguration indexConfiguration = readIndexConfig(configuration);
+  private ElasticsearchSinkConfiguration readESConfig(final PluginSetting pluginSetting) {
+    final ConnectionConfiguration connectionConfiguration = readConnectionConfiguration(pluginSetting);
+    final IndexConfiguration indexConfiguration = readIndexConfig(pluginSetting);
 
     return new ElasticsearchSinkConfiguration.Builder()
         .withConnectionConfiguration(connectionConfiguration)
@@ -55,26 +55,26 @@ public class ElasticsearchSink implements Sink<Record<String>> {
         .build();
   }
 
-  private ConnectionConfiguration readConnectionConfiguration(final Configuration configuration){
+  private ConnectionConfiguration readConnectionConfiguration(final PluginSetting pluginSetting){
     ConnectionConfiguration.Builder builder = new ConnectionConfiguration.Builder();
     @SuppressWarnings("unchecked")
-    final List<String> addresses = (List<String>)configuration.getAttributeFromMetadata(ADDRESSES);
+    final List<String> addresses = (List<String>)pluginSetting.getAttributeFromSettings(ADDRESSES);
     if (addresses != null) {
       builder = builder.withAddresses(addresses);
     }
-    final String username = (String)configuration.getAttributeFromMetadata(USERNAME);
+    final String username = (String)pluginSetting.getAttributeFromSettings(USERNAME);
     if (username != null) {
       builder = builder.withUsername(username);
     }
-    final String password = (String)configuration.getAttributeFromMetadata(PASSWORD);
+    final String password = (String)pluginSetting.getAttributeFromSettings(PASSWORD);
     if (password != null) {
       builder = builder.withPassword(password);
     }
-    final Integer socketTimeout = (Integer)configuration.getAttributeFromMetadata(SOCKET_TIMEOUT);
+    final Integer socketTimeout = (Integer)pluginSetting.getAttributeFromSettings(SOCKET_TIMEOUT);
     if (socketTimeout != null) {
       builder = builder.withSocketTimeout(socketTimeout);
     }
-    final Integer connectTimeout = (Integer)configuration.getAttributeFromMetadata(CONNECT_TIMEOUT);
+    final Integer connectTimeout = (Integer)pluginSetting.getAttributeFromSettings(CONNECT_TIMEOUT);
     if (connectTimeout != null) {
       builder = builder.withConnectTimeout(connectTimeout);
     }
@@ -82,17 +82,17 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     return builder.build();
   }
 
-  private IndexConfiguration readIndexConfig(final Configuration configuration) {
+  private IndexConfiguration readIndexConfig(final PluginSetting pluginSetting) {
     IndexConfiguration.Builder builder = new IndexConfiguration.Builder();
-    final String indexType = (String)configuration.getAttributeFromMetadata(INDEX_TYPE);
+    final String indexType = (String)pluginSetting.getAttributeFromSettings(INDEX_TYPE);
     if (indexType != null) {
       builder = builder.withIndexType(indexType);
     }
-    final String indexAlias = (String)configuration.getAttributeFromMetadata(INDEX_ALIAS);
+    final String indexAlias = (String)pluginSetting.getAttributeFromSettings(INDEX_ALIAS);
     if (indexAlias != null) {
       builder = builder.withIndexAlias(indexAlias);
     }
-    final String templateFile = (String)configuration.getAttributeFromMetadata(TEMPLATE_FILE);
+    final String templateFile = (String)pluginSetting.getAttributeFromSettings(TEMPLATE_FILE);
     if (templateFile != null) {
       builder = builder.withTemplateFile(templateFile);
     }
@@ -153,7 +153,7 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     }
   }
 
-  @Override
+  // TODO: need to be invoked by pipeline
   public void stop() {
     if (restClient != null) {
       try {

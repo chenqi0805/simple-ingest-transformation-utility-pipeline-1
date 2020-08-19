@@ -1,10 +1,10 @@
 package com.amazon.ti.plugins.processor;
 
-import com.amazon.ti.Record;
-import com.amazon.ti.annotations.TransformationInstancePlugin;
-import com.amazon.ti.configuration.Configuration;
+import com.amazon.ti.model.record.Record;
+import com.amazon.ti.model.annotations.TransformationInstancePlugin;
+import com.amazon.ti.model.configuration.PluginSetting;
 import com.amazon.ti.plugins.PluginType;
-import com.amazon.ti.processor.Processor;
+import com.amazon.ti.model.processor.Processor;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,13 +18,13 @@ public class StringProcessor implements Processor<Record<String>, Record<String>
 
     /**
      * Mandatory constructor for Transformation Instance Component - This constructor is used by Transformation instance
-     * runtime engine to construct an instance of {@link StringProcessor} using an instance of {@link Configuration} which
-     * has access to configuration metadata from pipeline
-     * configuration file.
+     * runtime engine to construct an instance of {@link StringProcessor} using an instance of {@link PluginSetting} which
+     * has access to pluginSetting metadata from pipeline
+     * pluginSetting file.
      *
-     * @param configuration instance with metadata information from pipeline configuration file.
+     * @param pluginSetting instance with metadata information from pipeline pluginSetting file.
      */
-    public StringProcessor(final Configuration configuration) {
+    public StringProcessor(final PluginSetting pluginSetting) {
         this();
     }
 

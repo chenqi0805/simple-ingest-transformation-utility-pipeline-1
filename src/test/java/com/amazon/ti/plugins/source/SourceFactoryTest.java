@@ -1,8 +1,8 @@
 package com.amazon.ti.plugins.source;
 
-import com.amazon.ti.configuration.Configuration;
+import com.amazon.ti.model.configuration.PluginSetting;
 import com.amazon.ti.plugins.PluginException;
-import com.amazon.ti.source.Source;
+import com.amazon.ti.model.source.Source;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -18,7 +18,7 @@ public class SourceFactoryTest {
      */
     @Test
     public void testSourceClassByName() {
-        final Configuration stdInSourceConfiguration = new Configuration("stdin", new HashMap<>());
+        final PluginSetting stdInSourceConfiguration = new PluginSetting("stdin", new HashMap<>());
         final Source actualSource = SourceFactory.newSource(stdInSourceConfiguration);
         final Source expectedSource = new StdInSource();
         assertNotNull(actualSource);

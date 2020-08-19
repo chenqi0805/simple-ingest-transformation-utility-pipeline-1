@@ -1,26 +1,25 @@
 package com.amazon.ti;
 
-import com.amazon.ti.buffer.Buffer;
-import com.amazon.ti.configuration.Configuration;
+import com.amazon.ti.model.buffer.Buffer;
+import com.amazon.ti.model.configuration.Configuration;
+import com.amazon.ti.model.configuration.PluginSetting;
+import com.amazon.ti.model.sink.Sink;
+import com.amazon.ti.model.source.Source;
 import com.amazon.ti.parser.PipelineParser;
 import com.amazon.ti.parser.model.PipelineConfiguration;
 import com.amazon.ti.pipeline.Pipeline;
-import com.amazon.ti.plugins.PluginRepository;
 import com.amazon.ti.plugins.buffer.BufferFactory;
 import com.amazon.ti.plugins.processor.ProcessorFactory;
 import com.amazon.ti.plugins.sink.SinkFactory;
 import com.amazon.ti.plugins.source.SourceFactory;
-import com.amazon.ti.processor.Processor;
-import com.amazon.ti.sink.Sink;
-import com.amazon.ti.source.Source;
+import com.amazon.ti.model.processor.Processor;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 /**
- *
  * DO NOT REVIEW THIS FILE YET
  * Utility class - This is solely being used for testing the partial changes.
  * TODO Either remove this class or Reformat it.
@@ -28,13 +27,15 @@ import java.util.stream.Collectors;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class TransformationInstance {
     private static final String DEFAULT_CONFIG_LOCATION = "src/main/resources/transformation-instance.yml";
+    private static final String PROCESSOR_THREADS_ATTRIBUTE = "threads";
     private Pipeline transformationPipeline;
 
     private static volatile TransformationInstance transformationInstance;
-    public static TransformationInstance getInstance(){
-        if(transformationInstance == null) {
-            synchronized (TransformationInstance.class){
-                if(transformationInstance == null)
+
+    public static TransformationInstance getInstance() {
+        if (transformationInstance == null) {
+            synchronized (TransformationInstance.class) {
+                if (transformationInstance == null)
                     transformationInstance = new TransformationInstance();
             }
         }
@@ -42,17 +43,27 @@ public class TransformationInstance {
     }
 
     private TransformationInstance() {
-        if(transformationInstance != null) {
+        if (transformationInstance != null) {
             throw new RuntimeException("Please use getInstance() for an instance of this TransformationInstance");
         }
     }
 
     /**
      * Executes Transformation Instance engine using the default configuration file/
+     *
      * @return true if the execute successfully initiates the Transformation Instance
      */
     public boolean execute() {
-        final PipelineParser pipelineParser = new PipelineParser(DEFAULT_CONFIG_LOCATION);
+        return execute(DEFAULT_CONFIG_LOCATION);
+    }
+
+    /**
+     * Executes Transformation Instance engine using the default configuration file/
+     *
+     * @return true if the execute successfully initiates the Transformation Instance
+     */
+    public boolean execute(final String configurationFileLocation) {
+        final PipelineParser pipelineParser = new PipelineParser(configurationFileLocation);
         final PipelineConfiguration pipelineConfiguration = pipelineParser.parseConfiguration();
         execute(pipelineConfiguration);
         return true;
@@ -61,6 +72,7 @@ public class TransformationInstance {
     /**
      * Terminates the execution of Transformation Instance
      * TODO - Set a flag to notify components
+     *
      * return boolean status of the stop request [TODO]
      */
     public void stop() {
@@ -69,6 +81,7 @@ public class TransformationInstance {
 
     /**
      * Executes Transformation instance engine for the provided {@link PipelineConfiguration}
+     *
      * @param pipelineConfiguration
      * @return true if the execute successfully initiates the Transformation Instance
      * {@link com.amazon.ti.pipeline.Pipeline} execute.
@@ -81,6 +94,7 @@ public class TransformationInstance {
 
     /**
      * Executes Transformation instance engine using the provided {@link PipelineParser}
+     *
      * @param pipelineParser an instance of {@link PipelineParser} to retrieve {@link PipelineConfiguration}
      * @return true if the execute successfully initiates the Transformation Instance
      * {@link com.amazon.ti.pipeline.Pipeline} execute.
@@ -90,19 +104,38 @@ public class TransformationInstance {
     }
 
     private Pipeline buildPipelineFromConfiguration(final PipelineConfiguration pipelineConfiguration) {
-        final Source source = SourceFactory.newSource(pipelineConfiguration.getSource());
+        final Source source = SourceFactory.newSource(getFirstSettingsIfExists(pipelineConfiguration.getSource()));
+        final PluginSetting bufferPluginSetting = getFirstSettingsIfExists(pipelineConfiguration.getBuffer());
+        final Buffer buffer = bufferPluginSetting == null ? null : BufferFactory.newBuffer(bufferPluginSetting);
 
-        final Configuration bufferConfiguration = pipelineConfiguration.getBuffer();
-        Buffer buffer = bufferConfiguration == null ? null : BufferFactory.newBuffer(bufferConfiguration);
+        final Configuration processorConfiguration = pipelineConfiguration.getProcessor();
+        final List<PluginSetting> processorPluginSettings = processorConfiguration.getPluginSettings();
+        final List<Processor> processors = processorPluginSettings.stream().map(ProcessorFactory::newProcessor).collect(Collectors.toList());
 
-        final List<Configuration> processorConfigurations = pipelineConfiguration.getProcessors();
-        final List<Processor> processors = processorConfigurations == null ? null : processorConfigurations
-                .stream().map(ProcessorFactory::newProcessor).collect(Collectors.toList());
+        final List<PluginSetting> sinkPluginSettings = pipelineConfiguration.getSink().getPluginSettings();
+        final Collection<Sink> sinks = sinkPluginSettings.stream().map(SinkFactory::newSink).collect(Collectors.toList());
 
-        final List<Configuration> sinkConfigurations = pipelineConfiguration.getSink();
-        final Collection<Sink> sinks = sinkConfigurations.stream().map(SinkFactory::newSink).collect(Collectors.toList());
+        final int processorThreads = getConfiguredThreadsOrDefault(processorConfiguration);
 
-        return new Pipeline(pipelineConfiguration.getName(), source, buffer, processors, sinks);
+        return new Pipeline(pipelineConfiguration.getName(), source, buffer, processors, sinks,
+                Executors.newFixedThreadPool(processorThreads));
+    }
+
+    private PluginSetting getFirstSettingsIfExists(final Configuration configuration) {
+        final List<PluginSetting> pluginSettings = configuration.getPluginSettings();
+        return pluginSettings.isEmpty() ? null : pluginSettings.get(0);
+    }
+
+    private int getConfiguredThreadsOrDefault(final Configuration processorConfiguration) {
+        int processorThreads = processorConfiguration.getAttributeValueAsInteger(PROCESSOR_THREADS_ATTRIBUTE);
+        return processorThreads == 0 ? getDefaultProcessorThreads() : processorThreads;
+    }
+
+    /**
+     * TODO Implement this to use CPU cores of the executing machine
+     */
+    private int getDefaultProcessorThreads() {
+        return 1;
     }
 
 }

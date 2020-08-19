@@ -1,6 +1,7 @@
 package com.amazon.ti.plugins.sink.elasticsearch;
 
-import com.amazon.ti.configuration.Configuration;
+import com.amazon.ti.model.configuration.Configuration;
+import com.amazon.ti.model.configuration.PluginSetting;
 import org.apache.http.HttpStatus;
 import org.apache.http.util.EntityUtils;
 import org.elasticsearch.client.Request;
@@ -25,8 +26,8 @@ public class ElasticsearchSinkIT extends ESRestTestCase {
     metadata.put("addresses", HOSTS);
     metadata.put("username", "");
     metadata.put("password", "");
-    Configuration configuration = new Configuration("elasticsearch", metadata);
-    ElasticsearchSink sink = new ElasticsearchSink(configuration);
+    PluginSetting pluginSetting = new PluginSetting("elasticsearch", metadata);
+    ElasticsearchSink sink = new ElasticsearchSink(pluginSetting);
     String indexAlias = IndexConstants.TYPE_TO_DEFAULT_ALIAS.get(IndexConstants.RAW);
     Request request = new Request(HttpMethod.HEAD, indexAlias);
     Response response = client().performRequest(request);
@@ -40,7 +41,7 @@ public class ElasticsearchSinkIT extends ESRestTestCase {
     assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
 
     // Instantiate sink again
-    sink = new ElasticsearchSink(configuration);
+    sink = new ElasticsearchSink(pluginSetting);
     // Make sure no new write index *-000001 is created under alias
     String rolloverIndexName = String.format("%s-000002", indexAlias);
     request = new Request(HttpMethod.GET, rolloverIndexName + "/_alias");
@@ -58,8 +59,8 @@ public class ElasticsearchSinkIT extends ESRestTestCase {
     metadata.put("password", "");
     metadata.put("index_alias", testIndexAlias);
     metadata.put("template_file", testTemplateFile);
-    Configuration configuration = new Configuration("elasticsearch", metadata);
-    ElasticsearchSink sink = new ElasticsearchSink(configuration);
+    PluginSetting pluginSetting = new PluginSetting("elasticsearch", metadata);
+    ElasticsearchSink sink = new ElasticsearchSink(pluginSetting);
     Request request = new Request(HttpMethod.HEAD, testIndexAlias);
     Response response = client().performRequest(request);
     assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
@@ -72,7 +73,7 @@ public class ElasticsearchSinkIT extends ESRestTestCase {
     assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
 
     // Instantiate sink again
-    sink = new ElasticsearchSink(configuration);
+    sink = new ElasticsearchSink(pluginSetting);
     // Make sure no new write index *-000001 is created under alias
     String rolloverIndexName = String.format("%s-000002", testIndexAlias);
     request = new Request(HttpMethod.GET, rolloverIndexName + "/_alias");
@@ -87,8 +88,8 @@ public class ElasticsearchSinkIT extends ESRestTestCase {
     metadata.put("addresses", HOSTS);
     metadata.put("username", "");
     metadata.put("password", "");
-    Configuration configuration = new Configuration("elasticsearch", metadata);
-    ElasticsearchSink sink = new ElasticsearchSink(configuration);
+    PluginSetting pluginSetting = new PluginSetting("elasticsearch", metadata);
+    ElasticsearchSink sink = new ElasticsearchSink(pluginSetting);
     String indexAlias = IndexConstants.TYPE_TO_DEFAULT_ALIAS.get(IndexConstants.SERVICE_MAP);
     Request request = new Request(HttpMethod.HEAD, indexAlias);
     Response response = client().performRequest(request);
@@ -106,8 +107,8 @@ public class ElasticsearchSinkIT extends ESRestTestCase {
     metadata.put("password", "");
     metadata.put("index_alias", testIndexAlias);
     metadata.put("template_file", testTemplateFile);
-    Configuration configuration = new Configuration("elasticsearch", metadata);
-    ElasticsearchSink sink = new ElasticsearchSink(configuration);
+    PluginSetting pluginSetting = new PluginSetting("elasticsearch", metadata);
+    ElasticsearchSink sink = new ElasticsearchSink(pluginSetting);
     Request request = new Request(HttpMethod.HEAD, testIndexAlias);
     Response response = client().performRequest(request);
     assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
@@ -124,8 +125,8 @@ public class ElasticsearchSinkIT extends ESRestTestCase {
     metadata.put("password", "");
     metadata.put("index_alias", testIndexAlias);
     metadata.put("template_file", testTemplateFile);
-    Configuration configuration = new Configuration("elasticsearch", metadata);
-    ElasticsearchSink sink = new ElasticsearchSink(configuration);
+    PluginSetting pluginSetting = new PluginSetting("elasticsearch", metadata);
+    ElasticsearchSink sink = new ElasticsearchSink(pluginSetting);
     Request request = new Request(HttpMethod.HEAD, testIndexAlias);
     Response response = client().performRequest(request);
     assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
