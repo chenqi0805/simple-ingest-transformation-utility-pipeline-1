@@ -1,9 +1,9 @@
 package com.amazon.ti.plugins.processor;
 
-import com.amazon.ti.configuration.PluginSetting;
+import com.amazon.ti.model.configuration.PluginSetting;
 import com.amazon.ti.plugins.PluginException;
 import com.amazon.ti.plugins.sink.SinkFactory;
-import com.amazon.ti.processor.Processor;
+import com.amazon.ti.model.processor.Processor;
 import org.junit.Test;
 
 import java.util.HashMap;
