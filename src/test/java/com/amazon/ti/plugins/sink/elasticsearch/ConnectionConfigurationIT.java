@@ -16,7 +16,7 @@ public class ConnectionConfigurationIT extends ESRestTestCase {
   public void testCreateClientSimple() throws IOException {
     List<HttpHost> hosts = getClusterHosts();
     ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration.Builder()
-        .withAddresses(HOSTS)
+        .withHosts(HOSTS)
         .withUsername("")
         .withPassword("")
         .build();

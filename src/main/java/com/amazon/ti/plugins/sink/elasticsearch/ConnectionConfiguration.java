@@ -14,7 +14,7 @@ import java.util.List;
 import static com.google.common.base.Preconditions.checkArgument;
 
 public class ConnectionConfiguration {
-  public static final String ADDRESSES = "addresses";
+  public static final String HOSTS = "hosts";
 
   public static final String USERNAME = "username";
 
@@ -24,7 +24,7 @@ public class ConnectionConfiguration {
 
   public static final String CONNECT_TIMEOUT = "connect_timeout";
 
-  private final List<String> addresses;
+  private final List<String> hosts;
 
   private final String username;
 
@@ -34,8 +34,8 @@ public class ConnectionConfiguration {
 
   private final Integer connectTimeout;
 
-  public List<String> getAddresses() {
-    return addresses;
+  public List<String> getHosts() {
+    return hosts;
   }
 
   public String getUsername() {
@@ -55,7 +55,7 @@ public class ConnectionConfiguration {
   }
 
   public static class Builder {
-    private List<String> addresses;
+    private List<String> hosts;
 
     private String username;
 
@@ -65,10 +65,10 @@ public class ConnectionConfiguration {
 
     private Integer connectTimeout;
 
-    public Builder withAddresses(final List<String> addresses) {
-      checkArgument(addresses != null, "addresses cannot be null");
-      checkArgument(addresses.size() > 0, "addresses cannot be empty list");
-      this.addresses = addresses;
+    public Builder withHosts(final List<String> hosts) {
+      checkArgument(hosts != null, "hosts cannot be null");
+      checkArgument(hosts.size() > 0, "hosts cannot be empty list");
+      this.hosts = hosts;
       return this;
     }
 
@@ -98,8 +98,8 @@ public class ConnectionConfiguration {
 
     public ConnectionConfiguration build() {
       String missing = "";
-      if (addresses == null) {
-        missing += ADDRESSES;
+      if (hosts == null) {
+        missing += HOSTS;
       }
       if (!missing.isEmpty()) {
         throw new IllegalStateException("Missing required properties:" + missing);
@@ -110,7 +110,7 @@ public class ConnectionConfiguration {
   }
 
   private ConnectionConfiguration(final Builder builder) {
-    this.addresses = builder.addresses;
+    this.hosts = builder.hosts;
     this.username = builder.username;
     this.password = builder.password;
     this.socketTimeout = builder.socketTimeout;
@@ -118,13 +118,13 @@ public class ConnectionConfiguration {
   }
 
   public RestClient createClient() {
-    final HttpHost[] hosts = new HttpHost[addresses.size()];
+    final HttpHost[] httpHosts = new HttpHost[hosts.size()];
     int i = 0;
-    for (final String address : addresses) {
-      hosts[i] = HttpHost.create(address);
+    for (final String host : hosts) {
+      httpHosts[i] = HttpHost.create(host);
       i++;
     }
-    final RestClientBuilder restClientBuilder = RestClient.builder(hosts);
+    final RestClientBuilder restClientBuilder = RestClient.builder(httpHosts);
     if (username != null) {
       final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
       credentialsProvider.setCredentials(

@@ -57,9 +57,9 @@ public class ElasticsearchSink implements Sink<Record<String>> {
   private ConnectionConfiguration readConnectionConfiguration(final PluginSetting pluginSetting){
     ConnectionConfiguration.Builder builder = new ConnectionConfiguration.Builder();
     @SuppressWarnings("unchecked")
-    final List<String> addresses = (List<String>)pluginSetting.getAttributeFromSettings(ADDRESSES);
-    if (addresses != null) {
-      builder = builder.withAddresses(addresses);
+    final List<String> hosts = (List<String>)pluginSetting.getAttributeFromSettings(HOSTS);
+    if (hosts != null) {
+      builder = builder.withHosts(hosts);
     }
     final String username = (String)pluginSetting.getAttributeFromSettings(USERNAME);
     if (username != null) {

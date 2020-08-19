@@ -23,7 +23,7 @@ public class ElasticsearchSinkIT extends ESRestTestCase {
 
   public void testInstantiateSinkRawSpanDefault() throws IOException {
     Map<String, Object> metadata = new HashMap<>();
-    metadata.put("addresses", HOSTS);
+    metadata.put("hosts", HOSTS);
     metadata.put("username", "");
     metadata.put("password", "");
     PluginSetting pluginSetting = new PluginSetting("elasticsearch", metadata);
@@ -54,7 +54,7 @@ public class ElasticsearchSinkIT extends ESRestTestCase {
     String testIndexAlias = "test-raw-span";
     String testTemplateFile = getClass().getClassLoader().getResource("test-index-template.json").getFile();
     Map<String, Object> metadata = new HashMap<>();
-    metadata.put("addresses", HOSTS);
+    metadata.put("hosts", HOSTS);
     metadata.put("username", "");
     metadata.put("password", "");
     metadata.put("index_alias", testIndexAlias);
@@ -85,7 +85,7 @@ public class ElasticsearchSinkIT extends ESRestTestCase {
   public void testInstantiateSinkServiceMapDefault() throws IOException {
     Map<String, Object> metadata = new HashMap<>();
     metadata.put("index_type", IndexConstants.SERVICE_MAP);
-    metadata.put("addresses", HOSTS);
+    metadata.put("hosts", HOSTS);
     metadata.put("username", "");
     metadata.put("password", "");
     PluginSetting pluginSetting = new PluginSetting("elasticsearch", metadata);
@@ -102,7 +102,7 @@ public class ElasticsearchSinkIT extends ESRestTestCase {
     String testTemplateFile = getClass().getClassLoader().getResource("test-index-template.json").getFile();
     Map<String, Object> metadata = new HashMap<>();
     metadata.put("index_type", IndexConstants.SERVICE_MAP);
-    metadata.put("addresses", HOSTS);
+    metadata.put("hosts", HOSTS);
     metadata.put("username", "");
     metadata.put("password", "");
     metadata.put("index_alias", testIndexAlias);
@@ -120,7 +120,7 @@ public class ElasticsearchSinkIT extends ESRestTestCase {
     String testTemplateFile = getClass().getClassLoader().getResource("test-index-template.json").getFile();
     Map<String, Object> metadata = new HashMap<>();
     metadata.put("index_type", IndexConstants.CUSTOM);
-    metadata.put("addresses", HOSTS);
+    metadata.put("hosts", HOSTS);
     metadata.put("username", "");
     metadata.put("password", "");
     metadata.put("index_alias", testIndexAlias);
