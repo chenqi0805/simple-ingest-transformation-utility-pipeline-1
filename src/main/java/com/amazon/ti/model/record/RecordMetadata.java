@@ -40,7 +40,7 @@ public class RecordMetadata {
      * @return the attribute as a String.
      */
     public String getAsString(String attributeName) {
-        return metadata.get(attributeName).toString();
+        return (String) metadata.get(attributeName);
     }
 
     /**
