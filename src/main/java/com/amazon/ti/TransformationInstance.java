@@ -1,8 +1,10 @@
 package com.amazon.ti;
 
-import com.amazon.ti.buffer.Buffer;
-import com.amazon.ti.configuration.Configuration;
-import com.amazon.ti.configuration.PluginSetting;
+import com.amazon.ti.model.buffer.Buffer;
+import com.amazon.ti.model.configuration.Configuration;
+import com.amazon.ti.model.configuration.PluginSetting;
+import com.amazon.ti.model.sink.Sink;
+import com.amazon.ti.model.source.Source;
 import com.amazon.ti.parser.PipelineParser;
 import com.amazon.ti.parser.model.PipelineConfiguration;
 import com.amazon.ti.pipeline.Pipeline;
@@ -10,9 +12,7 @@ import com.amazon.ti.plugins.buffer.BufferFactory;
 import com.amazon.ti.plugins.processor.ProcessorFactory;
 import com.amazon.ti.plugins.sink.SinkFactory;
 import com.amazon.ti.plugins.source.SourceFactory;
-import com.amazon.ti.processor.Processor;
-import com.amazon.ti.sink.Sink;
-import com.amazon.ti.source.Source;
+import com.amazon.ti.model.processor.Processor;
 
 import java.util.Collection;
 import java.util.List;

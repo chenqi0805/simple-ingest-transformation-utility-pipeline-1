@@ -1,6 +1,6 @@
-package com.amazon.ti.buffer;
+package com.amazon.ti.model.buffer;
 
-import com.amazon.ti.Record;
+import com.amazon.ti.model.record.Record;
 import com.amazon.ti.plugins.buffer.UnboundedInMemoryBuffer;
 
 import java.util.Collection;

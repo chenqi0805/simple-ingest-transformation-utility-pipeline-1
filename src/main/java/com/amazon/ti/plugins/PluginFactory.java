@@ -1,6 +1,6 @@
 package com.amazon.ti.plugins;
 
-import com.amazon.ti.configuration.PluginSetting;
+import com.amazon.ti.model.configuration.PluginSetting;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
