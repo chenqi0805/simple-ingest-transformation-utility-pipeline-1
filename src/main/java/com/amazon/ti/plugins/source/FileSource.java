@@ -1,11 +1,11 @@
 package com.amazon.ti.plugins.source;
 
-import com.amazon.ti.Record;
-import com.amazon.ti.annotations.TransformationInstancePlugin;
-import com.amazon.ti.buffer.Buffer;
-import com.amazon.ti.configuration.PluginSetting;
+import com.amazon.ti.model.record.Record;
+import com.amazon.ti.model.annotations.TransformationInstancePlugin;
+import com.amazon.ti.model.buffer.Buffer;
+import com.amazon.ti.model.configuration.PluginSetting;
 import com.amazon.ti.plugins.PluginType;
-import com.amazon.ti.source.Source;
+import com.amazon.ti.model.source.Source;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package com.amazon.ti.annotations;
+package com.amazon.ti.model.annotations;
 
 import com.amazon.ti.plugins.PluginType;
 

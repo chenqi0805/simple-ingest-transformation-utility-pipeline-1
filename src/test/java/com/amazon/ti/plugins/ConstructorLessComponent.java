@@ -1,9 +1,9 @@
 package com.amazon.ti.plugins;
 
-import com.amazon.ti.Record;
-import com.amazon.ti.annotations.TransformationInstancePlugin;
-import com.amazon.ti.buffer.Buffer;
-import com.amazon.ti.source.Source;
+import com.amazon.ti.model.record.Record;
+import com.amazon.ti.model.annotations.TransformationInstancePlugin;
+import com.amazon.ti.model.buffer.Buffer;
+import com.amazon.ti.model.source.Source;
 
 @TransformationInstancePlugin(name = "junit-test", type = PluginType.SOURCE)
 public class ConstructorLessComponent implements Source<Record<String>> {

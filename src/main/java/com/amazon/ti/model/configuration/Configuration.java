@@ -1,4 +1,4 @@
-package com.amazon.ti.configuration;
+package com.amazon.ti.model.configuration;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;

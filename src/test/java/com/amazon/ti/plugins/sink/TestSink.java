@@ -1,11 +1,11 @@
 package com.amazon.ti.plugins.sink;
 
 
-import com.amazon.ti.Record;
-import com.amazon.ti.annotations.TransformationInstancePlugin;
-import com.amazon.ti.configuration.Configuration;
+import com.amazon.ti.model.record.Record;
+import com.amazon.ti.model.annotations.TransformationInstancePlugin;
+import com.amazon.ti.model.configuration.Configuration;
 import com.amazon.ti.plugins.PluginType;
-import com.amazon.ti.sink.Sink;
+import com.amazon.ti.model.sink.Sink;
 
 import java.util.ArrayList;
 import java.util.Collection;

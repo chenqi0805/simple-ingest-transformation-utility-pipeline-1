@@ -1,10 +1,10 @@
 package com.amazon.ti.pipeline;
 
-import com.amazon.ti.Record;
-import com.amazon.ti.buffer.Buffer;
-import com.amazon.ti.processor.Processor;
-import com.amazon.ti.sink.Sink;
-import com.amazon.ti.source.Source;
+import com.amazon.ti.model.record.Record;
+import com.amazon.ti.model.buffer.Buffer;
+import com.amazon.ti.model.processor.Processor;
+import com.amazon.ti.model.sink.Sink;
+import com.amazon.ti.model.source.Source;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

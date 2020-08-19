@@ -1,9 +1,9 @@
 package com.amazon.ti.pipeline;
 
-import com.amazon.ti.Record;
+import com.amazon.ti.model.record.Record;
 import com.amazon.ti.plugins.sink.TestSink;
 import com.amazon.ti.plugins.source.TestSource;
-import com.amazon.ti.source.Source;
+import com.amazon.ti.model.source.Source;
 import org.junit.Test;
 
 import java.util.Collections;

@@ -1,7 +1,7 @@
 package com.amazon.ti.plugins.buffer;
 
-import com.amazon.ti.buffer.Buffer;
-import com.amazon.ti.configuration.PluginSetting;
+import com.amazon.ti.model.buffer.Buffer;
+import com.amazon.ti.model.configuration.PluginSetting;
 import com.amazon.ti.plugins.PluginException;
 import org.junit.Test;
 
