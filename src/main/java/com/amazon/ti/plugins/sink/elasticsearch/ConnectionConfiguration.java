@@ -120,14 +120,13 @@ public class ConnectionConfiguration {
   }
 
   public RestClient createClient() throws IOException {
-    HttpHost[] hosts = new HttpHost[addresses.size()];
+    final HttpHost[] hosts = new HttpHost[addresses.size()];
     int i = 0;
-    for (String address : addresses) {
-      URL url = new URL(address);
-      hosts[i] = new HttpHost(url.getHost(), url.getPort(), url.getProtocol());
+    for (final String address : addresses) {
+      hosts[i] = HttpHost.create(address);
       i++;
     }
-    RestClientBuilder restClientBuilder = RestClient.builder(hosts);
+    final RestClientBuilder restClientBuilder = RestClient.builder(hosts);
     if (username != null) {
       final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
       credentialsProvider.setCredentials(
