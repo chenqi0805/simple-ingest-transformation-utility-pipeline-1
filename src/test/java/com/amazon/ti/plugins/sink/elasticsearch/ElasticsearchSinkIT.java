@@ -1,6 +1,7 @@
 package com.amazon.ti.plugins.sink.elasticsearch;
 
 import com.amazon.ti.model.configuration.PluginSetting;
+import com.amazon.ti.model.record.Record;
 import org.apache.http.HttpStatus;
 import org.apache.http.util.EntityUtils;
 import org.elasticsearch.client.Request;
@@ -12,10 +13,7 @@ import org.elasticsearch.test.rest.ESRestTestCase;
 
 import javax.ws.rs.HttpMethod;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ElasticsearchSinkIT extends ESRestTestCase {
@@ -47,6 +45,27 @@ public class ElasticsearchSinkIT extends ESRestTestCase {
     sink.stop();
   }
 
+  public void testOutputRawSpanDefault() throws IOException, InterruptedException {
+    String traceId1 = UUID.randomUUID().toString();
+    String traceId2 = UUID.randomUUID().toString();
+    List<Record<String>> testRecords = Arrays.asList(
+        generateDummyRawSpanRecord(traceId1, "2020-08-05", "2020-08-06"),
+        generateDummyRawSpanRecord(traceId2, "2020-08-30", "2020-09-01")
+    );
+    PluginSetting pluginSetting = generatePluginSetting(IndexConstants.RAW, null, null);
+    ElasticsearchSink sink = new ElasticsearchSink(pluginSetting);
+    boolean success = sink.output(testRecords);
+    sink.stop();
+    // wait for documents to be populated
+    Thread.sleep(1000);
+
+    String expIndexAlias = IndexConstants.TYPE_TO_DEFAULT_ALIAS.get(IndexConstants.RAW);
+    assertTrue(success);
+    assertEquals(Integer.valueOf(1), getDocumentCount(expIndexAlias, "traceId", traceId1));
+    assertEquals(Integer.valueOf(1), getDocumentCount(expIndexAlias, "startTime", "2020-08-05T00:00:00.000Z"));
+    assertEquals(Integer.valueOf(1), getDocumentCount(expIndexAlias, "endTime", "2020-09-01T00:00:00.000Z"));
+  }
+
   public void testInstantiateSinkRawSpanCustom() throws IOException {
     String testIndexAlias = "test-raw-span";
     String testTemplateFile = getClass().getClassLoader().getResource("test-index-template.json").getFile();
@@ -71,6 +90,29 @@ public class ElasticsearchSinkIT extends ESRestTestCase {
     response = client().performRequest(request);
     assertEquals(true, checkIsWriteIndex(EntityUtils.toString(response.getEntity()), testIndexAlias, rolloverIndexName));
     sink.stop();
+  }
+
+  public void testOutputRawSpanCustom() throws IOException, InterruptedException {
+    String testIndexAlias = "test-raw-span";
+    String testTemplateFile = getClass().getClassLoader().getResource("test-index-template.json").getFile();
+    String traceId1 = UUID.randomUUID().toString();
+    String traceId2 = UUID.randomUUID().toString();
+    List<Record<String>> testRecords = Arrays.asList(
+        generateDummyRawSpanRecord(traceId1, "2020-08-05", "2020-08-06"),
+        generateDummyRawSpanRecord(traceId2, "2020-08-30", "2020-09-01")
+    );
+    PluginSetting pluginSetting = generatePluginSetting(IndexConstants.RAW, testIndexAlias, testTemplateFile);
+    ElasticsearchSink sink = new ElasticsearchSink(pluginSetting);
+    boolean success = sink.output(testRecords);
+    sink.stop();
+    // wait for documents to be populated
+    Thread.sleep(1000);
+
+    assertTrue(success);
+    assertEquals(Integer.valueOf(1), getDocumentCount(testIndexAlias, "traceId", traceId1));
+    // startTime field should no longer be detected as datetime in test-index-template.json
+    assertEquals(Integer.valueOf(0), getDocumentCount(testIndexAlias, "startTime", "2020-08-05T00:00:00.000Z"));
+    assertEquals(Integer.valueOf(1), getDocumentCount(testIndexAlias, "endTime", "2020-09-01"));
   }
 
   public void testInstantiateSinkServiceMapDefault() throws IOException {
@@ -115,6 +157,19 @@ public class ElasticsearchSinkIT extends ESRestTestCase {
     return new PluginSetting("elasticsearch", metadata);
   }
 
+  private Record<String> generateDummyRawSpanRecord(String traceId, String startTime, String endTime) throws IOException {
+    return new Record<>(
+        Strings.toString(
+            XContentFactory.jsonBuilder()
+                .startObject()
+                .field("traceId", traceId)
+                .field("startTime", startTime)
+                .field("endTime", endTime)
+                .endObject()
+        )
+    );
+  }
+
   private Boolean checkIsWriteIndex(String responseBody, String aliasName, String indexName) throws IOException {
     @SuppressWarnings("unchecked")
     Map<String, Object> indexBlob = (Map<String, Object>)createParser(XContentType.JSON.xContent(), responseBody).map().get(indexName);
@@ -123,5 +178,24 @@ public class ElasticsearchSinkIT extends ESRestTestCase {
     @SuppressWarnings("unchecked")
     Map<String, Object> aliasBlob = (Map<String, Object>)aliasesBlob.get(aliasName);
     return (Boolean) aliasBlob.get("is_write_index");
+  }
+
+  private Integer getDocumentCount(String index, String field, String value) throws IOException, InterruptedException {
+    Request request = new Request(HttpMethod.GET, index + "/_count");
+    if (field != null && value != null) {
+      String jsonEntity = Strings.toString(
+          XContentFactory.jsonBuilder().startObject()
+              .startObject("query")
+              .startObject("match")
+              .field(field, value)
+              .endObject()
+              .endObject()
+              .endObject()
+      );
+      request.setJsonEntity(jsonEntity);
+    }
+    Response response = client().performRequest(request);
+    String responseBody = EntityUtils.toString(response.getEntity());
+    return (Integer)createParser(XContentType.JSON.xContent(), responseBody).map().get("count");
   }
 }
