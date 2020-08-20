@@ -7,7 +7,6 @@ public class ElasticsearchSinkConfiguration {
    * TODO: add retryConfiguration
    */
   private final ConnectionConfiguration connectionConfiguration;
-
   private final IndexConfiguration indexConfiguration;
 
   public ConnectionConfiguration getConnectionConfiguration() {
@@ -20,7 +19,6 @@ public class ElasticsearchSinkConfiguration {
 
   public static class Builder {
     private ConnectionConfiguration connectionConfiguration;
-
     private IndexConfiguration indexConfiguration = new IndexConfiguration.Builder().build();
 
     public Builder(final ConnectionConfiguration connectionConfiguration) {

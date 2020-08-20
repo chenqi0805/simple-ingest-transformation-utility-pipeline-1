@@ -7,15 +7,11 @@ public class IndexConfiguration {
    * TODO: add index management policy parameters
    */
   public static final String INDEX_TYPE = "index_type";
-
   public static final String INDEX_ALIAS = "index_alias";
-
   public static final String TEMPLATE_FILE = "template_file";
 
   private final String indexType;
-
   private final String indexAlias;
-
   private final String templateFile;
 
   public String getIndexType() {
@@ -32,9 +28,7 @@ public class IndexConfiguration {
 
   public static class Builder {
     private String indexType = IndexConstants.RAW;
-
     private String indexAlias;
-
     private String templateFile;
 
     public Builder withIndexType(final String indexType) {

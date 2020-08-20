@@ -7,18 +7,12 @@ import java.util.Set;
 
 public class IndexConstants {
   public static final String RAW = "raw";
-
   public static final String SERVICE_MAP = "service_map";
-
   public static final String CUSTOM = "custom";
-
   public static final Set<String> TYPES = new HashSet<>();
-
   public static final Map<String, String> TYPE_TO_DEFAULT_ALIAS = new HashMap<>();
-
   // TODO: extract out version number into version enum
   public static final String RAW_DEFAULT_TEMPLATE_FILE = "otel-v1-apm-span-index-template.json";
-
   // TODO: extract out version number into version enum
   public static final String SERVICE_MAP_DEFAULT_TEMPLATE_FILE = "otel-v1-apm-service-map-index-template.json";
 

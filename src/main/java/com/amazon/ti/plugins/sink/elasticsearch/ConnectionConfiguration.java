@@ -15,23 +15,15 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 public class ConnectionConfiguration {
   public static final String HOSTS = "hosts";
-
   public static final String USERNAME = "username";
-
   public static final String PASSWORD = "password";
-
   public static final String SOCKET_TIMEOUT = "socket_timeout";
-
   public static final String CONNECT_TIMEOUT = "connect_timeout";
 
   private final List<String> hosts;
-
   private final String username;
-
   private final String password;
-
   private final Integer socketTimeout;
-
   private final Integer connectTimeout;
 
   public List<String> getHosts() {
@@ -56,13 +48,9 @@ public class ConnectionConfiguration {
 
   public static class Builder {
     private List<String> hosts;
-
     private String username;
-
     private String password;
-
     private Integer socketTimeout;
-
     private Integer connectTimeout;
 
     public Builder(final List<String> hosts) {
