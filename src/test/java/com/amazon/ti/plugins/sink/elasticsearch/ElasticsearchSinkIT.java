@@ -1,11 +1,12 @@
 package com.amazon.ti.plugins.sink.elasticsearch;
 
-import com.amazon.ti.model.configuration.Configuration;
 import com.amazon.ti.model.configuration.PluginSetting;
 import org.apache.http.HttpStatus;
 import org.apache.http.util.EntityUtils;
 import org.elasticsearch.client.Request;
 import org.elasticsearch.client.Response;
+import org.elasticsearch.common.Strings;
+import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.test.rest.ESRestTestCase;
 
@@ -22,11 +23,7 @@ public class ElasticsearchSinkIT extends ESRestTestCase {
       .map(ip -> "http://" + ip).collect(Collectors.toList());
 
   public void testInstantiateSinkRawSpanDefault() throws IOException {
-    Map<String, Object> metadata = new HashMap<>();
-    metadata.put("hosts", HOSTS);
-    metadata.put("username", "");
-    metadata.put("password", "");
-    PluginSetting pluginSetting = new PluginSetting("elasticsearch", metadata);
+    PluginSetting pluginSetting = generatePluginSetting(IndexConstants.RAW, null, null);
     ElasticsearchSink sink = new ElasticsearchSink(pluginSetting);
     String indexAlias = IndexConstants.TYPE_TO_DEFAULT_ALIAS.get(IndexConstants.RAW);
     Request request = new Request(HttpMethod.HEAD, indexAlias);
@@ -53,13 +50,7 @@ public class ElasticsearchSinkIT extends ESRestTestCase {
   public void testInstantiateSinkRawSpanCustom() throws IOException {
     String testIndexAlias = "test-raw-span";
     String testTemplateFile = getClass().getClassLoader().getResource("test-index-template.json").getFile();
-    Map<String, Object> metadata = new HashMap<>();
-    metadata.put("hosts", HOSTS);
-    metadata.put("username", "");
-    metadata.put("password", "");
-    metadata.put("index_alias", testIndexAlias);
-    metadata.put("template_file", testTemplateFile);
-    PluginSetting pluginSetting = new PluginSetting("elasticsearch", metadata);
+    PluginSetting pluginSetting = generatePluginSetting(IndexConstants.RAW, testIndexAlias, testTemplateFile);
     ElasticsearchSink sink = new ElasticsearchSink(pluginSetting);
     Request request = new Request(HttpMethod.HEAD, testIndexAlias);
     Response response = client().performRequest(request);
@@ -83,12 +74,7 @@ public class ElasticsearchSinkIT extends ESRestTestCase {
   }
 
   public void testInstantiateSinkServiceMapDefault() throws IOException {
-    Map<String, Object> metadata = new HashMap<>();
-    metadata.put("index_type", IndexConstants.SERVICE_MAP);
-    metadata.put("hosts", HOSTS);
-    metadata.put("username", "");
-    metadata.put("password", "");
-    PluginSetting pluginSetting = new PluginSetting("elasticsearch", metadata);
+    PluginSetting pluginSetting = generatePluginSetting(IndexConstants.SERVICE_MAP, null, null);
     ElasticsearchSink sink = new ElasticsearchSink(pluginSetting);
     String indexAlias = IndexConstants.TYPE_TO_DEFAULT_ALIAS.get(IndexConstants.SERVICE_MAP);
     Request request = new Request(HttpMethod.HEAD, indexAlias);
@@ -100,14 +86,7 @@ public class ElasticsearchSinkIT extends ESRestTestCase {
   public void testInstantiateSinkServiceMapCustom() throws IOException {
     String testIndexAlias = "test-service-map";
     String testTemplateFile = getClass().getClassLoader().getResource("test-index-template.json").getFile();
-    Map<String, Object> metadata = new HashMap<>();
-    metadata.put("index_type", IndexConstants.SERVICE_MAP);
-    metadata.put("hosts", HOSTS);
-    metadata.put("username", "");
-    metadata.put("password", "");
-    metadata.put("index_alias", testIndexAlias);
-    metadata.put("template_file", testTemplateFile);
-    PluginSetting pluginSetting = new PluginSetting("elasticsearch", metadata);
+    PluginSetting pluginSetting = generatePluginSetting(IndexConstants.SERVICE_MAP, testIndexAlias, testTemplateFile);
     ElasticsearchSink sink = new ElasticsearchSink(pluginSetting);
     Request request = new Request(HttpMethod.HEAD, testIndexAlias);
     Response response = client().performRequest(request);
@@ -118,19 +97,22 @@ public class ElasticsearchSinkIT extends ESRestTestCase {
   public void testInstantiateSinkCustomIndex() throws IOException {
     String testIndexAlias = "test-alias";
     String testTemplateFile = getClass().getClassLoader().getResource("test-index-template.json").getFile();
-    Map<String, Object> metadata = new HashMap<>();
-    metadata.put("index_type", IndexConstants.CUSTOM);
-    metadata.put("hosts", HOSTS);
-    metadata.put("username", "");
-    metadata.put("password", "");
-    metadata.put("index_alias", testIndexAlias);
-    metadata.put("template_file", testTemplateFile);
-    PluginSetting pluginSetting = new PluginSetting("elasticsearch", metadata);
+    PluginSetting pluginSetting = generatePluginSetting(IndexConstants.CUSTOM, testIndexAlias, testTemplateFile);
     ElasticsearchSink sink = new ElasticsearchSink(pluginSetting);
     Request request = new Request(HttpMethod.HEAD, testIndexAlias);
     Response response = client().performRequest(request);
     assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
     sink.stop();
+  }
+
+  private PluginSetting generatePluginSetting(String indexType, String indexAlias, String templateFilePath) {
+    Map<String, Object> metadata = new HashMap<>();
+    metadata.put("index_type", indexType);
+    metadata.put("hosts", HOSTS);
+    metadata.put("index_alias", indexAlias);
+    metadata.put("template_file", templateFilePath);
+
+    return new PluginSetting("elasticsearch", metadata);
   }
 
   private Boolean checkIsWriteIndex(String responseBody, String aliasName, String indexName) throws IOException {
