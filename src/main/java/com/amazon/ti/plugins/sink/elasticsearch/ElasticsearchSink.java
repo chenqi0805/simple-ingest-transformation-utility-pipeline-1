@@ -48,8 +48,7 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     final ConnectionConfiguration connectionConfiguration = readConnectionConfiguration(pluginSetting);
     final IndexConfiguration indexConfiguration = readIndexConfig(pluginSetting);
 
-    return new ElasticsearchSinkConfiguration.Builder()
-        .withConnectionConfiguration(connectionConfiguration)
+    return new ElasticsearchSinkConfiguration.Builder(connectionConfiguration)
         .withIndexConfiguration(indexConfiguration)
         .build();
   }

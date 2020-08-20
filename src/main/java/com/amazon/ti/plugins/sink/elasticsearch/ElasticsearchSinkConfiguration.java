@@ -23,10 +23,9 @@ public class ElasticsearchSinkConfiguration {
 
     private IndexConfiguration indexConfiguration = new IndexConfiguration.Builder().build();
 
-    public Builder withConnectionConfiguration(final ConnectionConfiguration connectionConfiguration) {
+    public Builder(final ConnectionConfiguration connectionConfiguration) {
       checkArgument(connectionConfiguration != null, "connectionConfiguration cannot be null");
       this.connectionConfiguration = connectionConfiguration;
-      return this;
     }
 
     public Builder withIndexConfiguration(final IndexConfiguration indexConfiguration) {
@@ -36,17 +35,6 @@ public class ElasticsearchSinkConfiguration {
     }
 
     public ElasticsearchSinkConfiguration build() {
-      String missing = "";
-      if (connectionConfiguration == null) {
-        missing += "connectionConfiguration";
-      }
-      if (indexConfiguration == null) {
-        missing += "indexConfiguration";
-      }
-      if (!missing.isEmpty()) {
-        throw new IllegalStateException("Missing required properties:" + missing);
-      }
-
       return new ElasticsearchSinkConfiguration(this);
     }
   }
