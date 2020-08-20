@@ -204,7 +204,7 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     if (statusLine.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
       // TODO: use date as suffix?
       String initialIndexName;
-      if (esSinkConfig.getIndexConfiguration().getIndexType() == IndexConstants.RAW) {
+      if (esSinkConfig.getIndexConfiguration().getIndexType().equals(IndexConstants.RAW)) {
         initialIndexName = indexAlias + "-000001";
         request = new Request(HttpMethod.PUT, initialIndexName);
         String jsonContent = Strings.toString(
