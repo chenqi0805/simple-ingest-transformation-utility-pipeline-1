@@ -110,7 +110,7 @@ public class ElasticsearchSinkIT extends ESRestTestCase {
 
     assertTrue(success);
     assertEquals(Integer.valueOf(1), getDocumentCount(testIndexAlias, "traceId", traceId1));
-    // startTime field should no longer be detected as datetime in test-index-template.json
+    // startTime field should no longer be detected as datetime according to test-index-template.json
     assertEquals(Integer.valueOf(0), getDocumentCount(testIndexAlias, "startTime", "2020-08-05T00:00:00.000Z"));
     assertEquals(Integer.valueOf(1), getDocumentCount(testIndexAlias, "endTime", "2020-09-01"));
   }
