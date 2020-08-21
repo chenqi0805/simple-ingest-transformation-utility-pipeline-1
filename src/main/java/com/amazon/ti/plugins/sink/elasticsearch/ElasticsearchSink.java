@@ -109,21 +109,16 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     }
     StringBuilder bulkRequest = new StringBuilder();
     for (final Record<String> record: records) {
-      /**
-       * TODO:
-       * If the record includes documentID, we need to fill it into the bulk request entity
-       */
       String document = record.getData();
       try {
-        bulkRequest.append(
-            Strings.toString(
-                XContentFactory.jsonBuilder()
-                    .startObject()
-                    .startObject("index")
-                    .endObject()
-                    .endObject()
-            )
-        ).append("\n").append(document).append("\n");
+        XContentBuilder xcontentBuilder = XContentFactory.jsonBuilder();
+        xcontentBuilder.startObject().startObject("index");
+        String spanId = getSpanIdFromRecord(document);
+        if (spanId != null) {
+          xcontentBuilder.field("_id", spanId);
+        }
+        xcontentBuilder.endObject().endObject();
+        bulkRequest.append(Strings.toString(xcontentBuilder)).append("\n").append(document).append("\n");
       } catch (IOException e) {
         throw new RuntimeException(e.getMessage(), e);
       }
@@ -227,6 +222,12 @@ public class ElasticsearchSink implements Sink<Record<String>> {
       responseEntity = handleRetry(HttpMethod.POST, initialIndexName, responseEntity);
       checkForErrors(responseEntity);
     }
+  }
+
+  private String getSpanIdFromRecord(String documentJson) throws IOException {
+    final XContentParser parser = XContentFactory.xContent(XContentType.JSON)
+            .createParser(NamedXContentRegistry.EMPTY, LoggingDeprecationHandler.INSTANCE, documentJson);
+    return (String)parser.map().get("spanId");
   }
 
   private HttpEntity handleRetry(String method, String endpoint, HttpEntity requestBody) {
