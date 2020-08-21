@@ -46,11 +46,12 @@ public class ElasticsearchSinkIT extends ESRestTestCase {
   }
 
   public void testOutputRawSpanDefault() throws IOException, InterruptedException {
-    String traceId1 = UUID.randomUUID().toString();
-    String traceId2 = UUID.randomUUID().toString();
+    String traceId = UUID.randomUUID().toString();
+    String spanId1 = UUID.randomUUID().toString();
+    String spanId2 = UUID.randomUUID().toString();
     List<Record<String>> testRecords = Arrays.asList(
-        generateDummyRawSpanRecord(traceId1, "2020-08-05", "2020-08-06"),
-        generateDummyRawSpanRecord(traceId2, "2020-08-30", "2020-09-01")
+        generateDummyRawSpanRecord(traceId, spanId1, "2020-08-05", "2020-08-06"),
+        generateDummyRawSpanRecord(traceId, spanId2, "2020-08-30", "2020-09-01")
     );
     PluginSetting pluginSetting = generatePluginSetting(IndexConstants.RAW, null, null);
     ElasticsearchSink sink = new ElasticsearchSink(pluginSetting);
@@ -61,7 +62,9 @@ public class ElasticsearchSinkIT extends ESRestTestCase {
 
     String expIndexAlias = IndexConstants.TYPE_TO_DEFAULT_ALIAS.get(IndexConstants.RAW);
     assertTrue(success);
-    assertEquals(Integer.valueOf(1), getDocumentCount(expIndexAlias, "traceId", traceId1));
+    assertEquals(Integer.valueOf(2), getDocumentCount(expIndexAlias, "traceId", traceId));
+    assertEquals(Integer.valueOf(1), getDocumentCount(expIndexAlias, "_id", spanId1));
+    assertEquals(Integer.valueOf(1), getDocumentCount(expIndexAlias, "spanId", spanId2));
     assertEquals(Integer.valueOf(1), getDocumentCount(expIndexAlias, "startTime", "2020-08-05T00:00:00.000Z"));
     assertEquals(Integer.valueOf(1), getDocumentCount(expIndexAlias, "endTime", "2020-09-01T00:00:00.000Z"));
   }
@@ -95,11 +98,12 @@ public class ElasticsearchSinkIT extends ESRestTestCase {
   public void testOutputRawSpanCustom() throws IOException, InterruptedException {
     String testIndexAlias = "test-raw-span";
     String testTemplateFile = getClass().getClassLoader().getResource("test-index-template.json").getFile();
-    String traceId1 = UUID.randomUUID().toString();
-    String traceId2 = UUID.randomUUID().toString();
+    String traceId = UUID.randomUUID().toString();
+    String spanId1 = UUID.randomUUID().toString();
+    String spanId2 = UUID.randomUUID().toString();
     List<Record<String>> testRecords = Arrays.asList(
-        generateDummyRawSpanRecord(traceId1, "2020-08-05", "2020-08-06"),
-        generateDummyRawSpanRecord(traceId2, "2020-08-30", "2020-09-01")
+        generateDummyRawSpanRecord(traceId, spanId1, "2020-08-05", "2020-08-06"),
+        generateDummyRawSpanRecord(traceId, spanId2, "2020-08-30", "2020-09-01")
     );
     PluginSetting pluginSetting = generatePluginSetting(IndexConstants.RAW, testIndexAlias, testTemplateFile);
     ElasticsearchSink sink = new ElasticsearchSink(pluginSetting);
@@ -109,7 +113,7 @@ public class ElasticsearchSinkIT extends ESRestTestCase {
     Thread.sleep(1000);
 
     assertTrue(success);
-    assertEquals(Integer.valueOf(1), getDocumentCount(testIndexAlias, "traceId", traceId1));
+    assertEquals(Integer.valueOf(2), getDocumentCount(testIndexAlias, "traceId", traceId));
     // startTime field should no longer be detected as datetime according to test-index-template.json
     assertEquals(Integer.valueOf(0), getDocumentCount(testIndexAlias, "startTime", "2020-08-05T00:00:00.000Z"));
     assertEquals(Integer.valueOf(1), getDocumentCount(testIndexAlias, "endTime", "2020-09-01"));
@@ -157,12 +161,13 @@ public class ElasticsearchSinkIT extends ESRestTestCase {
     return new PluginSetting("elasticsearch", metadata);
   }
 
-  private Record<String> generateDummyRawSpanRecord(String traceId, String startTime, String endTime) throws IOException {
+  private Record<String> generateDummyRawSpanRecord(String traceId, String spanId, String startTime, String endTime) throws IOException {
     return new Record<>(
         Strings.toString(
             XContentFactory.jsonBuilder()
                 .startObject()
                 .field("traceId", traceId)
+                .field("spanId", spanId)
                 .field("startTime", startTime)
                 .field("endTime", endTime)
                 .endObject()
