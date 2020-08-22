@@ -60,6 +60,7 @@ public class TransformationInstance {
     /**
      * Executes Transformation Instance engine using the default configuration file/
      *
+     * @param configurationFileLocation the location of the configuration file
      * @return true if the execute successfully initiates the Transformation Instance
      */
     public boolean execute(final String configurationFileLocation) {
@@ -110,7 +111,9 @@ public class TransformationInstance {
 
         final Configuration processorConfiguration = pipelineConfiguration.getProcessor();
         final List<PluginSetting> processorPluginSettings = processorConfiguration.getPluginSettings();
-        final List<Processor> processors = processorPluginSettings.stream().map(ProcessorFactory::newProcessor).collect(Collectors.toList());
+        final List<Processor> processors = processorPluginSettings.stream()
+                                            .map(ProcessorFactory::newProcessor)
+                                            .collect(Collectors.toList());
 
         final List<PluginSetting> sinkPluginSettings = pipelineConfiguration.getSink().getPluginSettings();
         final Collection<Sink> sinks = sinkPluginSettings.stream().map(SinkFactory::newSink).collect(Collectors.toList());

@@ -18,7 +18,7 @@ public interface Buffer<T extends Record<?>> {
      *
      * @param record The Record which needed to be written
      */
-    void write(final T record);
+    void write(T record);
 
     /**
      * @return The earliest record in the buffer which is still not read.
@@ -30,7 +30,7 @@ public interface Buffer<T extends Record<?>> {
      */
     Collection<T> readBatch();
 
-    void writeBatch(final Collection<T> records);
+    void writeBatch(Collection<T> records);
 
     @SuppressWarnings("rawtypes")
     static Buffer defaultBuffer() {

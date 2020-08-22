@@ -14,7 +14,8 @@ import java.util.stream.Stream;
 
 @TransformationInstancePlugin(name = "test-source", type = PluginType.SOURCE)
 public class TestSource implements Source<Record<String>> {
-    public static final List<Record<String>> TEST_DATA = Stream.of("THIS", "IS", "TEST", "DATA").map(Record::new).collect(Collectors.toList());
+    public static final List<Record<String>> TEST_DATA = Stream.of("THIS", "IS", "TEST", "DATA")
+                                                            .map(Record::new).collect(Collectors.toList());
     private boolean isStopRequested;
 
     public TestSource(final Configuration configuration) {

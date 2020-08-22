@@ -11,16 +11,19 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Deserializer for pipeline configuration: Deserializes on the basis of {@link PipelineAttribute} for required check,
  * expects exactly one source, at least one sink, optional buffer and processors.
  */
 public class ConfigurationDeserializer extends JsonDeserializer<PipelineConfiguration> {
-    private final static ObjectMapper SIMPLE_OBJECT_MAPPER = new ObjectMapper();
-    private final static TypeReference<Map<String, Object>> MAP_TYPE_REFERENCE = new TypeReference<Map<String, Object>>() {
-    };
+    private static final ObjectMapper SIMPLE_OBJECT_MAPPER = new ObjectMapper();
+    private static final TypeReference<Map<String, Object>> MAP_TYPE_REFERENCE = new TypeReference<Map<String, Object>>() {};
 
     @Override
     public PipelineConfiguration deserialize(JsonParser jsonParser, DeserializationContext context) {

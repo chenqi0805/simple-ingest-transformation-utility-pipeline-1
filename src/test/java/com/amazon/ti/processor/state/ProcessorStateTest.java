@@ -15,7 +15,7 @@ public abstract class ProcessorStateTest {
     private static final Random random = new Random();
 
     @Before
-    abstract public void setProcessorState() throws Exception;
+    public abstract void setProcessorState() throws Exception;
 
     @Test
     public void testPutAndGet() {

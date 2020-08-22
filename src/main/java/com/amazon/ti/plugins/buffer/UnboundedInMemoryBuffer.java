@@ -6,7 +6,11 @@ import com.amazon.ti.model.buffer.Buffer;
 import com.amazon.ti.model.configuration.PluginSetting;
 import com.amazon.ti.plugins.PluginType;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 
 /**
  * Implementation of {@link Buffer} - An unbounded in-memory FIFO buffer. The bufferSize determines the size of the
@@ -27,10 +31,10 @@ public class UnboundedInMemoryBuffer<T extends Record<?>> implements Buffer<T> {
     }
 
     /**
-     * Constructs an unbounded in-memory buffer with provided bufferSize. The bufferSize determines the size of the
+     * Constructs an unbounded in-memory buffer with provided batch size. The batch size determines the size of the
      * collection for {@link #readBatch()}.
      *
-     * @param batchSize
+     * @param batchSize the collection size for {@link #readBatch()}.
      */
     public UnboundedInMemoryBuffer(int batchSize) {
         this.queue = new LinkedList<>();
