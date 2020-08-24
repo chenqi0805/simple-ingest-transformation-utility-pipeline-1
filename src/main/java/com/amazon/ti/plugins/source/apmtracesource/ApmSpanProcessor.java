@@ -18,7 +18,6 @@ public class ApmSpanProcessor {
   private final static String SPANS = "spans";
   private final static String RESOURCE = "resource";
   private final static String ATTRIBUTES = "attributes";
-  private final static String NODE = "node";
 
 
   public static ArrayList<String> decodeResourceSpan(final String jsonResourceSpans) throws JsonProcessingException {

@@ -12,7 +12,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> 
   private final String path;
   private final ServerRequestProcessor<FullHttpRequest> requestProcessor;
 
-  public ServerHandler(String path, ServerRequestProcessor requestProcessor) {
+  public ServerHandler(String path, ServerRequestProcessor<FullHttpRequest> requestProcessor) {
     this.path = path;
     this.requestProcessor = requestProcessor;
   }
