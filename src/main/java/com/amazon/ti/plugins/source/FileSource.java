@@ -48,8 +48,7 @@ public class FileSource implements Source<Record<String>> {
     @Override
     public void start(final Buffer<Record<String>> buffer) {
         checkNotNull(buffer, "buffer cannot be null for source to start");
-        try (final BufferedReader reader =
-                     Files.newBufferedReader(Paths.get(filePathToRead), StandardCharsets.UTF_8)) {
+        try (BufferedReader reader = Files.newBufferedReader(Paths.get(filePathToRead), StandardCharsets.UTF_8)) {
             String line;
             while ((line = reader.readLine()) != null && !isStopRequested) {
                 buffer.write(new Record<>(line));

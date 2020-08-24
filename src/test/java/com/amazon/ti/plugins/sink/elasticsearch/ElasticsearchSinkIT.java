@@ -13,7 +13,12 @@ import org.elasticsearch.test.rest.ESRestTestCase;
 
 import javax.ws.rs.HttpMethod;
 import java.io.IOException;
-import java.util.*;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class ElasticsearchSinkIT extends ESRestTestCase {

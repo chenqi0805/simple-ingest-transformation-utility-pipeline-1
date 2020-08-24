@@ -39,6 +39,7 @@ public class Pipeline {
      * @param name   name of the pipeline
      * @param source source from where the pipeline reads the records
      * @param sinks  collection of sink's to which the transformed records need to be posted
+     * @param executorService the executor service to use to  process the work
      */
     public Pipeline(
             @Nonnull final String name,
@@ -66,6 +67,7 @@ public class Pipeline {
      * @param buffer     buffer for the source to queue records
      * @param processors processor that is applied to records
      * @param sinks      sink to which the transformed records are posted
+     * @param executorService the executor service to use to  process the work
      */
     public Pipeline(
             @Nonnull final String name,

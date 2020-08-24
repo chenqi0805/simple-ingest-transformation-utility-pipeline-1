@@ -2,7 +2,12 @@ package com.amazon.ti.plugins.sink.elasticsearch;
 
 import org.junit.Test;
 
-import static com.amazon.ti.plugins.sink.elasticsearch.IndexConstants.*;
+import static com.amazon.ti.plugins.sink.elasticsearch.IndexConstants.CUSTOM;
+import static com.amazon.ti.plugins.sink.elasticsearch.IndexConstants.RAW;
+import static com.amazon.ti.plugins.sink.elasticsearch.IndexConstants.RAW_DEFAULT_TEMPLATE_FILE;
+import static com.amazon.ti.plugins.sink.elasticsearch.IndexConstants.SERVICE_MAP;
+import static com.amazon.ti.plugins.sink.elasticsearch.IndexConstants.SERVICE_MAP_DEFAULT_TEMPLATE_FILE;
+import static com.amazon.ti.plugins.sink.elasticsearch.IndexConstants.TYPE_TO_DEFAULT_ALIAS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 

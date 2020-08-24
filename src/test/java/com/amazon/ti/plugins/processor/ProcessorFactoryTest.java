@@ -9,7 +9,9 @@ import org.junit.Test;
 import java.util.HashMap;
 
 import static com.amazon.ti.plugins.PluginFactoryTest.NON_EXISTENT_EMPTY_CONFIGURATION;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 
 @SuppressWarnings("rawtypes")
 public class ProcessorFactoryTest {

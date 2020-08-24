@@ -37,8 +37,8 @@ repositories {
 
 dependencies {
     // ES sink
-    compile "org.elasticsearch:elasticsearch:${es_version}"
-    compile "org.elasticsearch.client:elasticsearch-rest-client:${es_version}"
+    implementation "org.elasticsearch:elasticsearch:${es_version}"
+    implementation "org.elasticsearch.client:elasticsearch-rest-client:${es_version}"
 
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.10.0'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.11.1'

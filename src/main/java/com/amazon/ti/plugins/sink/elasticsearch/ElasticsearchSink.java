@@ -13,7 +13,12 @@ import org.elasticsearch.client.Request;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.common.Strings;
-import org.elasticsearch.common.xcontent.*;
+import org.elasticsearch.common.xcontent.LoggingDeprecationHandler;
+import org.elasticsearch.common.xcontent.NamedXContentRegistry;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
+import org.elasticsearch.common.xcontent.XContentParser;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,8 +29,14 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.List;
 
-import static com.amazon.ti.plugins.sink.elasticsearch.ConnectionConfiguration.*;
-import static com.amazon.ti.plugins.sink.elasticsearch.IndexConfiguration.*;
+import static com.amazon.ti.plugins.sink.elasticsearch.ConnectionConfiguration.CONNECT_TIMEOUT;
+import static com.amazon.ti.plugins.sink.elasticsearch.ConnectionConfiguration.HOSTS;
+import static com.amazon.ti.plugins.sink.elasticsearch.ConnectionConfiguration.PASSWORD;
+import static com.amazon.ti.plugins.sink.elasticsearch.ConnectionConfiguration.SOCKET_TIMEOUT;
+import static com.amazon.ti.plugins.sink.elasticsearch.ConnectionConfiguration.USERNAME;
+import static com.amazon.ti.plugins.sink.elasticsearch.IndexConfiguration.INDEX_ALIAS;
+import static com.amazon.ti.plugins.sink.elasticsearch.IndexConfiguration.INDEX_TYPE;
+import static com.amazon.ti.plugins.sink.elasticsearch.IndexConfiguration.TEMPLATE_FILE;
 
 @TransformationInstancePlugin(name = "elasticsearch", type = PluginType.SINK)
 public class ElasticsearchSink implements Sink<Record<String>> {

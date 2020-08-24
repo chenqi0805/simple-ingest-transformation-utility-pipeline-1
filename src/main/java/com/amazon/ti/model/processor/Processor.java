@@ -17,5 +17,5 @@ public interface Processor<InputRecord extends Record<?>, OutputRecord extends R
      * @param records Input records that will be modified/processed
      * @return Record  modified output records
      */
-    Collection<OutputRecord> execute(final Collection<InputRecord> records);
+    Collection<OutputRecord> execute(Collection<InputRecord> records);
 }

@@ -24,3 +24,6 @@ As we know, the default provided source, buffer, processor and/or sinks will not
 1. Implement the appropriate interface from ```com.amazon.ti.<source|buffer|processor|sink>.Source|Buffer|Processor|Sink```
 2. Annotate the class file with ```com.amazon.ti.model.annotations.TransformationInstancePlugin``` providing appropriate name and type
 3. Add a mandatory constructor to the class with ```com.amazon.ti.model.configuration.PluginSetting``` as parameter. Example: [FileSink](https://github.com/yadavcbala/transformation-instance/blob/master/src/main/java/com/amazon/ti/plugins/sink/FileSink.java)
+
+## Building Transformation Instance
+In order to build this code base, you must use Gradle X.XX or above and Java Development Kit 14 is required.

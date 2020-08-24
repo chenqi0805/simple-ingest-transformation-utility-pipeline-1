@@ -13,7 +13,9 @@ public interface Sink<T extends Record<?>> {
     /**
      * outputs collection of records which extend {@link Record}.
      *
-     * @param records
+     * TODO: rethink boolean output, might be better off as int for number of records written successfully.
+     * @param records the records to write to the sink.
+     * @return boolean as to the success of the writing.
      */
     boolean output(Collection<T> records);
 
