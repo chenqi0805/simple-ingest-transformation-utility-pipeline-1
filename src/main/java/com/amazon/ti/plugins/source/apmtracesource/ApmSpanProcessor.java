@@ -23,22 +23,25 @@ public class ApmSpanProcessor {
   public static ArrayList<String> decodeResourceSpan(final String jsonResourceSpans) throws JsonProcessingException {
     final JsonNode jsonNode = OBJECT_MAPPER.readTree(jsonResourceSpans);
     final ArrayList<String> result = new ArrayList<>(Collections.emptyList());
-    final ArrayNode instrumentationLibrarySpans = (ArrayNode) jsonNode.path(INSTRUMENTATION_LIBRARY_SPANS);
     //if number of spans is zero, return empty result.
-    if(instrumentationLibrarySpans == null || instrumentationLibrarySpans.size() <= 0)
+    if(!jsonNode.path(INSTRUMENTATION_LIBRARY_SPANS).isArray())
        return result;
-    //Get Resource attributes
-    final List<ObjectNode> resourceNodes =  processKeyValueList((ArrayNode) jsonNode.path(RESOURCE).path(ATTRIBUTES), String.format("%s.%s", RESOURCE, ATTRIBUTES));
+    final ArrayNode instrumentationLibrarySpans = (ArrayNode) jsonNode.path(INSTRUMENTATION_LIBRARY_SPANS);
+    //Get Resource attributes, if not present we will store the spans without resources objects.
+    final ArrayList<ObjectNode> resourceNodes =  jsonNode.path(RESOURCE).path(ATTRIBUTES).isArray() ?
+        processKeyValueList((ArrayNode) jsonNode.path(RESOURCE).path(ATTRIBUTES), String.format("%s.%s", RESOURCE, ATTRIBUTES))
+        : new ArrayList<>(Collections.emptyList());
     for (int i = 0; i < instrumentationLibrarySpans.size(); i++) {
       final ObjectNode instrumentationLibraryNode = (ObjectNode)instrumentationLibrarySpans.get(i).path(INSTRUMENTATION_LIBRARY);
       final ArrayNode spans = (ArrayNode) instrumentationLibrarySpans.get(i).path(SPANS);
-      //if number of spans is zero, return empty result.
-      if(spans == null || spans.size() <= 0)
-        return result;
+      //if number of spans is zero, return empty result. Note this is a temporary implementation because in the final version we will process
+      // the protobuf.
+      if(!instrumentationLibrarySpans.get(i).path(SPANS).isArray())
+        return new ArrayList<>(Collections.emptyList());
       for (int j = 0; j < spans.size(); j++) {
         final ObjectNode spanNode = (ObjectNode) spans.get(j);
         //Get Span Attributes. Skipping Events/Links for now
-        if(!spanNode.path(ATTRIBUTES).isMissingNode())
+        if(spanNode.path(ATTRIBUTES).isArray())
           processKeyValueList((ArrayNode) spanNode.remove(ATTRIBUTES), ATTRIBUTES).forEach(spanNode::setAll);
         resourceNodes.forEach(spanNode::setAll);
         spanNode.setAll(instrumentationLibraryNode);
@@ -54,8 +57,8 @@ public class ApmSpanProcessor {
 
   //Note the current version has zero dependency on opentelemetry-proto so we are going to
   //assume attributesKeyValue is processed like below.
-  public static List<ObjectNode> processKeyValueList(final ArrayNode resourceAttributes, final String prefix) {
-    final List<ObjectNode> objectNodes = new java.util.ArrayList<>(Collections.emptyList());
+  public static ArrayList<ObjectNode> processKeyValueList(final ArrayNode resourceAttributes, final String prefix) {
+    final ArrayList<ObjectNode> objectNodes = new ArrayList<>(Collections.emptyList());
     for (int i = 0; i < resourceAttributes.size(); i++) {
       final ObjectNode objectNode = OBJECT_MAPPER.createObjectNode();
       final String newKey =  String.format("%s.%s", prefix,resourceAttributes.get(i).get("key").asText());
