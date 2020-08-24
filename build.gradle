@@ -36,6 +36,9 @@ repositories {
 }
 
 dependencies {
+    //apm-source
+    implementation 'io.netty:netty-all:4.1.51.Final'
+
     // ES sink
     implementation "org.elasticsearch:elasticsearch:${es_version}"
     implementation "org.elasticsearch.client:elasticsearch-rest-client:${es_version}"
