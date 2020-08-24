@@ -30,6 +30,7 @@ public class Pipeline {
     private final Buffer buffer;
     private final List<Processor> processors;
     private final Collection<Sink> sinks;
+    private final int processorThreads;
     private final ExecutorService executorService;
 
     /**
@@ -39,19 +40,21 @@ public class Pipeline {
      * @param name   name of the pipeline
      * @param source source from where the pipeline reads the records
      * @param sinks  collection of sink's to which the transformed records need to be posted
-     * @param executorService the executor service to use to  process the work
+     * @param processorThreads configured or default threads to parallelize processor work
      */
     public Pipeline(
             @Nonnull final String name,
             @Nonnull final Source source,
             @Nonnull final Collection<Sink> sinks,
-            final ExecutorService executorService) {
+            final int processorThreads) {
         this.name = name;
         this.source = source;
         this.buffer = Buffer.defaultBuffer();
         processors = EMPTY_PROCESSOR_LIST;
         this.sinks = sinks;
-        this.executorService = executorService == null ? Executors.newSingleThreadExecutor() : executorService;
+        int actualProcessorThreads = processorThreads == 0 ? 1 : processorThreads;
+        this.processorThreads = actualProcessorThreads;
+        this.executorService = Executors.newFixedThreadPool(actualProcessorThreads);
         stopRequested = false;
     }
 
@@ -67,7 +70,7 @@ public class Pipeline {
      * @param buffer     buffer for the source to queue records
      * @param processors processor that is applied to records
      * @param sinks      sink to which the transformed records are posted
-     * @param executorService the executor service to use to  process the work
+     * @param processorThreads configured or default threads to parallelize processor work
      */
     public Pipeline(
             @Nonnull final String name,
@@ -75,13 +78,15 @@ public class Pipeline {
             @Nullable final Buffer buffer,
             @Nullable final List<Processor> processors,
             @Nonnull final Collection<Sink> sinks,
-            @Nullable final ExecutorService executorService) {
+            @Nullable final int processorThreads) {
         this.name = name;
         this.source = source;
         this.buffer = buffer != null ? buffer : Buffer.defaultBuffer();
         this.processors = processors != null ? processors : EMPTY_PROCESSOR_LIST;
         this.sinks = sinks;
-        this.executorService = executorService == null ? Executors.newSingleThreadExecutor() : executorService;
+        int actualProcessorThreads = processorThreads == 0 ? 1 : processorThreads;
+        this.processorThreads = actualProcessorThreads;
+        this.executorService = Executors.newFixedThreadPool(actualProcessorThreads);
         stopRequested = false;
     }
 
@@ -150,9 +155,12 @@ public class Pipeline {
     }
 
     private void executeWithStart() {
-        source.start(buffer);
+        //source.start(buffer);
+        Executors.newSingleThreadExecutor().submit( () -> { source.start(buffer); });
         try {
-            executorService.execute(new ProcessWorker(buffer, processors, sinks, this));
+            for (int i = 0; i < processorThreads; i++) {
+                executorService.execute(new ProcessWorker(buffer, processors, sinks, this));
+            }
         } catch (Exception ex) {
             executorService.shutdown();
             throw ex;
