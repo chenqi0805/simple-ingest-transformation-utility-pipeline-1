@@ -51,7 +51,8 @@ public class ElasticsearchSinkIT extends ESRestTestCase {
     String spanId2 = UUID.randomUUID().toString();
     List<Record<String>> testRecords = Arrays.asList(
         generateDummyRawSpanRecord(traceId, spanId1, "2020-08-05", "2020-08-06"),
-        generateDummyRawSpanRecord(traceId, spanId2, "2020-08-30", "2020-09-01")
+        generateDummyRawSpanRecord(
+                traceId, spanId2, "2020-08-30T00:00:00.000000000Z", "2020-08-30T00:00:00.000123456Z")
     );
     PluginSetting pluginSetting = generatePluginSetting(IndexConstants.RAW, null, null);
     ElasticsearchSink sink = new ElasticsearchSink(pluginSetting);
@@ -66,7 +67,7 @@ public class ElasticsearchSinkIT extends ESRestTestCase {
     assertEquals(Integer.valueOf(1), getDocumentCount(expIndexAlias, "_id", spanId1));
     assertEquals(Integer.valueOf(1), getDocumentCount(expIndexAlias, "spanId", spanId2));
     assertEquals(Integer.valueOf(1), getDocumentCount(expIndexAlias, "startTime", "2020-08-05T00:00:00.000Z"));
-    assertEquals(Integer.valueOf(1), getDocumentCount(expIndexAlias, "endTime", "2020-09-01T00:00:00.000Z"));
+    assertEquals(Integer.valueOf(1), getDocumentCount(expIndexAlias, "endTime", "2020-08-30T00:00:00.000123456Z"));
   }
 
   public void testInstantiateSinkRawSpanCustom() throws IOException {
