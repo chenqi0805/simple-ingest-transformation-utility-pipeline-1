@@ -9,6 +9,7 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 
@@ -21,7 +22,7 @@ public class NettyHttpServer {
   private volatile ServerBootstrap serverBootstrap;
   private NioEventLoopGroup nioEventLoopGroup;
 
-  public NettyHttpServer(final NettyHttpConfig httpConfig, final ServerRequestProcessor requestProcessor) {
+  public NettyHttpServer(final NettyHttpConfig httpConfig, final ServerRequestProcessor<FullHttpRequest> requestProcessor) {
     this.httpConfig = httpConfig;
     nioEventLoopGroup  = new NioEventLoopGroup(httpConfig.getWorkerCount(),
         new DaemonThreadFactory(HTTP_SERVER_WORKER_THREAD_NAME_PREFIX));
@@ -32,7 +33,7 @@ public class NettyHttpServer {
         .option(ChannelOption.ALLOCATOR, BYTE_BUF_ALLOCATOR)
         .childOption(ChannelOption.SO_KEEPALIVE, true)
         .childHandler(new ChannelInitializer<SocketChannel>() {
-          @Override protected void initChannel(SocketChannel channel) throws Exception {
+          @Override protected void initChannel(SocketChannel channel) {
             channel.pipeline()
                 //TODO: ProtoBufDecoder for OTLP and SSLHandler
                // .addLast(new ServerTrafficShapingHandler())

@@ -22,7 +22,7 @@ public class ApmSpanProcessor {
 
   public static ArrayList<String> decodeResourceSpan(final String jsonResourceSpans) throws JsonProcessingException {
     final JsonNode jsonNode = OBJECT_MAPPER.readTree(jsonResourceSpans);
-    final ArrayList<String> result = new java.util.ArrayList<>(Collections.emptyList());
+    final ArrayList<String> result = new ArrayList<>(Collections.emptyList());
     final ArrayNode instrumentationLibrarySpans = (ArrayNode) jsonNode.path(INSTRUMENTATION_LIBRARY_SPANS);
     //if number of spans is zero, return empty result.
     if(instrumentationLibrarySpans == null || instrumentationLibrarySpans.size() <= 0)
