@@ -9,7 +9,7 @@ import com.amazon.ti.plugins.PluginType;
 import com.amazon.ti.plugins.source.apmtracesource.http.server.NettyHttpConfig;
 import com.amazon.ti.plugins.source.apmtracesource.http.server.NettyHttpServer;
 
-@TransformationInstancePlugin(name = "APM_TRACE_SOURCE", type = PluginType.SOURCE)
+@TransformationInstancePlugin(name = "apm_trace_source", type = PluginType.SOURCE)
 public class ApmTraceSource implements Source<Record<String>> {
   //TODO: Hardcoding the source config to avoid conflicts
   final static NettyHttpConfig DEFAULT_NETTY_HTTP_CONFIG = new NettyHttpConfig(9400,

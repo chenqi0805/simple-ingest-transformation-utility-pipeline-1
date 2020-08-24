@@ -57,6 +57,7 @@ public class Configuration {
      * @return value of the attribute from the metadata
      */
     public int getAttributeValueAsInteger(final String attributeName) {
-        return Integer.parseInt(getAttributeValueAsString(attributeName));
+        final String attributeValue = getAttributeValueAsString(attributeName);
+        return attributeValue == null ? 0 : Integer.parseInt(getAttributeValueAsString(attributeName));
     }
 }
