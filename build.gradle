@@ -113,4 +113,5 @@ testingConventions.enabled = false
 licenseHeaders.enabled = false
 dependencyLicenses.enabled = false
 thirdPartyAudit.enabled = false
+validateMavenPom.enabled = false
 validateNebulaPom.enabled = false
