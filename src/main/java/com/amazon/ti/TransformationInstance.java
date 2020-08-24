@@ -120,8 +120,7 @@ public class TransformationInstance {
 
         final int processorThreads = getConfiguredThreadsOrDefault(processorConfiguration);
 
-        return new Pipeline(pipelineConfiguration.getName(), source, buffer, processors, sinks,
-                Executors.newFixedThreadPool(processorThreads));
+        return new Pipeline(pipelineConfiguration.getName(), source, buffer, processors, sinks, processorThreads);
     }
 
     private PluginSetting getFirstSettingsIfExists(final Configuration configuration) {

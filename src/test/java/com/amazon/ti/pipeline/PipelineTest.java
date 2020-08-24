@@ -18,7 +18,7 @@ public class PipelineTest {
     public void testExecute() throws InterruptedException {
         final Source<Record<String>> testSource = new TestSource();
         final TestSink testSink = new TestSink();
-        final Pipeline testPipeline = new Pipeline("test-pipeline", testSource, Collections.singletonList(testSink), null);
+        final Pipeline testPipeline = new Pipeline("test-pipeline", testSource, Collections.singletonList(testSink), 1);
         List<Record<String>> preRun = testSink.getCollectedRecords();
         assertThat("Sink records are not empty before Pipeline execution", preRun.isEmpty());
         testPipeline.execute();
