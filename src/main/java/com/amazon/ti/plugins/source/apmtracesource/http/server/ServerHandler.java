@@ -27,7 +27,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> 
     ctx.writeAndFlush(resp);
   }
 
-  private String parseClientPath(FullHttpRequest req) throws URISyntaxException {
+  private String parseClientPath(final FullHttpRequest req) throws URISyntaxException {
     URI uri = new URI(req.uri().toLowerCase());
     return uri.getPath();
   }
