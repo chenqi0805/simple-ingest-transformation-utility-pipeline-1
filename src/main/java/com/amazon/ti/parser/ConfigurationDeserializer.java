@@ -70,7 +70,7 @@ public class ConfigurationDeserializer extends JsonDeserializer<PipelineConfigur
             while (fieldIterator.hasNext()) {
                 String fieldName = fieldIterator.next();
                 final JsonNode fieldValueNode = jsonNode.get(fieldName);
-                if (fieldValueNode.isObject()) {
+                if (fieldValueNode.isObject() || fieldValueNode.isNull()) { //to handle default source settings
                     final Map<String, Object> settingsMap = SIMPLE_OBJECT_MAPPER.convertValue(fieldValueNode, MAP_TYPE_REFERENCE);
                     pluginSettings.add(new PluginSetting(fieldName, settingsMap));
                 } else if (fieldValueNode.isValueNode()) {

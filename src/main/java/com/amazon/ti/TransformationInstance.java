@@ -3,6 +3,7 @@ package com.amazon.ti;
 import com.amazon.ti.model.buffer.Buffer;
 import com.amazon.ti.model.configuration.Configuration;
 import com.amazon.ti.model.configuration.PluginSetting;
+import com.amazon.ti.model.processor.Processor;
 import com.amazon.ti.model.sink.Sink;
 import com.amazon.ti.model.source.Source;
 import com.amazon.ti.parser.PipelineParser;
@@ -12,11 +13,9 @@ import com.amazon.ti.plugins.buffer.BufferFactory;
 import com.amazon.ti.plugins.processor.ProcessorFactory;
 import com.amazon.ti.plugins.sink.SinkFactory;
 import com.amazon.ti.plugins.source.SourceFactory;
-import com.amazon.ti.model.processor.Processor;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 /**
@@ -120,8 +119,7 @@ public class TransformationInstance {
 
         final int processorThreads = getConfiguredThreadsOrDefault(processorConfiguration);
 
-        return new Pipeline(pipelineConfiguration.getName(), source, buffer, processors, sinks,
-                Executors.newFixedThreadPool(processorThreads));
+        return new Pipeline(pipelineConfiguration.getName(), source, buffer, processors, sinks, processorThreads);
     }
 
     private PluginSetting getFirstSettingsIfExists(final Configuration configuration) {

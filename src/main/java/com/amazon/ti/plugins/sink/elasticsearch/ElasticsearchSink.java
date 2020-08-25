@@ -38,7 +38,7 @@ import static com.amazon.ti.plugins.sink.elasticsearch.IndexConfiguration.INDEX_
 import static com.amazon.ti.plugins.sink.elasticsearch.IndexConfiguration.INDEX_TYPE;
 import static com.amazon.ti.plugins.sink.elasticsearch.IndexConfiguration.TEMPLATE_FILE;
 
-@TransformationInstancePlugin(name = "elasticsearch", type = PluginType.SINK)
+@TransformationInstancePlugin(name = "amazon_es", type = PluginType.SINK)
 public class ElasticsearchSink implements Sink<Record<String>> {
 
   private static final Logger LOG = LoggerFactory.getLogger(ElasticsearchSink.class);
