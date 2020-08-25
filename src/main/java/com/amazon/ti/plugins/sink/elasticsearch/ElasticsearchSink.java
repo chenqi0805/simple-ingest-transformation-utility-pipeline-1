@@ -27,7 +27,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.amazon.ti.plugins.sink.elasticsearch.ConnectionConfiguration.CONNECT_TIMEOUT;
 import static com.amazon.ti.plugins.sink.elasticsearch.ConnectionConfiguration.HOSTS;
@@ -136,7 +138,7 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     }
     Response response;
     HttpEntity responseEntity;
-    final String endPoint = esSinkConfig.getIndexConfiguration().getIndexAlias() + "/_bulk";
+    final String endPoint = String.format("/%s/_bulk", esSinkConfig.getIndexConfiguration().getIndexAlias());
     final Request request = new Request(HttpMethod.POST, endPoint);
     request.setJsonEntity(bulkRequest.toString());
     try {
@@ -171,7 +173,7 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     Response response;
     HttpEntity responseEntity;
     final String indexAlias = esSinkConfig.getIndexConfiguration().getIndexAlias();
-    final String endPoint = String.format("_index_template/%s-index-template", indexAlias);
+    final String endPoint = String.format("/_template/%s-index-template", indexAlias);
     final String jsonFilePath = esSinkConfig.getIndexConfiguration().getTemplateFile();
     StringBuilder templateJsonBuffer = new StringBuilder();
     Files.lines(Paths.get(jsonFilePath)).forEach(s -> templateJsonBuffer.append(s).append("\n"));
@@ -179,19 +181,21 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     final Request request = new Request(HttpMethod.POST, endPoint);
     final XContentParser parser = XContentFactory.xContent(XContentType.JSON)
         .createParser(NamedXContentRegistry.EMPTY, LoggingDeprecationHandler.INSTANCE, templateJson);
+    Map<String, Object> template = parser.map();
     String jsonEntity;
-    if (esSinkConfig.getIndexConfiguration().getIndexType() == IndexConstants.RAW) {
+    if (esSinkConfig.getIndexConfiguration().getIndexType().equals(IndexConstants.RAW)) {
       // Add -* prefix for rollover
       jsonEntity = Strings.toString(
           XContentFactory.jsonBuilder().startObject()
               .field("index_patterns", indexAlias + "-*")
-              .field("template").copyCurrentStructure(parser).endObject());
+              .field("settings", template.getOrDefault("settings", new HashMap<>()))
+              .field("mappings", template.getOrDefault("mappings", new HashMap<>())).endObject());
     } else {
       jsonEntity = Strings.toString(
           XContentFactory.jsonBuilder().startObject()
               .field("index_patterns", indexAlias)
-              .field("template").copyCurrentStructure(parser).endObject()
-      );
+              .field("settings", template.getOrDefault("settings", new HashMap<>()))
+              .field("mappings", template.getOrDefault("mappings", new HashMap<>())).endObject());
     }
     request.setJsonEntity(jsonEntity);
     response = restClient.performRequest(request);
@@ -204,7 +208,7 @@ public class ElasticsearchSink implements Sink<Record<String>> {
   private void checkAndCreateIndex() throws IOException {
     // Check alias exists
     final String indexAlias = esSinkConfig.getIndexConfiguration().getIndexAlias();
-    Request request = new Request(HttpMethod.HEAD, indexAlias);
+    Request request = new Request(HttpMethod.HEAD, "/" + indexAlias);
     Response response = restClient.performRequest(request);
     final StatusLine statusLine = response.getStatusLine();
     if (statusLine.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
@@ -212,7 +216,7 @@ public class ElasticsearchSink implements Sink<Record<String>> {
       String initialIndexName;
       if (esSinkConfig.getIndexConfiguration().getIndexType().equals(IndexConstants.RAW)) {
         initialIndexName = indexAlias + "-000001";
-        request = new Request(HttpMethod.PUT, initialIndexName);
+        request = new Request(HttpMethod.PUT, "/" + initialIndexName);
         String jsonContent = Strings.toString(
             XContentFactory.jsonBuilder().startObject()
                 .startObject("aliases")
@@ -225,7 +229,7 @@ public class ElasticsearchSink implements Sink<Record<String>> {
         request.setJsonEntity(jsonContent);
       } else {
         initialIndexName = indexAlias;
-        request = new Request(HttpMethod.PUT, initialIndexName);
+        request = new Request(HttpMethod.PUT, "/" + initialIndexName);
       }
       response = restClient.performRequest(request);
       HttpEntity responseEntity = new BufferedHttpEntity(response.getEntity());
