@@ -18,6 +18,14 @@ public class ServerTrafficShapingHandler extends ChannelTrafficShapingHandler {
     super(0);
   }
 
+  public static AtomicInteger getActiveConnectionCount() {
+    return ACTIVE_CONNECTION_COUNT;
+  }
+
+  public static AtomicInteger getOverallConnectionCount() {
+    return OVERALL_CONNECTION_COUNT;
+  }
+
   @Override
   public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
     ACTIVE_CONNECTION_COUNT.incrementAndGet();
@@ -29,13 +37,5 @@ public class ServerTrafficShapingHandler extends ChannelTrafficShapingHandler {
   public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
     super.handlerRemoved(ctx);
     ACTIVE_CONNECTION_COUNT.decrementAndGet();
-  }
-
-  public static AtomicInteger getActiveConnectionCount() {
-    return ACTIVE_CONNECTION_COUNT;
-  }
-
-  public static AtomicInteger getOverallConnectionCount() {
-    return OVERALL_CONNECTION_COUNT;
   }
 }

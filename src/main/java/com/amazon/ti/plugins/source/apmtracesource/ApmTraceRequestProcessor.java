@@ -12,8 +12,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 public class ApmTraceRequestProcessor implements ServerRequestProcessor<FullHttpRequest> {
-  private final Buffer<Record<String>> buffer;
   private static final Charset CHAR_SET = StandardCharsets.UTF_8;
+  private final Buffer<Record<String>> buffer;
 
   public ApmTraceRequestProcessor(Buffer<Record<String>> buffer) {
     this.buffer = buffer;

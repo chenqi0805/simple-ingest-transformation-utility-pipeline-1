@@ -4,5 +4,5 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 
 public interface ServerRequestProcessor<T> {
 
-  public HttpResponseStatus processMessage(T message);
+  HttpResponseStatus processMessage(T message);
 }

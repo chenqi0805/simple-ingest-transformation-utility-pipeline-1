@@ -7,7 +7,6 @@ public class NettyHttpConfig {
   private final int workerCount;
   private final int maxHttpContentLength;
 
-
   public NettyHttpConfig(int port, String host, String path, int workerCount, int maxHttpContentLength) {
     this.port = port;
     this.host = host;
