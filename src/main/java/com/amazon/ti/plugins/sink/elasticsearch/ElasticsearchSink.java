@@ -182,7 +182,7 @@ public class ElasticsearchSink implements Sink<Record<String>> {
         .createParser(NamedXContentRegistry.EMPTY, LoggingDeprecationHandler.INSTANCE, templateJson);
     String jsonEntity;
     Map<String, Object> template = parser.map();
-    if (esSinkConfig.getIndexConfiguration().getIndexType() == IndexConstants.RAW) {
+    if (esSinkConfig.getIndexConfiguration().getIndexType().equals(IndexConstants.RAW)) {
       // Add -* prefix for rollover
       jsonEntity = Strings.toString(
           XContentFactory.jsonBuilder().startObject()

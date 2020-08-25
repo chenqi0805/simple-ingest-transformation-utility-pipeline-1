@@ -1,15 +1,7 @@
 pipeline:
   name: file-io-test
   source:
-    file:
-      path: "src/resources/file-test-sample.txt"
-  buffer:
-    unbounded-inmemory:
-      batch-size: 5
-  processor:
-    threads: 3
-    upper-case:
-    no-op:
+    apm_trace_source:
   sink:
-    file:
-      path: "src/resources/file-test-sample-output.txt"
+    amazon_es:
+      hosts: ["https://search-sample-app-test-lqwynrnd2ikcuzfsrdilv4stbq.us-west-2.es.amazonaws.com"]
