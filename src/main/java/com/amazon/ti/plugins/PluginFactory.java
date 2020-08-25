@@ -20,10 +20,10 @@ public class PluginFactory {
         } catch (NoSuchMethodException e) {
             throw new PluginException(format("TransformationInstance plugin requires a constructor with %s parameter;" +
                             " Plugin %s with name %s is missing such constructor.", PluginSetting.class.getSimpleName(),
-                    clazz.getSimpleName(), pluginSetting.getName()));
+                    clazz.getSimpleName(), pluginSetting.getName()), e);
         } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new PluginException(format("Encountered %s exception while instantiating the plugin %s",
-                    e.getMessage(), clazz.getSimpleName()));
+            throw new PluginException(format("Encountered exception while instantiating the plugin %s",
+                    clazz.getSimpleName()), e);
         }
     }
 }
