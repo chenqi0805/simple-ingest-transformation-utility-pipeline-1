@@ -28,6 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import static com.amazon.ti.plugins.sink.elasticsearch.ConnectionConfiguration.CONNECT_TIMEOUT;
 import static com.amazon.ti.plugins.sink.elasticsearch.ConnectionConfiguration.HOSTS;
@@ -171,7 +172,7 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     Response response;
     HttpEntity responseEntity;
     final String indexAlias = esSinkConfig.getIndexConfiguration().getIndexAlias();
-    final String endPoint = String.format("_index_template/%s-index-template", indexAlias);
+    final String endPoint = String.format("_template/%s-index-template", indexAlias);
     final String jsonFilePath = esSinkConfig.getIndexConfiguration().getTemplateFile();
     StringBuilder templateJsonBuffer = new StringBuilder();
     Files.lines(Paths.get(jsonFilePath)).forEach(s -> templateJsonBuffer.append(s).append("\n"));
@@ -180,18 +181,20 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     final XContentParser parser = XContentFactory.xContent(XContentType.JSON)
         .createParser(NamedXContentRegistry.EMPTY, LoggingDeprecationHandler.INSTANCE, templateJson);
     String jsonEntity;
+    Map<String, Object> template = parser.map();
     if (esSinkConfig.getIndexConfiguration().getIndexType() == IndexConstants.RAW) {
       // Add -* prefix for rollover
       jsonEntity = Strings.toString(
           XContentFactory.jsonBuilder().startObject()
               .field("index_patterns", indexAlias + "-*")
-              .field("template").copyCurrentStructure(parser).endObject());
+              .field("settings", template.get("settings"))
+              .field("mappings", template.get("mappings")).endObject());
     } else {
       jsonEntity = Strings.toString(
           XContentFactory.jsonBuilder().startObject()
               .field("index_patterns", indexAlias)
-              .field("template").copyCurrentStructure(parser).endObject()
-      );
+              .field("settings", template.get("settings"))
+              .field("mappings", template.get("mappings")).endObject());
     }
     request.setJsonEntity(jsonEntity);
     response = restClient.performRequest(request);
