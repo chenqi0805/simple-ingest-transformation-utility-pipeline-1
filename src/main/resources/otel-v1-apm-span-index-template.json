@@ -17,7 +17,7 @@
       }
     ],
     "_source": {
-      "enabled": false
+      "enabled": true
     },
     "properties": {
       "traceId": {
