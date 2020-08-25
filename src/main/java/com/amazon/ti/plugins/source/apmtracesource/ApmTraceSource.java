@@ -13,7 +13,7 @@ import com.amazon.ti.plugins.source.apmtracesource.http.server.NettyHttpServer;
 public class ApmTraceSource implements Source<Record<String>> {
   //TODO: Hardcoding the source config to avoid conflicts
   final static NettyHttpConfig DEFAULT_NETTY_HTTP_CONFIG = new NettyHttpConfig(9400,
-      "127.0.0.1",
+      "0.0.0.0",
       "/_smart_ingest/traces/v1",
       8,
       1024 * 1024);
