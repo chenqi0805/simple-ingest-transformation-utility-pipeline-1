@@ -39,7 +39,6 @@ public class ApmSpanProcessor {
         processKeyValueList((ArrayNode) jsonNode.path(RESOURCE).path(ATTRIBUTES), String.format("%s.%s", RESOURCE, ATTRIBUTES))
         : new ArrayList<>(Collections.emptyList());
     for (int i = 0; i < instrumentationLibrarySpans.size(); i++) {
-      final ObjectNode instrumentationLibraryNode = (ObjectNode) instrumentationLibrarySpans.get(i).path(INSTRUMENTATION_LIBRARY);
       final ArrayNode spans = (ArrayNode) instrumentationLibrarySpans.get(i).path(SPANS);
       //if number of spans is zero, return empty result. Note this is a temporary implementation because in the final version we will process
       // the protobuf.
@@ -52,7 +51,8 @@ public class ApmSpanProcessor {
         if (spanNode.path(ATTRIBUTES).isArray())
           processKeyValueList((ArrayNode) spanNode.remove(ATTRIBUTES), ATTRIBUTES).forEach(spanNode::setAll);
         resourceNodes.forEach(spanNode::setAll);
-        spanNode.setAll(instrumentationLibraryNode);
+        if (!instrumentationLibrarySpans.get(i).path(INSTRUMENTATION_LIBRARY).isMissingNode())
+          spanNode.setAll((ObjectNode) instrumentationLibrarySpans.get(i).path(INSTRUMENTATION_LIBRARY));
         result.add(OBJECT_MAPPER.writeValueAsString(spanNode));
       }
     }
