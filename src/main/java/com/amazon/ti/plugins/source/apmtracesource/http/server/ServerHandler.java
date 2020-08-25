@@ -2,7 +2,8 @@ package com.amazon.ti.plugins.source.apmtracesource.http.server;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.FullHttpResponse;
 
 import java.net.URI;
 import java.net.URISyntaxException;

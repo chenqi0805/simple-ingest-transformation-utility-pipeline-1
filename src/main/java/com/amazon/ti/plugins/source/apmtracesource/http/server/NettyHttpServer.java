@@ -24,7 +24,7 @@ public class NettyHttpServer {
 
   public NettyHttpServer(final NettyHttpConfig httpConfig, final ServerRequestProcessor<FullHttpRequest> requestProcessor) {
     this.httpConfig = httpConfig;
-    nioEventLoopGroup  = new NioEventLoopGroup(httpConfig.getWorkerCount(),
+    nioEventLoopGroup = new NioEventLoopGroup(httpConfig.getWorkerCount(),
         new DaemonThreadFactory(HTTP_SERVER_WORKER_THREAD_NAME_PREFIX));
     serverBootstrap = new ServerBootstrap();
     serverBootstrap
@@ -36,7 +36,7 @@ public class NettyHttpServer {
           @Override protected void initChannel(SocketChannel channel) {
             channel.pipeline()
                 //TODO: ProtoBufDecoder for OTLP and SSLHandler
-               // .addLast(new ServerTrafficShapingHandler())
+                // .addLast(new ServerTrafficShapingHandler())
                 .addLast(new HttpServerCodec())
                 .addLast(new HttpObjectAggregator(httpConfig.getMaxHttpContentLength()))
                 .addLast(new ServerHandler(httpConfig.getPath(), requestProcessor));
@@ -47,13 +47,12 @@ public class NettyHttpServer {
   public void startServer() {
     try {
       final ChannelFuture channel = serverBootstrap.bind(httpConfig.getHost(), httpConfig.getPort());
-      System.out.println(String.format("Starting netty server on %s:%s",httpConfig.getHost(), httpConfig.getPort()));
+      System.out.println(String.format("Starting netty server on %s:%s", httpConfig.getHost(), httpConfig.getPort()));
       channel.sync().channel().closeFuture().sync();
     } catch (final InterruptedException ex) {
       throw new IllegalStateException(ex);
     }
   }
-
 
   public void shutdownServer() {
     try {

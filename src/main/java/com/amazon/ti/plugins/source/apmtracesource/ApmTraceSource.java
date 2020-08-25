@@ -16,7 +16,7 @@ public class ApmTraceSource implements Source<Record<String>> {
       "127.0.0.1",
       "/_smart_ingest/traces/v1",
       8,
-      1024*1024);
+      1024 * 1024);
 
   private final NettyHttpConfig nettyHttpConfig;
 
@@ -28,17 +28,17 @@ public class ApmTraceSource implements Source<Record<String>> {
   }
 
   public ApmTraceSource(NettyHttpConfig nettyHttpConfig) {
-    this.nettyHttpConfig=nettyHttpConfig;
+    this.nettyHttpConfig = nettyHttpConfig;
   }
 
   @Override public void start(Buffer<Record<String>> buffer) {
-     if(nettyHttpServer==null) {
-       nettyHttpServer = new NettyHttpServer(nettyHttpConfig, new ApmTraceRequestProcessor(buffer));
-     }
-     nettyHttpServer.startServer();
+    if (nettyHttpServer == null) {
+      nettyHttpServer = new NettyHttpServer(nettyHttpConfig, new ApmTraceRequestProcessor(buffer));
+    }
+    nettyHttpServer.startServer();
   }
 
   @Override public void stop() {
-     nettyHttpServer.shutdownServer();
+    nettyHttpServer.shutdownServer();
   }
 }

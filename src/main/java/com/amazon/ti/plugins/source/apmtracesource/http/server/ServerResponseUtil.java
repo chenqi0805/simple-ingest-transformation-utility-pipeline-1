@@ -1,6 +1,10 @@
 package com.amazon.ti.plugins.source.apmtracesource.http.server;
 
-import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.DefaultFullHttpResponse;
+import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpVersion;
+import io.netty.handler.codec.http.HttpHeaderNames;
 
 public class ServerResponseUtil {
 
