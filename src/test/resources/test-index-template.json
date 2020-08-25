@@ -1,5 +1,4 @@
 {
-  "settings": {},
   "mappings": {
     "date_detection": false,
     "dynamic_templates": [

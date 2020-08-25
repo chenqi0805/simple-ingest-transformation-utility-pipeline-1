@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -180,21 +181,21 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     final Request request = new Request(HttpMethod.POST, endPoint);
     final XContentParser parser = XContentFactory.xContent(XContentType.JSON)
         .createParser(NamedXContentRegistry.EMPTY, LoggingDeprecationHandler.INSTANCE, templateJson);
-    String jsonEntity;
     Map<String, Object> template = parser.map();
+    String jsonEntity;
     if (esSinkConfig.getIndexConfiguration().getIndexType().equals(IndexConstants.RAW)) {
       // Add -* prefix for rollover
       jsonEntity = Strings.toString(
           XContentFactory.jsonBuilder().startObject()
               .field("index_patterns", indexAlias + "-*")
-              .field("settings", template.get("settings"))
-              .field("mappings", template.get("mappings")).endObject());
+              .field("settings", template.getOrDefault("settings", new HashMap<>()))
+              .field("mappings", template.getOrDefault("mappings", new HashMap<>())).endObject());
     } else {
       jsonEntity = Strings.toString(
           XContentFactory.jsonBuilder().startObject()
               .field("index_patterns", indexAlias)
-              .field("settings", template.get("settings"))
-              .field("mappings", template.get("mappings")).endObject());
+              .field("settings", template.getOrDefault("settings", new HashMap<>()))
+              .field("mappings", template.getOrDefault("mappings", new HashMap<>())).endObject());
     }
     request.setJsonEntity(jsonEntity);
     response = restClient.performRequest(request);
