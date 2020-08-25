@@ -1,5 +1,5 @@
 pipeline:
-  name: file-io-test
+  name: otel-es-raw-pipeline
   source:
     apm_trace_source:
   sink:
