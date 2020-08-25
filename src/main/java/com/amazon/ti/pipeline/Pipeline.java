@@ -52,9 +52,8 @@ public class Pipeline {
         this.buffer = Buffer.defaultBuffer();
         processors = EMPTY_PROCESSOR_LIST;
         this.sinks = sinks;
-        int actualProcessorThreads = processorThreads == 0 ? 1 : processorThreads;
-        this.processorThreads = actualProcessorThreads;
-        this.executorService = Executors.newFixedThreadPool(actualProcessorThreads);
+        this.processorThreads = processorThreads;
+        this.executorService = Executors.newFixedThreadPool(processorThreads);
         stopRequested = false;
     }
 
@@ -84,9 +83,8 @@ public class Pipeline {
         this.buffer = buffer != null ? buffer : Buffer.defaultBuffer();
         this.processors = processors != null ? processors : EMPTY_PROCESSOR_LIST;
         this.sinks = sinks;
-        int actualProcessorThreads = processorThreads == 0 ? 1 : processorThreads;
-        this.processorThreads = actualProcessorThreads;
-        this.executorService = Executors.newFixedThreadPool(actualProcessorThreads);
+        this.processorThreads = processorThreads;
+        this.executorService = Executors.newFixedThreadPool(processorThreads);
         stopRequested = false;
     }
 
