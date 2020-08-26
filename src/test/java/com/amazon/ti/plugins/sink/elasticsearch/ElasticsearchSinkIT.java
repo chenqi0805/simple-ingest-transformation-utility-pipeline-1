@@ -77,7 +77,8 @@ public class ElasticsearchSinkIT extends ESRestTestCase {
 
   public void testInstantiateSinkRawSpanCustom() throws IOException {
     String testIndexAlias = "test-raw-span";
-    String testTemplateFile = getClass().getClassLoader().getResource("test-index-template.json").getFile();
+    //String testTemplateFile = getClass().getClassLoader().getResource("test-index-template.json").getFile();
+    String testTemplateFile = "test-index-template.json";
     PluginSetting pluginSetting = generatePluginSetting(IndexConstants.RAW, testIndexAlias, testTemplateFile);
     ElasticsearchSink sink = new ElasticsearchSink(pluginSetting);
     Request request = new Request(HttpMethod.HEAD, testIndexAlias);
@@ -103,7 +104,8 @@ public class ElasticsearchSinkIT extends ESRestTestCase {
 
   public void testOutputRawSpanCustom() throws IOException, InterruptedException {
     String testIndexAlias = "test-raw-span";
-    String testTemplateFile = getClass().getClassLoader().getResource("test-index-template.json").getFile();
+    //String testTemplateFile = getClass().getClassLoader().getResource("test-index-template.json").getFile();
+    String testTemplateFile = "test-index-template.json";
     String traceId = UUID.randomUUID().toString();
     String spanId1 = UUID.randomUUID().toString();
     String spanId2 = UUID.randomUUID().toString();
@@ -137,7 +139,8 @@ public class ElasticsearchSinkIT extends ESRestTestCase {
 
   public void testInstantiateSinkServiceMapCustom() throws IOException {
     String testIndexAlias = "test-service-map";
-    String testTemplateFile = getClass().getClassLoader().getResource("test-index-template.json").getFile();
+    //String testTemplateFile = getClass().getClassLoader().getResource("test-index-template.json").getFile();
+    String testTemplateFile = "test-index-template.json";
     PluginSetting pluginSetting = generatePluginSetting(IndexConstants.SERVICE_MAP, testIndexAlias, testTemplateFile);
     ElasticsearchSink sink = new ElasticsearchSink(pluginSetting);
     Request request = new Request(HttpMethod.HEAD, testIndexAlias);
@@ -148,7 +151,8 @@ public class ElasticsearchSinkIT extends ESRestTestCase {
 
   public void testInstantiateSinkCustomIndex() throws IOException {
     String testIndexAlias = "test-alias";
-    String testTemplateFile = getClass().getClassLoader().getResource("test-index-template.json").getFile();
+    //String testTemplateFile = getClass().getClassLoader().getResource("test-index-template.json").getFile();
+    String testTemplateFile = "test-index-template.json";
     PluginSetting pluginSetting = generatePluginSetting(IndexConstants.CUSTOM, testIndexAlias, testTemplateFile);
     ElasticsearchSink sink = new ElasticsearchSink(pluginSetting);
     Request request = new Request(HttpMethod.HEAD, testIndexAlias);

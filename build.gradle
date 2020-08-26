@@ -15,6 +15,7 @@ buildscript {
 }
 
 plugins {
+    id 'com.github.johnrengelman.shadow' version '6.0.0'
     id 'java'
 }
 version = '0.1-alpha'
@@ -102,7 +103,8 @@ integTest.runner {
 jar {
     manifest {
         attributes('Implementation-Title': project.name,
-                'Implementation-Version': project.version)
+                'Implementation-Version': project.version,
+                'Main-Class': 'com.amazon.ti.TransformationInstanceExecute')
     }
 }
 
@@ -114,4 +116,5 @@ licenseHeaders.enabled = false
 dependencyLicenses.enabled = false
 thirdPartyAudit.enabled = false
 validateMavenPom.enabled = false
+validateShadowPom.enabled = false
 validateNebulaPom.enabled = false

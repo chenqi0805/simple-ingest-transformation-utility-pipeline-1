@@ -23,13 +23,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.HttpMethod;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.amazon.ti.plugins.sink.elasticsearch.ConnectionConfiguration.CONNECT_TIMEOUT;
 import static com.amazon.ti.plugins.sink.elasticsearch.ConnectionConfiguration.HOSTS;
@@ -175,9 +172,7 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     final String indexAlias = esSinkConfig.getIndexConfiguration().getIndexAlias();
     final String endPoint = String.format("/_template/%s-index-template", indexAlias);
     final String jsonFilePath = esSinkConfig.getIndexConfiguration().getTemplateFile();
-    StringBuilder templateJsonBuffer = new StringBuilder();
-    Files.lines(Paths.get(jsonFilePath)).forEach(s -> templateJsonBuffer.append(s).append("\n"));
-    final String templateJson = templateJsonBuffer.toString();
+    final String templateJson = readTemplateFile(jsonFilePath);
     final Request request = new Request(HttpMethod.POST, endPoint);
     final XContentParser parser = XContentFactory.xContent(XContentType.JSON)
         .createParser(NamedXContentRegistry.EMPTY, LoggingDeprecationHandler.INSTANCE, templateJson);
@@ -239,6 +234,14 @@ public class ElasticsearchSink implements Sink<Record<String>> {
     }
   }
 
+  private String readTemplateFile(final String templateFilePath) throws IOException {
+    final StringBuilder templateJsonBuffer = new StringBuilder();
+    try(BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(getClass().getClassLoader().
+            getResourceAsStream(templateFilePath))))){
+      reader.lines().forEach(line -> templateJsonBuffer.append(line).append("\n"));
+    }
+    return templateJsonBuffer.toString();
+  }
   private String getSpanIdFromRecord(String documentJson) throws IOException {
     final XContentParser parser = XContentFactory.xContent(XContentType.JSON)
             .createParser(NamedXContentRegistry.EMPTY, LoggingDeprecationHandler.INSTANCE, documentJson);
