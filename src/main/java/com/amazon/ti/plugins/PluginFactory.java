@@ -1,7 +1,6 @@
 package com.amazon.ti.plugins;
 
 import com.amazon.ti.model.configuration.PluginSetting;
-import com.amazon.ti.parser.PipelineConfigurationValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
