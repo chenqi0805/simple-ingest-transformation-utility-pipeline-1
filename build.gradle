@@ -54,6 +54,7 @@ dependencies {
     implementation 'org.apache.bval:bval-jsr:2.0.0'
     implementation 'org.apache.bval:bval-extras:2.0.4'
     implementation 'org.slf4j:slf4j-api:1.7.30'
+    implementation 'org.slf4j:slf4j-log4j12:1.7.30'
     implementation "org.apache.logging.log4j:log4j-core:2.11.1"
     testImplementation('junit:junit:4.13') {
         exclude group:'org.hamcrest' // workaround for jarHell
