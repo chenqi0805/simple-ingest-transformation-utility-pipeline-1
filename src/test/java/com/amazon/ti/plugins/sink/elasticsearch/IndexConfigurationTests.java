@@ -15,9 +15,9 @@ public class IndexConfigurationTests {
   @Test
   public void testDefault() {
     IndexConfiguration indexConfiguration = new IndexConfiguration.Builder().build();
-    String expTemplateFile = indexConfiguration
-        .getClass().getClassLoader().getResource(RAW_DEFAULT_TEMPLATE_FILE).getFile();
-
+//    String expTemplateFile = indexConfiguration
+//        .getClass().getClassLoader().getResource(RAW_DEFAULT_TEMPLATE_FILE).getFile();
+    String expTemplateFile = RAW_DEFAULT_TEMPLATE_FILE;
     assertEquals(RAW, indexConfiguration.getIndexType());
     assertEquals(TYPE_TO_DEFAULT_ALIAS.get(RAW), indexConfiguration.getIndexAlias());
     assertEquals(expTemplateFile, indexConfiguration.getTemplateFile());
@@ -36,8 +36,9 @@ public class IndexConfigurationTests {
     String testIndexAlias = "foo";
     indexConfiguration = new IndexConfiguration.Builder()
         .withIndexAlias(testIndexAlias).build();
-    String expTemplateFile = indexConfiguration
-        .getClass().getClassLoader().getResource(RAW_DEFAULT_TEMPLATE_FILE).getFile();
+//    String expTemplateFile = indexConfiguration
+//        .getClass().getClassLoader().getResource(RAW_DEFAULT_TEMPLATE_FILE).getFile();
+    String expTemplateFile = RAW_DEFAULT_TEMPLATE_FILE;
 
     assertEquals(testIndexAlias, indexConfiguration.getIndexAlias());
     assertEquals(expTemplateFile, indexConfiguration.getTemplateFile());
@@ -59,8 +60,9 @@ public class IndexConfigurationTests {
         .withIndexType(SERVICE_MAP)
         .withIndexAlias(testIndexAlias)
         .build();
-    String expTemplateFile = indexConfiguration
-        .getClass().getClassLoader().getResource(SERVICE_MAP_DEFAULT_TEMPLATE_FILE).getFile();
+    /*String expTemplateFile = indexConfiguration
+        .getClass().getClassLoader().getResource(SERVICE_MAP_DEFAULT_TEMPLATE_FILE).getFile();*/
+    String expTemplateFile = SERVICE_MAP_DEFAULT_TEMPLATE_FILE;
 
     assertEquals(testIndexAlias, indexConfiguration.getIndexAlias());
     assertEquals(expTemplateFile, indexConfiguration.getTemplateFile());
