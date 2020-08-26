@@ -129,7 +129,7 @@ public class TransformationInstance {
 
     private int getConfiguredThreadsOrDefault(final Configuration processorConfiguration) {
         int processorThreads = processorConfiguration.getAttributeValueAsInteger(PROCESSOR_THREADS_ATTRIBUTE);
-        return processorThreads == 0 ? getDefaultProcessorThreads() : processorThreads;
+        return processorThreads <= 0 ? getDefaultProcessorThreads() : processorThreads;
     }
 
     /**
