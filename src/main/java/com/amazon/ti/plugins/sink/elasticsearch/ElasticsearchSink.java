@@ -23,10 +23,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.HttpMethod;
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Objects;
 
 import static com.amazon.ti.plugins.sink.elasticsearch.ConnectionConfiguration.CONNECT_TIMEOUT;
 import static com.amazon.ti.plugins.sink.elasticsearch.ConnectionConfiguration.HOSTS;
