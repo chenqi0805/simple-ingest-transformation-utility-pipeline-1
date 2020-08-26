@@ -240,8 +240,8 @@ public class ElasticsearchSink implements Sink<Record<String>> {
 
   private String readTemplateFile(final String templateFilePath) throws IOException {
     final StringBuilder templateJsonBuffer = new StringBuilder();
-    try(BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(getClass().getClassLoader().
-            getResourceAsStream(templateFilePath))))){
+    try(BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(getClass()
+            .getClassLoader().getResourceAsStream(templateFilePath))))){
       reader.lines().forEach(line -> templateJsonBuffer.append(line).append("\n"));
     }
     return templateJsonBuffer.toString();

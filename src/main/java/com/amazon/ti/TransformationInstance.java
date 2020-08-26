@@ -13,18 +13,22 @@ import com.amazon.ti.plugins.buffer.BufferFactory;
 import com.amazon.ti.plugins.processor.ProcessorFactory;
 import com.amazon.ti.plugins.sink.SinkFactory;
 import com.amazon.ti.plugins.source.SourceFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * DO NOT REVIEW THIS FILE YET
- * Utility class - This is solely being used for testing the partial changes.
- * TODO Either remove this class or Reformat it.
+ * TransformationInstance is the entry point into the execution engine. An instance of this class is provided by
+ * {@link #getInstance()} method and the same can eb used to trigger execution via {@link #execute()} of the
+ * {@link Pipeline} with default configuration or {@link #execute(String)} to provide custom configuration file. Also,
+ * the same instance reference can be further used to {@link #stop()} the execution.
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
 public class TransformationInstance {
+    private static final Logger LOG = LoggerFactory.getLogger(TransformationInstance.class);
+
     private static final String DEFAULT_CONFIG_LOCATION = "src/main/resources/transformation-instance.yml";
     private static final String PROCESSOR_THREADS_ATTRIBUTE = "threads";
     private Pipeline transformationPipeline;
@@ -63,6 +67,7 @@ public class TransformationInstance {
      * @return true if the execute successfully initiates the Transformation Instance
      */
     public boolean execute(final String configurationFileLocation) {
+        LOG.info("Using {} configuration file",configurationFileLocation);
         final PipelineParser pipelineParser = new PipelineParser(configurationFileLocation);
         final PipelineConfiguration pipelineConfiguration = pipelineParser.parseConfiguration();
         execute(pipelineConfiguration);
@@ -70,39 +75,27 @@ public class TransformationInstance {
     }
 
     /**
-     * Terminates the execution of Transformation Instance
-     * TODO - Set a flag to notify components
-     *
-     * return boolean status of the stop request [TODO]
+     * Terminates the execution of Transformation Instance.
+     * TODO return boolean status of the stop request
      */
     public void stop() {
         transformationPipeline.stop();
     }
 
     /**
-     * Executes Transformation instance engine for the provided {@link PipelineConfiguration}
-     *
-     * @param pipelineConfiguration
+     * Executes Transformation instance engine for the provided {@link PipelineConfiguration}.
+     * @param pipelineConfiguration to be used for {@link Pipeline} execution
      * @return true if the execute successfully initiates the Transformation Instance
      * {@link com.amazon.ti.pipeline.Pipeline} execute.
      */
     private boolean execute(final PipelineConfiguration pipelineConfiguration) {
         transformationPipeline = buildPipelineFromConfiguration(pipelineConfiguration);
+        LOG.info("Successfully parsed the configuration file, Triggering pipeline execution");
         transformationPipeline.execute();
         return true;
     }
 
-    /**
-     * Executes Transformation instance engine using the provided {@link PipelineParser}
-     *
-     * @param pipelineParser an instance of {@link PipelineParser} to retrieve {@link PipelineConfiguration}
-     * @return true if the execute successfully initiates the Transformation Instance
-     * {@link com.amazon.ti.pipeline.Pipeline} execute.
-     */
-    public boolean execute(final PipelineParser pipelineParser) {
-        return execute(pipelineParser.parseConfiguration());
-    }
-
+    @SuppressWarnings({"rawtypes"})
     private Pipeline buildPipelineFromConfiguration(final PipelineConfiguration pipelineConfiguration) {
         final Source source = SourceFactory.newSource(getFirstSettingsIfExists(pipelineConfiguration.getSource()));
         final PluginSetting bufferPluginSetting = getFirstSettingsIfExists(pipelineConfiguration.getBuffer());

@@ -4,12 +4,16 @@ import com.amazon.ti.model.record.Record;
 import com.amazon.ti.model.buffer.Buffer;
 import com.amazon.ti.model.processor.Processor;
 import com.amazon.ti.model.sink.Sink;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.List;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class ProcessWorker implements Runnable {
+    private static final Logger LOG = LoggerFactory.getLogger(Pipeline.class);
+
     private final Buffer readBuffer;
     private final List<Processor> processors;
     private final Collection<Sink> sinks;
@@ -33,8 +37,10 @@ public class ProcessWorker implements Runnable {
             boolean isHalted = false;
             do {
                 isHalted = isHalted || pipeline.isStopRequested();
+                Thread.sleep(0);
                 Collection records = readBuffer.readBatch();
                 if (records != null && !records.isEmpty()) {
+                    LOG.debug("Pipeline Worker: Processing {} records from buffer", records.size());
                     for (final Processor processor : processors) {
                         records = processor.execute(records);
                     }
@@ -61,6 +67,7 @@ public class ProcessWorker implements Runnable {
      * TODO Add isolator pattern - Fail if one of the Sink fails [isolator Pattern]
      */
     private boolean postToSink(Collection<Record> records) {
+        LOG.debug("Pipeline Worker: Submitting {} processed records to sink", records.size());
         sinks.forEach(sink -> sink.output(records));
         return true;
     }

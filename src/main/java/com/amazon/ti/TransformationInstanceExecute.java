@@ -1,9 +1,14 @@
 package com.amazon.ti;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Execute entry into Transformation Instance.
  */
 public class TransformationInstanceExecute {
+    private static final Logger LOG = LoggerFactory.getLogger(TransformationInstanceExecute.class);
+
     public static void main(String[] args) {
         final TransformationInstance transformationInstance = TransformationInstance.getInstance();
         boolean executeSubmissionStatus;
@@ -13,9 +18,9 @@ public class TransformationInstanceExecute {
             executeSubmissionStatus = transformationInstance.execute();
         }
         if (executeSubmissionStatus) {
-            System.out.println("Submitted execution request successfully");
+            LOG.info("Submitted execution request successfully");
         } else {
-            System.out.println("Something went wrong - Failed to submit request");
+            LOG.warn("Something went wrong - Failed to submit request");
         }
     }
 }

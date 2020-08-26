@@ -5,6 +5,8 @@ import com.amazon.ti.model.buffer.Buffer;
 import com.amazon.ti.model.processor.Processor;
 import com.amazon.ti.model.sink.Sink;
 import com.amazon.ti.model.source.Source;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -21,6 +23,7 @@ import java.util.concurrent.TimeUnit;
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class Pipeline {
+    private static final Logger LOG = LoggerFactory.getLogger(Pipeline.class);
     private static final List<Processor> EMPTY_PROCESSOR_LIST = new ArrayList<>(0);
     private static final int DEFAULT_TERMINATION_IN_MILLISECONDS = 5000;
     private boolean stopRequested;
@@ -31,7 +34,8 @@ public class Pipeline {
     private final List<Processor> processors;
     private final Collection<Sink> sinks;
     private final int processorThreads;
-    private final ExecutorService executorService;
+    private final ExecutorService processorExecutorService;
+    private final ExecutorService sourceExecutorService;
 
     /**
      * Constructs a {@link Pipeline} object with provided {@link Source}, {@link #name}, {@link Collection} of
@@ -53,7 +57,8 @@ public class Pipeline {
         processors = EMPTY_PROCESSOR_LIST;
         this.sinks = sinks;
         this.processorThreads = processorThreads;
-        this.executorService = Executors.newFixedThreadPool(processorThreads);
+        this.processorExecutorService = Executors.newFixedThreadPool(processorThreads);
+        sourceExecutorService = Executors.newSingleThreadExecutor();
         stopRequested = false;
     }
 
@@ -77,14 +82,15 @@ public class Pipeline {
             @Nullable final Buffer buffer,
             @Nullable final List<Processor> processors,
             @Nonnull final Collection<Sink> sinks,
-            @Nullable final int processorThreads) {
+            final int processorThreads) {
         this.name = name;
         this.source = source;
         this.buffer = buffer != null ? buffer : Buffer.defaultBuffer();
         this.processors = processors != null ? processors : EMPTY_PROCESSOR_LIST;
         this.sinks = sinks;
         this.processorThreads = processorThreads;
-        this.executorService = Executors.newFixedThreadPool(processorThreads);
+        this.processorExecutorService = Executors.newFixedThreadPool(processorThreads);
+        sourceExecutorService = Executors.newSingleThreadExecutor();
         stopRequested = false;
     }
 
@@ -140,29 +146,31 @@ public class Pipeline {
      * Notifies the components to stop the processing.
      */
     public void stop() {
+        LOG.info("Attempting to terminate the pipeline execution");
         stopRequested = true;
         source.stop();
-        executorService.shutdown();
+        processorExecutorService.shutdown();
         try {
-            if (!executorService.awaitTermination(DEFAULT_TERMINATION_IN_MILLISECONDS, TimeUnit.MILLISECONDS)) {
-                executorService.shutdownNow();
+            if (!processorExecutorService.awaitTermination(DEFAULT_TERMINATION_IN_MILLISECONDS, TimeUnit.MILLISECONDS)) {
+                processorExecutorService.shutdownNow();
             }
         } catch (InterruptedException ex) {
-            executorService.shutdownNow();
+            LOG.info("Encountered interruption terminating the pipeline execution, Attempting to force the termination");
+            processorExecutorService.shutdownNow();
         }
     }
 
     private void executeWithStart() {
-        //source.start(buffer);
-        Executors.newSingleThreadExecutor().submit( () -> { source.start(buffer); });
+        LOG.info("Submitting request to initiate the pipeline execution");
+        sourceExecutorService.submit(() -> source.start(buffer));
         try {
             for (int i = 0; i < processorThreads; i++) {
-                executorService.execute(new ProcessWorker(buffer, processors, sinks, this));
+                processorExecutorService.execute(new ProcessWorker(buffer, processors, sinks, this));
             }
         } catch (Exception ex) {
-            executorService.shutdown();
+            processorExecutorService.shutdown();
+            LOG.error("Encountered exception during pipeline execution", ex);
             throw ex;
-            //throw new TransformationInstanceException("Encountered exception while executing processors", ex);
         }
     }
 }

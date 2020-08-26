@@ -62,13 +62,9 @@ public class IndexConfiguration {
     String templateFile = builder.templateFile;
     if (templateFile == null) {
       if (builder.indexType == IndexConstants.RAW) {
-//        templateFile = getClass().getClassLoader()
-//            .getResource(IndexConstants.RAW_DEFAULT_TEMPLATE_FILE).getFile();
         templateFile = IndexConstants.RAW_DEFAULT_TEMPLATE_FILE;
       } else if (builder.indexType == IndexConstants.SERVICE_MAP) {
         templateFile = IndexConstants.SERVICE_MAP_DEFAULT_TEMPLATE_FILE;
-//        templateFile = getClass().getClassLoader()
-//            .getResource(IndexConstants.SERVICE_MAP_DEFAULT_TEMPLATE_FILE).getFile();
       }
     }
     this.templateFile = templateFile;
