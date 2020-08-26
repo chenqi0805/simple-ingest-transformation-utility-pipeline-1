@@ -35,7 +35,7 @@ public class Pipeline {
     private final Collection<Sink> sinks;
     private final int processorThreads;
     private final ExecutorService processorExecutorService;
-    private final ExecutorService sourceExecutorService = Executors.newSingleThreadExecutor();
+    private final ExecutorService sourceExecutorService;
 
     /**
      * Constructs a {@link Pipeline} object with provided {@link Source}, {@link #name}, {@link Collection} of
@@ -58,6 +58,7 @@ public class Pipeline {
         this.sinks = sinks;
         this.processorThreads = processorThreads;
         this.processorExecutorService = Executors.newFixedThreadPool(processorThreads);
+        sourceExecutorService = Executors.newSingleThreadExecutor();
         stopRequested = false;
     }
 
@@ -89,6 +90,7 @@ public class Pipeline {
         this.sinks = sinks;
         this.processorThreads = processorThreads;
         this.processorExecutorService = Executors.newFixedThreadPool(processorThreads);
+        sourceExecutorService = Executors.newSingleThreadExecutor();
         stopRequested = false;
     }
 
@@ -167,8 +169,8 @@ public class Pipeline {
             }
         } catch (Exception ex) {
             processorExecutorService.shutdown();
+            LOG.error("Encountered exception during pipeline execution", ex);
             throw ex;
-            //throw new TransformationInstanceException("Encountered exception while executing processors", ex);
         }
     }
 }
