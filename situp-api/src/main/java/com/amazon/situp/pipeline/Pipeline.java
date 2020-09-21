@@ -6,12 +6,10 @@ import com.amazon.situp.model.record.Record;
 import com.amazon.situp.model.sink.Sink;
 import com.amazon.situp.model.source.Source;
 import com.amazon.situp.pipeline.common.PipelineThreadFactory;
-import com.amazon.situp.plugins.buffer.BlockingBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -27,7 +25,6 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class Pipeline {
     private static final Logger LOG = LoggerFactory.getLogger(Pipeline.class);
-    private static final List<Processor> EMPTY_PROCESSOR_LIST = new ArrayList<>(0);
     private static final int PROCESSOR_DEFAULT_TERMINATION_IN_MILLISECONDS = 5000;
     private static final int SOURCE_DEFAULT_TERMINATION_IN_MILLISECONDS = 2000;
     private boolean stopRequested;
@@ -41,26 +38,6 @@ public class Pipeline {
     private final int readBatchTimeoutInMillis;
     private final ExecutorService processorSinkExecutorService;
     private final ExecutorService sourceExecutorService;
-
-    /**
-     * Constructs a {@link Pipeline} object with provided {@link #name}, {@link Source}, {@link Collection} of
-     * {@link Sink}, processorThreads, readBatchTimeout and default {@link Buffer}, {@link Processor}.
-     *
-     * @param name             name of the pipeline
-     * @param source           source from where the pipeline reads the records
-     * @param sinks            collection of sink's to which the transformed records need to be posted
-     * @param processorThreads configured or default threads to parallelize processor work
-     * @param readBatchTimeoutInMillis configured or default timeout for reading batch of records from buffer
-     *
-     */
-    public Pipeline(
-            @Nonnull final String name,
-            @Nonnull final Source source,
-            @Nonnull final List<Sink> sinks,
-            final int processorThreads,
-            final int readBatchTimeoutInMillis) {
-        this(name, source, new BlockingBuffer(), EMPTY_PROCESSOR_LIST, sinks, processorThreads, readBatchTimeoutInMillis);
-    }
 
     /**
      * Constructs a {@link Pipeline} object with provided {@link Source}, {@link #name}, {@link Collection} of

@@ -118,7 +118,7 @@ public class Situp {
         final int processorThreads = getConfiguredThreadsOrDefault(processorConfiguration);
         final int readBatchDelay = getConfiguredDelayOrDefault(processorConfiguration);
 
-        return new Pipeline(pipelineConfiguration.getName(), source, buffer, processors, sinks, processorThreads, readBatchDelay);
+        return new Pipeline("", source, buffer, processors, sinks, processorThreads, readBatchDelay);
     }
 
     private PluginSetting getFirstSettingsIfExists(final Configuration configuration) {

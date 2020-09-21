@@ -57,8 +57,8 @@ public class BlockingBuffer<T extends Record<?>> implements Buffer<T> {
      * @param pluginSetting instance with metadata information from pipeline pluginSetting file.
      */
     public BlockingBuffer(final PluginSetting pluginSetting) {
-        this(getAttributeValue(pluginSetting, ATTRIBUTE_BUFFER_CAPACITY, DEFAULT_BUFFER_CAPACITY),
-                getAttributeValue(pluginSetting, ATTRIBUTE_BATCH_SIZE, DEFAULT_BATCH_SIZE));
+        this(pluginSetting.getAttributeOrDefaultAsInt(ATTRIBUTE_BUFFER_CAPACITY, DEFAULT_BUFFER_CAPACITY),
+                pluginSetting.getAttributeOrDefaultAsInt(ATTRIBUTE_BATCH_SIZE, DEFAULT_BATCH_SIZE));
     }
 
     public BlockingBuffer() {
@@ -107,8 +107,4 @@ public class BlockingBuffer<T extends Record<?>> implements Buffer<T> {
         return records;
     }
 
-    private static int getAttributeValue(final PluginSetting pluginSetting, final String attributeName,
-                                         final int defaultValue) {
-        return (Integer) pluginSetting.getAttributeOrDefault(attributeName, defaultValue);
-    }
 }

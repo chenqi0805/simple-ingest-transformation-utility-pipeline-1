@@ -1,5 +1,6 @@
 package com.amazon.situp.pipeline.common;
 
+import javax.annotation.Nonnull;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -22,7 +23,7 @@ public class PipelineThreadFactory implements ThreadFactory {
     }
 
     @Override
-    public Thread newThread(final Runnable runnable) {
+    public Thread newThread(@Nonnull final Runnable runnable) {
         Thread thread = new Thread(threadGroup, runnable, namePrefix + threadNumber.getAndIncrement(), 0);
         if(thread.isDaemon()) {
             thread.setDaemon(false);
